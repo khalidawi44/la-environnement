@@ -172,6 +172,43 @@ faut un navigateur : à réserver au poste de travail.
 
 ---
 
+## Config de travail (reprise entre sessions)
+
+Reprise de la config du dépôt Alliance Groupe, allégée de ce qui lui est
+propre (agents de prospection, cadenas des templates vendus, workflow Gwen).
+
+| Fichier | Rôle |
+|---|---|
+| `.claude/settings.json` | Déclare le hook `SessionStart`. |
+| `.claude/hooks/session-start.sh` | Injecté au démarrage de **chaque** session Claude : rappel que `main` = production, branche courante, 8 derniers commits, travail non commité, chantier en cours, en-tête de `HANDOFF.md`. Réinstalle aussi les hooks git (ils ne survivent pas à un conteneur éphémère). |
+| `.claude/skills/ui-ux-pro-max/` | Skill design : 84 styles, 192 palettes, 74 associations de polices, 98 règles UX, 22 stacks. Pour l'étape design. |
+| `scripts/install-git-hooks.sh` | Installe le `pre-commit`. |
+| `scripts/stamp-handoff.sh` | Tamponne date + branche dans `HANDOFF.md` à chaque commit. |
+| `HANDOFF.md` | État du projet, à lire en premier en début de session. |
+| `BACKLOG.md` | Chantiers en attente et décisions reportées. |
+| `.WORKING_ON.md` | Chantier en cours et ce qu'on ne touche pas. |
+| `.gitattributes` | Fins de ligne. Les `.sh` restent en LF, sinon les hooks cassent (« bad interpreter »). |
+
+### Le pre-commit
+
+Différence assumée avec AG : là-bas le hook vérifie les cadenas des templates
+vendus (`check-all-locks.sh`), ce qui n'a pas d'objet ici. Il fait donc ce qui
+compte pour ce dépôt, et c'est **bloquant** :
+
+1. `php -l` sur chaque fichier `.php` indexé ;
+2. validation de chaque fichier `.json` indexé ;
+3. tampon de `HANDOFF.md`.
+
+Testé : PHP cassé → refusé, JSON invalide → refusé, PHP valide → accepté.
+
+Si `php` n'est pas dans le `PATH`, le hook le signale et laisse passer plutôt
+que de bloquer tout commit. Sur cette machine-là, vérifier à la main : `main`
+est déployé en production sous 5 minutes.
+
+Pour (ré)installer : `bash scripts/install-git-hooks.sh`.
+
+---
+
 ## Structure
 
 ```

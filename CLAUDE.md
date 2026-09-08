@@ -67,3 +67,13 @@ structure, gabarits, styles de base. Ne pas y empiler de design non validé.
 - Chaque brique indépendante (`if ( ! defined( 'ABSPATH' ) ) exit;`, gardes
   `function_exists`), pour rester copiable seule.
 - Capacité admin requise partout : `manage_options`.
+
+## Reprise de session
+- Lire `HANDOFF.md` en premier, puis `BACKLOG.md`. Les mettre à jour **avant
+  de fermer** une session : sur Claude Code web le conteneur est neuf à chaque
+  fois, seul ce qui est commité et poussé survit.
+- Le hook `SessionStart` (`.claude/hooks/session-start.sh`) affiche l'état réel
+  du dépôt au démarrage et réinstalle les hooks git.
+- Le `pre-commit` refuse tout PHP cassé ou JSON invalide et tamponne
+  `HANDOFF.md`. Le réinstaller si besoin : `bash scripts/install-git-hooks.sh`.
+- Skill design disponible : `ui-ux-pro-max` (`.claude/skills/`).

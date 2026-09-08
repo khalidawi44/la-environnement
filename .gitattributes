@@ -1,0 +1,19 @@
+# Normalisation des fins de ligne.
+# Les scripts shell (hooks git, hook SessionStart) DOIVENT rester en LF :
+# en CRLF, bash échoue avec « bad interpreter: No such file or directory ».
+* text=auto eol=lf
+*.sh   text eol=lf
+*.bat  text eol=crlf
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.mp4  binary
+*.webm binary
+*.mp3  binary
