@@ -97,8 +97,8 @@ $lae_contact    = lae_url_contact();
      L'egerie passe SOUS le voile, sinon le texte se poserait a meme la photo
      et deviendrait illisible. */
   .hero__veil{position:absolute;inset:0;z-index:2;
-    background:linear-gradient(180deg,rgba(5,5,10,.78),rgba(5,5,10,.12) 34%,rgba(5,5,10,.45) 68%,rgba(5,5,10,.97)),
-               radial-gradient(120% 80% at 22% 60%,transparent 38%,rgba(5,5,10,.62))}
+    background:linear-gradient(180deg,rgba(4,20,12,.78),rgba(4,20,12,.12) 34%,rgba(4,20,12,.45) 68%,rgba(4,20,12,.97)),
+               radial-gradient(120% 80% at 22% 60%,transparent 38%,rgba(4,20,12,.62))}
   /* PLEIN ECRAN (03/09) : l'egerie occupait une colonne de 46vw collee a
      droite, et object-fit:cover y recadrait horizontalement — le second visage
      sortait du cadre sur grand ecran. Elle prend maintenant tout le hero, donc
@@ -152,7 +152,7 @@ $lae_contact    = lae_url_contact();
   .tab__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   .tab__img{position:absolute;inset:0}
   .tab__img img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
-  .tab__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,10,.62),rgba(5,5,10,.25) 40%,rgba(5,5,10,.9))}
+  .tab__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,20,12,.62),rgba(4,20,12,.25) 40%,rgba(4,20,12,.9))}
   .tab__cap{position:relative;z-index:2;text-align:center;padding:0 26px;max-width:900px}
   .tab__cap h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,6.4vw,4.6rem);line-height:1.02}
   .tab__cap h2 em{font-style:italic;color:var(--feuille-hi)}
@@ -179,7 +179,7 @@ $lae_contact    = lae_url_contact();
   #cv{width:100%;height:100%;display:block}
   .ds__photo{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
   .ds__hand{position:absolute;z-index:4;width:min(52vw,620px);mix-blend-mode:screen;opacity:0;pointer-events:none}
-  .ds__veil{position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(5,5,10,.5),transparent 32%,rgba(5,5,10,.92))}
+  .ds__veil{position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(4,20,12,.42),transparent 32%,rgba(4,20,12,.78))}
   .ds__cap{position:absolute;z-index:5;left:0;right:0;bottom:11vh;text-align:center;padding:0 26px}
   .ds__cap h2{font-family:var(--serif);font-weight:500;font-size:clamp(1.9rem,5.4vw,4rem);line-height:1.05}
   .ds__cap h2 em{font-style:italic;color:var(--feuille-hi)}
@@ -235,7 +235,7 @@ $lae_contact    = lae_url_contact();
   .card__media{position:relative;aspect-ratio:16/10;overflow:hidden}
   .card__media img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
   .card:hover .card__media img{transform:scale(1.07)}
-  .card__badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(5,5,10,.72);border:1px solid rgba(127,176,74,.5);
+  .card__badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(4,20,12,.72);border:1px solid rgba(127,176,74,.5);
     color:var(--feuille-hi);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
   .card__body{padding:13px 15px 15px}
   .card__t{font-size:1.02rem;font-weight:700;margin-bottom:6px}
@@ -298,7 +298,7 @@ $lae_contact    = lae_url_contact();
   .arbre__img{position:absolute;z-index:1;width:min(58vw,520px);opacity:0;border-radius:50%;
     box-shadow:0 0 0 1px rgba(127,176,74,.5),0 70px 150px -50px rgba(127,176,74,.55)}
   .arbre__veil{position:absolute;inset:0;z-index:2;pointer-events:none;
-    background:radial-gradient(52% 52% at 50% 50%,rgba(5,5,10,.72),rgba(5,5,10,.9) 68%,rgba(5,5,10,.97))}
+    background:radial-gradient(52% 52% at 50% 50%,rgba(4,20,12,.5),rgba(4,20,12,.68) 68%,rgba(4,20,12,.8))}
   .arbre__panel{position:relative;z-index:3;width:100%;max-width:720px;padding:0 28px;text-align:center}
   .arbre__panel .eyebrow{display:inline-block;margin-bottom:14px}
   .arbre__lead{color:var(--muted);font-size:clamp(.96rem,2.1vw,1.08rem);line-height:1.62;
@@ -341,7 +341,7 @@ $lae_contact    = lae_url_contact();
     .hero__eg video,.hero__eg img{object-position:center 26%}
     .hero__in{padding-bottom:30px;position:relative;isolation:isolate}
     .hero__in::before{content:"";position:absolute;inset:-40px -24px -60px;z-index:-1;pointer-events:none;
-      background:linear-gradient(0deg,rgba(5,5,10,.95) 34%,rgba(5,5,10,.78) 62%,rgba(5,5,10,0) 100%)}
+      background:linear-gradient(0deg,rgba(4,20,12,.95) 34%,rgba(4,20,12,.78) 62%,rgba(4,20,12,0) 100%)}
     .hero__t{font-size:clamp(2.3rem,11vw,3.6rem);line-height:1.02}
     .hero__sub{font-size:1rem;max-width:34ch}
     .hero__proof{margin-top:16px;gap:11px;max-width:34ch}
@@ -517,7 +517,7 @@ $lae_contact    = lae_url_contact();
   .hero--nu::after{background:
       radial-gradient(90% 80% at 82% 12%,rgba(127,176,74,.5),transparent 62%),
       linear-gradient(160deg,#0f2418 0%,#04140c 62%,#020c07 100%)}
-  .tab__img--nu{background:linear-gradient(150deg,#12301e,#04140c 70%)}
+  .tab__img--nu{background:linear-gradient(150deg,rgba(18,48,30,.3),rgba(4,20,12,.55) 70%)}
   .ds__stick{background:radial-gradient(70% 70% at 50% 40%,#0f2418,#04140c)}
   .arbre__img--nu{background:radial-gradient(circle at 38% 32%,#3f7a3f,#0f2418 68%);aspect-ratio:1;
     width:min(58vw,520px)}
@@ -528,11 +528,11 @@ $lae_contact    = lae_url_contact();
      Ces règles disparaissent d'elles-mêmes dès qu'une image
      mise en avant est renseignée.
      ========================================================== */
-  .card__media--nu{background:linear-gradient(150deg,#12301e,#04140c);display:grid;place-items:center}
+  .card__media--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8));display:grid;place-items:center}
   .card__glyphe{color:var(--feuille-hi);opacity:.85}
   .card__glyphe svg{width:44px;height:44px}
-  .ch__media--nu{background:linear-gradient(150deg,#12301e,#04140c)}
-  .rz__vue--nu{background:linear-gradient(150deg,#12301e,#04140c)}
+  .ch__media--nu{background:linear-gradient(150deg,rgba(18,48,30,.55),rgba(4,20,12,.75))}
+  .rz__vue--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8))}
   .pack--nu .pack__txt{display:block}
   /* Le nom colle à son icône : la règle d'Alliance Groupe écartait les deux
      bouts (justify-content:space-between) parce qu'un prix fermait la ligne.
@@ -552,6 +552,37 @@ $lae_contact    = lae_url_contact();
   .ds__photo--nu{background:linear-gradient(155deg,#12301e,#04140c 68%)}
   .ds__hand--nu{aspect-ratio:4/3;border-radius:50%;
     background:radial-gradient(circle at 50% 46%,rgba(127,176,74,.55),rgba(15,36,24,0) 66%)}
+
+  /* ==========================================================
+     LA COLONNE — le décor unique de la page.
+     Une vidéo qui tient tout l'écran, et un arbre de plusieurs
+     écrans de haut que l'on descend en défilant : cime en haut
+     de page, racines en bas. Tout le reste passe par-dessus.
+     ========================================================== */
+  .lae-colonne{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--ink)}
+  .lae-colonne__video{position:absolute;inset:0}
+  .lae-colonne__video video,.lae-colonne__video img{width:100%;height:100%;object-fit:cover}
+  .lae-colonne__arbre{position:absolute;left:50%;top:0;width:min(128vw,1450px);
+    transform:translate3d(-50%,0,0);opacity:.85;will-change:transform;
+    filter:drop-shadow(0 0 60px rgba(47,125,79,.35))}
+  .lae-colonne__arbre img{width:100%;height:auto}
+  /* Assez de voile pour que le texte reste lisible, assez peu pour que l'arbre
+     se voie : c'est lui qui porte la descente. */
+  .lae-colonne__voile{position:absolute;inset:0;
+    background:radial-gradient(130% 80% at 50% 30%,rgba(4,20,12,.1),rgba(4,20,12,.5) 70%,rgba(4,20,12,.72)),
+               linear-gradient(180deg,rgba(4,20,12,.42),rgba(4,20,12,.12) 40%,rgba(4,20,12,.5))}
+  @media(max-width:960px){.lae-colonne__arbre{width:200vw;opacity:.7}}
+
+  /* Les fonds pleins des scènes deviennent des voiles : sans cela la colonne
+     serait masquée précisément là où la descente doit se sentir. */
+  .mq{background:rgba(6,26,16,.72)}
+  .ds__stick{background:radial-gradient(70% 70% at 50% 40%,rgba(15,36,24,.62),rgba(4,20,12,.9))}
+  .arbre__stick{background:radial-gradient(60% 60% at 50% 45%,rgba(15,36,24,.35),rgba(4,20,12,.78))}
+  .ds__photo--nu{background:linear-gradient(155deg,rgba(18,48,30,.75),rgba(4,20,12,.9) 68%)}
+  .pack,.card,.rz__card{background:rgba(11,29,19,.9);backdrop-filter:blur(2px)}
+  .hero__veil{background:
+    linear-gradient(180deg,rgba(4,20,12,.72),rgba(4,20,12,.12) 34%,rgba(4,20,12,.42) 68%,rgba(4,20,12,.9)),
+    radial-gradient(120% 80% at 22% 60%,transparent 38%,rgba(4,20,12,.55))}
 </style>
 
 <script>
@@ -562,37 +593,51 @@ document.documentElement.classList.add('js-cine');
 
 <div class="lae-cine">
 
-<section class="hero<?php echo $lae_hero_img ? '' : ' hero--nu'; ?>" id="top">
-  <?php if ( $lae_hero_img ) : ?>
-    <div class="hero__bg" data-parallax><?php echo lae_img( $lae_hero_img, '', array( 'fetchpriority' => 'high', 'loading' => '' ) ); ?></div>
-  <?php endif; ?>
-  <div class="hero__veil"></div>
-
-  <?php if ( $lae_hero_video || $lae_hero_post ) : ?>
-    <div class="hero__eg" data-eg>
-      <?php echo lae_img( $lae_hero_post, '', array( 'fetchpriority' => 'high', 'loading' => '' ) ); ?>
-      <?php if ( $lae_hero_video ) : ?>
-        <video src="<?php echo esc_url( $lae_hero_video ); ?>" muted loop playsinline preload="none" data-lazyplay<?php echo $lae_hero_post ? ' poster="' . esc_url( $lae_hero_post ) . '"' : ''; ?>></video>
-      <?php endif; ?>
+<?php
+/* ── LA COLONNE ────────────────────────────────────────────────
+   Le décor de toute la page, derrière chaque section : une vidéo qui occupe
+   l'écran entier, et un arbre haut de plusieurs écrans que l'on descend en
+   défilant — la cime en haut de page, les racines en bas. L'arbre livré est
+   un dessin vectoriel du thème ; une photo d'arbre en colonne le remplace dès
+   qu'elle est déposée dans le personnalisateur. */
+$lae_col_video = lae_reglage( 'cine_video' );
+$lae_col_arbre = lae_reglage( 'cine_colonne_image' );
+if ( '' === $lae_col_arbre ) {
+    $lae_col_arbre = $dir . '/assets/images/arbre-colonne.svg';
+}
+?>
+<div class="lae-colonne" aria-hidden="true">
+  <?php if ( $lae_col_video ) : ?>
+    <div class="lae-colonne__video">
+      <video src="<?php echo esc_url( $lae_col_video ); ?>" muted loop playsinline preload="none" data-lazyplay<?php echo $lae_hero_post ? ' poster="' . esc_url( $lae_hero_post ) . '"' : ''; ?>></video>
     </div>
-    <script>
-    /* La vidéo sort du chemin de chargement critique : l'affiche s'affiche
-       tout de suite, la vidéo démarre après le chargement — et jamais si le
-       visiteur a demandé moins d'animations. */
-    (function(){
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var start = function(){
-        document.querySelectorAll('video[data-lazyplay]').forEach(function(v){
-          v.preload = 'auto';
-          var p = v.play();
-          if (p && p.catch) { p.catch(function(){}); }
-        });
-      };
-      if (document.readyState === 'complete') { start(); }
-      else { window.addEventListener('load', function(){ setTimeout(start, 200); }); }
-    })();
-    </script>
+  <?php elseif ( $lae_hero_post ) : ?>
+    <div class="lae-colonne__video"><?php echo lae_img( $lae_hero_post, '', array( 'loading' => '' ) ); ?></div>
   <?php endif; ?>
+
+  <div class="lae-colonne__arbre"><img src="<?php echo esc_url( $lae_col_arbre ); ?>" alt="" decoding="async"></div>
+  <div class="lae-colonne__voile"></div>
+</div>
+
+<script>
+/* La vidéo de fond sort du chemin de chargement critique, et ne démarre
+   jamais chez un visiteur qui a demandé moins d'animations. */
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var start = function(){
+    document.querySelectorAll('video[data-lazyplay]').forEach(function(v){
+      v.preload = 'auto';
+      var p = v.play();
+      if (p && p.catch) { p.catch(function(){}); }
+    });
+  };
+  if (document.readyState === 'complete') { start(); }
+  else { window.addEventListener('load', function(){ setTimeout(start, 200); }); }
+})();
+</script>
+
+<section class="hero" id="top">
+  <div class="hero__veil"></div>
 
   <div class="hero__in wrap">
     <?php
@@ -1421,6 +1466,46 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
   })();
 })();
 
+</script>
+
+<script>
+/* ── La descente de l'arbre ──────────────────────────────────
+   L'image de l'arbre se déplace du haut vers le bas de son propre corps au
+   fil du défilement de la page : en haut on est dans le houppier, en bas au
+   pied du tronc. Avec GSAP quand il est là, à la main sinon — et jamais sous
+   « réduire les animations », où l'arbre reste simplement posé sur le tronc. */
+(function(){
+  var arbre = document.querySelector('.lae-colonne__arbre');
+  if (!arbre) return;
+
+  var reduit = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (reduit) { arbre.style.transform = 'translate3d(-50%,-38%,0)'; return; }
+
+  function course(){ return Math.max(0, arbre.offsetHeight - innerHeight); }
+
+  var G = window.gsap, ST = window.ScrollTrigger;
+  if (G && ST) {
+    G.to(arbre, {
+      y: function(){ return -course(); },
+      ease: 'none',
+      scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom',
+                       scrub: .6, invalidateOnRefresh: true }
+    });
+    return;
+  }
+
+  /* Repli sans GSAP : on suit le défilement à la main. */
+  var tick = false;
+  function place(){
+    var max = Math.max(1, document.body.scrollHeight - innerHeight);
+    var p = Math.min(1, Math.max(0, (window.pageYOffset || 0) / max));
+    arbre.style.transform = 'translate3d(-50%,' + (-course() * p) + 'px,0)';
+    tick = false;
+  }
+  addEventListener('scroll', function(){ if (!tick) { tick = true; requestAnimationFrame(place); } }, { passive: true });
+  addEventListener('resize', place);
+  place();
+})();
 </script>
 
 <?php

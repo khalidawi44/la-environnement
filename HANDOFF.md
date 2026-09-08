@@ -19,6 +19,17 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
 
 ## État actuel
 
+- **La colonne (v1.3.0)** — le décor unique de l'accueil : une vidéo qui
+  occupe tout l'écran derrière TOUTE la page, et un arbre haut de plusieurs
+  écrans que l'on descend en défilant (cime en haut de page, racines en bas).
+  L'arbre livré est un dessin vectoriel du thème
+  (`assets/images/arbre-colonne.svg`) ; une photo verticale le remplace depuis
+  le personnalisateur (« Arbre en colonne »).
+- **Le site est livré rempli** : `inc/lae-amorce.php` crée à la première
+  activation les 3 familles et les 6 prestations du métier, avec leurs textes.
+  Idempotent : ne tourne qu'une fois, et jamais si des prestations existent.
+- **Tous les textes sont réels** (plus aucun « à écrire avec le client ») et
+  modifiables dans le personnalisateur.
 - **Accueil cinématique (v1.2.0)** — même mécanique que l'accueil d'Alliance
   Groupe, en vert : bandeau plein écran (vidéo), bandeau défilant accéléré par
   la vitesse de scroll, grande image épinglée en Ken Burns, chapitres en
@@ -66,10 +77,12 @@ Le design est en place, **le contenu réel manque** :
    épinglée, les trois images de chapitre, l'image qui se dissout, la main
    ouverte, l'image ronde de la révélation. Sans elles la scène tourne, mais
    sur des dégradés.
-6. Les titres et textes de l'accueil cinématique livrés par défaut sont
-   **génériques** (aucun nom, chiffre, certification ni référence client) :
-   ils sont là pour que la page se tienne. **À valider ou réécrire avec le
-   client**, dans Apparence → Personnaliser → L.A Environnement.
+6. **Promesses à confirmer** dans les textes livrés (aucun chiffre, aucun nom,
+   aucune certification n'a été écrit — mais ces phrases engagent) :
+   « Diagnostic sur place avant le devis », « On se déplace, on regarde, et
+   vous repartez avec un devis écrit », « Déchets verts évacués ou broyés sur
+   place », « On travaille à la corde là où la nacelle ne passe pas ».
+   À valider ou réécrire dans Apparence → Personnaliser → L.A Environnement.
 
 Rien de tout cela n'est inventé ni pré-rempli : les réglages sont vides et
 les blocs correspondants restent masqués tant qu'ils ne sont pas remplis.
