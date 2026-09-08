@@ -1,0 +1,6 @@
+{
+  "_lisez_moi": "Contenu versionné du site. Le cron de sync importe UNIQUEMENT les slugs qui n'existent pas encore dans WordPress — il n'écrase jamais une page ou un article modifié depuis l'admin.",
+  "categories": [],
+  "pages": [],
+  "articles": []
+}

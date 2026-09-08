@@ -1,0 +1,680 @@
+<?php
+/**
+ * LAE GitHub Sync — Moteur de synchronisation des fichiers depuis GitHub.
+ *
+ * Principe : un push sur la branche `main` du dépôt est répercuté tout seul
+ * sur le site WordPress, sans FTP ni intervention manuelle.
+ *
+ *   - Un WP-Cron toutes les 5 minutes compare le SHA du dernier commit
+ *     distant au SHA de la dernière sync réussie.
+ *   - Si différent : sync incrémentale (API compare + raw), avec repli sur le
+ *     tarball complet si l'incrémental n'est pas applicable.
+ *   - Chaque fichier écrasé est sauvegardé dans uploads/lae-backups/.
+ *
+ * L'UI manuelle (« SYNC GitHub ») est dans `lae-import.php` (Outils).
+ *
+ * Pour ajouter un dépôt à synchroniser, hooker le filtre `lae_github_sync_repos` :
+ *
+ *   add_filter( 'lae_github_sync_repos', function ( $repos ) {
+ *       $repos['mon-repo'] = array(
+ *           'label'      => 'Mon Repo',
+ *           'repo'       => 'user/repo',
+ *           'branch'     => 'main',
+ *           'subdir'     => 'theme',
+ *           'target_dir' => get_stylesheet_directory(),
+ *       );
+ *       return $repos;
+ *   } );
+ *
+ * Sécurité :
+ *   - `manage_options` uniquement, nonce sur chaque action ;
+ *   - whitelist d'extensions (on n'écrit que des types de fichiers connus) ;
+ *   - blacklist : wp-config.php, .env, .htaccess… JAMAIS écrasés ;
+ *   - whitelist de dépôts de confiance EN DUR (self::TRUSTED_REPOS) : la sync
+ *     écrit du PHP qui sera exécuté, donc la source ne doit jamais être
+ *     pilotée par de la donnée. L'étendre est une décision de code délibérée.
+ *
+ * @package LA_Environnement
+ */
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+class LAE_GitHub_Sync {
+
+	/** Préfixe des options (sha, time, log) par slug de dépôt. */
+	const OPT_PREFIX    = 'lae_github_sync_';
+	const TRANSIENT_TTL = 5 * MINUTE_IN_SECONDS;
+
+	const CRON_HOOK     = 'lae_github_sync_cron';
+	const CRON_INTERVAL = 'lae_every_five_minutes';
+	const CRON_LOG_OPT  = 'lae_github_sync_cron_log';
+
+	/** Extensions autorisées à être écrites par la sync. */
+	const ALLOWED_EXT = array(
+		'php', 'css', 'js', 'json', 'md', 'html', 'htm', 'txt',
+		'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'avif', 'ico',
+		'woff', 'woff2', 'ttf', 'otf',
+		'mp4', 'webm', 'mp3', 'wav', 'm4a', 'ogg',
+		'glb', 'gltf', 'bin', 'hdr', 'ktx2',
+	);
+
+	/** Fichiers/dossiers à NE JAMAIS écraser, même présents dans le dépôt. */
+	const PROTECTED = array(
+		'wp-config.php', '.env', '.htaccess', '.user.ini',
+		'php.ini', '.htpasswd', 'web.config', '.git',
+	);
+
+	/** Dépôts de confiance autorisés comme source de sync (anti-RCE). */
+	const TRUSTED_REPOS = array( 'khalidawi44/la-environnement' );
+
+	/** Le dépôt est-il dans la liste de confiance ? */
+	public static function is_trusted_repo( $repo ) {
+		return in_array( (string) $repo, self::TRUSTED_REPOS, true );
+	}
+
+	/**
+	 * Token GitHub, utile uniquement si le dépôt passe en PRIVÉ (lecture seule
+	 * « Contents »). Priorité : constante LAE_GH_TOKEN (wp-config.php) >
+	 * option `lae_gh_token` > filtre. Vide = dépôt public, aucune en-tête d'auth.
+	 * Le token n'est JAMAIS commité (wp-config est hors dépôt).
+	 */
+	public static function get_token() {
+		if ( defined( 'LAE_GH_TOKEN' ) && LAE_GH_TOKEN ) {
+			return (string) LAE_GH_TOKEN;
+		}
+		$t = get_option( 'lae_gh_token', '' );
+		$t = apply_filters( 'lae_github_sync_token', $t );
+		return is_string( $t ) ? trim( $t ) : '';
+	}
+
+	/** En-têtes API GitHub, avec Authorization si un token est configuré. */
+	public static function api_headers( $accept = 'application/vnd.github+json' ) {
+		$h = array( 'Accept' => $accept, 'User-Agent' => 'WordPress LAE-Sync' );
+		$t = self::get_token();
+		if ( '' !== $t ) {
+			$h['Authorization'] = 'Bearer ' . $t;
+		}
+		return $h;
+	}
+
+	public static function init() {
+		add_action( 'admin_post_lae_github_sync_run', array( __CLASS__, 'handle_run' ) );
+
+		// Cron auto-sync toutes les 5 min, en arrière-plan, zéro clic.
+		// Déclenché par n'importe quelle visite du site (WP-Cron classique).
+		add_filter( 'cron_schedules', array( __CLASS__, 'add_cron_interval' ) );
+		add_action( self::CRON_HOOK, array( __CLASS__, 'cron_run' ) );
+		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
+			wp_schedule_event( time() + 60, self::CRON_INTERVAL, self::CRON_HOOK );
+		}
+	}
+
+	/** Ajoute l'intervalle 5 min aux schedules WP-Cron disponibles. */
+	public static function add_cron_interval( $schedules ) {
+		if ( ! isset( $schedules[ self::CRON_INTERVAL ] ) ) {
+			$schedules[ self::CRON_INTERVAL ] = array(
+				'interval' => 5 * MINUTE_IN_SECONDS,
+				'display'  => 'L.A Environnement : toutes les 5 minutes',
+			);
+		}
+		return $schedules;
+	}
+
+	/**
+	 * Liste des dépôts à synchroniser (extensible via `lae_github_sync_repos`).
+	 *
+	 * @return array<string, array> map slug => config
+	 */
+	public static function get_repos() {
+		$default = array(
+			'theme' => array(
+				'label'      => 'Fichiers du thème',
+				'repo'       => 'khalidawi44/la-environnement',
+				'branch'     => 'main',
+				'subdir'     => 'la-environnement-theme',
+				'target_dir' => get_stylesheet_directory(),
+			),
+		);
+		return apply_filters( 'lae_github_sync_repos', $default );
+	}
+
+	// ─────────────────────────────────────────────────────────────────
+	//  CRON
+	// ─────────────────────────────────────────────────────────────────
+
+	/**
+	 * Handler du cron : pour chaque dépôt, compare SHA distant vs local et
+	 * lance la sync si différent. Tourne en arrière-plan, sans UI.
+	 */
+	public static function cron_run() {
+		$log   = array();
+		$log[] = '[' . wp_date( 'Y-m-d H:i:s' ) . '] Cron auto-sync démarré';
+		$any_synced = false;
+
+		foreach ( array_keys( self::get_repos() ) as $slug ) {
+			$remote = self::get_remote_sha( $slug, true );
+			$local  = self::get_local_sha( $slug );
+			if ( ! $remote ) {
+				$log[] = $slug . ' : API GitHub injoignable, skip';
+				continue;
+			}
+			if ( $remote === $local ) {
+				$log[] = $slug . ' : déjà à jour (' . $remote . ')';
+				continue;
+			}
+			$log[] = $slug . ' : MAJ détectée (' . substr( $local, 0, 7 ) . ' → ' . substr( $remote, 0, 7 ) . ') — sync…';
+			$result = self::sync( $slug );
+			if ( $result['ok'] ) {
+				$n = (int) ( $result['stats']['updated'] ?? 0 ) + (int) ( $result['stats']['created'] ?? 0 );
+				$log[] = $slug . ' : OK, ' . $n . ' fichier(s) mis à jour';
+				$any_synced = true;
+			} else {
+				$log[] = $slug . ' : ERREUR — ' . $result['error'];
+			}
+		}
+		if ( ! $any_synced ) {
+			$log[] = 'Rien à synchroniser (thème).';
+		}
+
+		// Import auto des NOUVEAUX articles/pages depuis content/manifest.json.
+		$content = self::import_new_content();
+		if ( $content['articles'] > 0 || $content['pages'] > 0 ) {
+			$log[] = 'Contenu : ' . $content['articles'] . ' article(s) + ' . $content['pages'] . ' page(s) importé(s)';
+		}
+		if ( ! empty( $content['error'] ) ) {
+			$log[] = 'Contenu : ' . $content['error'];
+		}
+
+		// Garde les 50 dernières entrées.
+		$prev = get_option( self::CRON_LOG_OPT, array() );
+		if ( ! is_array( $prev ) ) $prev = array();
+		$merged = array_merge( $log, $prev );
+		if ( count( $merged ) > 50 ) $merged = array_slice( $merged, 0, 50 );
+		update_option( self::CRON_LOG_OPT, $merged );
+	}
+
+	/** Historique des derniers passages du cron. */
+	public static function get_cron_log() {
+		$log = get_option( self::CRON_LOG_OPT, array() );
+		return is_array( $log ) ? $log : array();
+	}
+
+	/** Heure prévue du prochain run cron (timestamp Unix), ou false. */
+	public static function get_next_cron_run() {
+		return wp_next_scheduled( self::CRON_HOOK );
+	}
+
+	// ─────────────────────────────────────────────────────────────────
+	//  CONTENU (pages / articles versionnés dans content/)
+	// ─────────────────────────────────────────────────────────────────
+
+	/**
+	 * Importe les NOUVEAUX articles + pages depuis content/manifest.json.
+	 * Idempotent : un slug déjà présent est ignoré (on n'écrase jamais du
+	 * contenu édité dans WordPress).
+	 *
+	 * @return array{articles:int, pages:int, error:string}
+	 */
+	public static function import_new_content() {
+		$out = array( 'articles' => 0, 'pages' => 0, 'error' => '' );
+
+		if ( ! function_exists( 'lae_gh_json' ) ) {
+			$out['error'] = 'lae_gh_json indisponible';
+			return $out;
+		}
+
+		$cfg    = self::get_repos();
+		$repo   = isset( $cfg['theme']['repo'] ) ? $cfg['theme']['repo'] : 'khalidawi44/la-environnement';
+		$branch = isset( $cfg['theme']['branch'] ) ? $cfg['theme']['branch'] : 'main';
+		if ( ! self::is_trusted_repo( $repo ) ) {
+			$out['error'] = 'dépôt non autorisé';
+			return $out;
+		}
+		$content_base = 'https://raw.githubusercontent.com/' . $repo . '/' . $branch . '/content';
+
+		$manifest = lae_gh_json( $content_base . '/manifest.json' );
+		if ( ! $manifest ) {
+			$out['error'] = 'manifest injoignable';
+			return $out;
+		}
+
+		// Catégories : nom → id (créées au besoin).
+		$cat_ids = array();
+		if ( ! empty( $manifest['categories'] ) ) {
+			foreach ( $manifest['categories'] as $c ) {
+				if ( empty( $c['name'] ) ) continue;
+				$term = term_exists( $c['name'], 'category' );
+				if ( ! $term ) $term = wp_insert_term( $c['name'], 'category' );
+				if ( ! is_wp_error( $term ) ) {
+					$cat_ids[ $c['name'] ] = (int) ( is_array( $term ) ? $term['term_id'] : $term );
+				}
+			}
+		}
+
+		// Pages : seulement celles dont le slug n'existe pas encore.
+		if ( ! empty( $manifest['pages'] ) ) {
+			foreach ( $manifest['pages'] as $path ) {
+				$p = lae_gh_json( $content_base . '/' . $path );
+				if ( ! $p || empty( $p['slug'] ) ) continue;
+				if ( get_page_by_path( $p['slug'] ) ) continue;
+				$pid = wp_insert_post( array(
+					'post_title'    => $p['title'],
+					'post_name'     => $p['slug'],
+					'post_status'   => 'publish',
+					'post_type'     => 'page',
+					'post_content'  => isset( $p['content'] ) ? wp_kses_post( $p['content'] ) : '',
+					'page_template' => isset( $p['template'] ) ? $p['template'] : '',
+				) );
+				if ( $pid && ! is_wp_error( $pid ) ) $out['pages']++;
+			}
+		}
+
+		// Articles : seulement les nouveaux slugs.
+		if ( ! empty( $manifest['articles'] ) ) {
+			foreach ( $manifest['articles'] as $path ) {
+				$a = lae_gh_json( $content_base . '/' . $path );
+				if ( ! $a || empty( $a['slug'] ) ) continue;
+				if ( get_page_by_path( $a['slug'], OBJECT, 'post' ) ) continue;
+				$cat_name = isset( $a['category'] ) ? $a['category'] : '';
+				$cid      = isset( $cat_ids[ $cat_name ] ) ? $cat_ids[ $cat_name ] : 0;
+				$pid = wp_insert_post( array(
+					'post_title'    => $a['title'],
+					'post_name'     => $a['slug'],
+					'post_status'   => 'publish',
+					'post_type'     => 'post',
+					'post_content'  => wp_kses_post( $a['content'] ),
+					'post_excerpt'  => isset( $a['excerpt'] ) ? $a['excerpt'] : '',
+					'post_category' => $cid ? array( $cid ) : array(),
+				) );
+				if ( $pid && ! is_wp_error( $pid ) ) {
+					if ( ! empty( $a['tags'] ) ) wp_set_post_tags( $pid, $a['tags'] );
+					$out['articles']++;
+				}
+			}
+		}
+
+		return $out;
+	}
+
+	// ─────────────────────────────────────────────────────────────────
+	//  ÉTAT
+	// ─────────────────────────────────────────────────────────────────
+
+	/**
+	 * SHA du dernier commit sur la branche distante. Cache 5 min (transient).
+	 *
+	 * @param string $slug  Slug du dépôt dans get_repos()
+	 * @param bool   $force Force le rafraîchissement sans cache
+	 * @return string|false SHA court (12 caractères) ou false si API KO
+	 */
+	public static function get_remote_sha( $slug, $force = false ) {
+		$repos = self::get_repos();
+		if ( ! isset( $repos[ $slug ] ) ) return false;
+		$cfg = $repos[ $slug ];
+		if ( ! self::is_trusted_repo( $cfg['repo'] ?? '' ) ) return false;
+
+		$cache_key = 'lae_gh_sha_' . $slug;
+		if ( ! $force ) {
+			$cached = get_transient( $cache_key );
+			if ( $cached ) return $cached;
+		}
+		$url  = 'https://api.github.com/repos/' . $cfg['repo'] . '/commits/' . $cfg['branch'];
+		$resp = wp_remote_get( $url, array( 'timeout' => 12, 'headers' => self::api_headers() ) );
+		if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) {
+			return false;
+		}
+		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
+		$sha  = isset( $body['sha'] ) ? substr( $body['sha'], 0, 12 ) : false;
+		if ( $sha ) set_transient( $cache_key, $sha, self::TRANSIENT_TTL );
+		return $sha;
+	}
+
+	/** SHA local stocké (dernière sync réussie). */
+	public static function get_local_sha( $slug ) {
+		return get_option( self::OPT_PREFIX . $slug . '_sha', '' );
+	}
+
+	/** Timestamp Unix de la dernière sync. */
+	public static function get_last_time( $slug ) {
+		return (int) get_option( self::OPT_PREFIX . $slug . '_time', 0 );
+	}
+
+	/** Log de la dernière sync. */
+	public static function get_last_log( $slug ) {
+		$log = get_option( self::OPT_PREFIX . $slug . '_log', array() );
+		return is_array( $log ) ? $log : array();
+	}
+
+	// ─────────────────────────────────────────────────────────────────
+	//  SYNC
+	// ─────────────────────────────────────────────────────────────────
+
+	/**
+	 * Lance la sync d'un dépôt.
+	 *
+	 * @param string $slug Slug du dépôt dans get_repos()
+	 * @return array{ok:bool, error:string, log:array, sha:string, stats:array}
+	 */
+	public static function sync( $slug ) {
+		$repos = self::get_repos();
+		if ( ! isset( $repos[ $slug ] ) ) {
+			return array( 'ok' => false, 'error' => 'Dépôt inconnu : ' . $slug, 'log' => array(), 'sha' => '', 'stats' => array() );
+		}
+		$cfg   = $repos[ $slug ];
+		$log   = array();
+		$log[] = '[' . wp_date( 'H:i:s' ) . '] Sync ' . $cfg['repo'] . '@' . $cfg['branch'] . ' (' . $slug . ')';
+
+		// 0. Refuse toute source hors liste de confiance (anti-RCE).
+		if ( ! self::is_trusted_repo( $cfg['repo'] ?? '' ) ) {
+			$log[] = 'ERREUR : dépôt non autorisé : ' . ( $cfg['repo'] ?? '?' );
+			return array( 'ok' => false, 'error' => 'Dépôt non autorisé', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+
+		// 1. SHA distant.
+		$remote_sha = self::get_remote_sha( $slug, true );
+		if ( ! $remote_sha ) {
+			$log[] = 'ERREUR : API GitHub injoignable';
+			return array( 'ok' => false, 'error' => 'API GitHub injoignable', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		$log[] = 'SHA distant : ' . $remote_sha;
+
+		// 1b. Sync incrémentale : ne récupère QUE les fichiers modifiés depuis
+		//     le dernier SHA connu. Évite le tarball complet quand le dépôt grossit.
+		$local_sha = self::get_local_sha( $slug );
+		if ( '' !== $local_sha && $local_sha === $remote_sha ) {
+			$log[] = 'Déjà à jour (SHA identique).';
+			update_option( self::OPT_PREFIX . $slug . '_time', time() );
+			update_option( self::OPT_PREFIX . $slug . '_log', $log );
+			return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => array( 'updated' => 0, 'created' => 0, 'skipped' => 0 ) );
+		}
+		if ( '' !== $local_sha ) {
+			$inc = self::sync_incremental( $slug, $cfg, $local_sha, $remote_sha, $log );
+			if ( is_array( $inc ) && empty( $inc['fallback'] ) ) {
+				update_option( self::OPT_PREFIX . $slug . '_time', time() );
+				update_option( self::OPT_PREFIX . $slug . '_log', $log );
+				if ( ! empty( $inc['ok'] ) ) {
+					update_option( self::OPT_PREFIX . $slug . '_sha', $remote_sha );
+					return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => $inc['stats'] );
+				}
+				// Échec partiel : on n'avance PAS le SHA → la prochaine sync réessaie.
+				return array( 'ok' => false, 'error' => $inc['error'], 'log' => $log, 'sha' => $local_sha, 'stats' => $inc['stats'] );
+			}
+			$log[] = 'Incrémental indisponible → bascule tarball complet.';
+		}
+
+		// 2. Tarball.
+		$tarball_url = 'https://api.github.com/repos/' . $cfg['repo'] . '/tarball/' . $cfg['branch'];
+		if ( ! function_exists( 'download_url' ) || ! function_exists( 'wp_tempnam' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		$gh_token = self::get_token();
+		if ( '' !== $gh_token ) {
+			// Dépôt PRIVÉ : download_url ne gère pas les en-têtes → téléchargement
+			// en streaming avec l'en-tête Authorization.
+			$tmp_file = wp_tempnam( 'lae-tarball' );
+			$resp = wp_remote_get( $tarball_url, array(
+				'timeout'  => 120,
+				'stream'   => true,
+				'filename' => $tmp_file,
+				'headers'  => self::api_headers(),
+			) );
+			if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) {
+				if ( file_exists( $tmp_file ) ) { @unlink( $tmp_file ); }
+				$err = is_wp_error( $resp ) ? $resp->get_error_message() : ( 'HTTP ' . wp_remote_retrieve_response_code( $resp ) );
+				$log[] = 'ERREUR téléchargement (privé) : ' . $err;
+				return array( 'ok' => false, 'error' => 'Téléchargement échoué (token ?)', 'log' => $log, 'sha' => '', 'stats' => array() );
+			}
+		} else {
+			$tmp_file = download_url( $tarball_url, 60 );
+		}
+		if ( is_wp_error( $tmp_file ) ) {
+			$log[] = 'ERREUR téléchargement : ' . $tmp_file->get_error_message();
+			return array( 'ok' => false, 'error' => 'Téléchargement échoué', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		$log[] = 'Tarball téléchargé (' . size_format( filesize( $tmp_file ) ) . ')';
+
+		// 3. Extraction.
+		$upload = wp_upload_dir();
+		$work   = trailingslashit( $upload['basedir'] ) . 'lae-sync-' . $slug . '-' . time();
+		if ( ! wp_mkdir_p( $work ) ) {
+			@unlink( $tmp_file );
+			$log[] = 'ERREUR : impossible de créer le dossier de travail';
+			return array( 'ok' => false, 'error' => 'Dossier de travail non créable', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		$ok = false;
+		try {
+			$phar = new PharData( $tmp_file );
+			$phar->extractTo( $work, null, true );
+			$ok = true;
+		} catch ( Exception $e ) {
+			$log[] = 'ERREUR PharData : ' . $e->getMessage();
+		}
+		@unlink( $tmp_file );
+		if ( ! $ok ) {
+			self::rm_recursive( $work );
+			return array( 'ok' => false, 'error' => 'Extraction échouée', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+
+		// Source = owner-repo-<sha>/<subdir>
+		$dirs = glob( $work . '/*', GLOB_ONLYDIR );
+		if ( empty( $dirs ) ) {
+			self::rm_recursive( $work );
+			return array( 'ok' => false, 'error' => 'Structure tarball inattendue', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		// Intégrité de base : la racine du tarball doit porter le SHA annoncé.
+		$root_name = basename( $dirs[0] );
+		if ( false === strpos( $root_name, substr( $remote_sha, 0, 7 ) ) ) {
+			self::rm_recursive( $work );
+			$log[] = 'ERREUR : tarball incohérent avec le SHA ' . $remote_sha . ' (racine : ' . $root_name . ')';
+			return array( 'ok' => false, 'error' => 'Intégrité tarball', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		$source_root = $dirs[0];
+		if ( ! empty( $cfg['subdir'] ) ) $source_root .= '/' . $cfg['subdir'];
+		if ( ! is_dir( $source_root ) ) {
+			self::rm_recursive( $work );
+			$log[] = 'ERREUR : sous-dossier introuvable : ' . $cfg['subdir'];
+			return array( 'ok' => false, 'error' => 'Sous-dossier introuvable', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		$log[] = 'Source extraite : ' . ( $cfg['subdir'] ?: '<racine>' );
+
+		// 4. Backup.
+		$backup_dir = trailingslashit( $upload['basedir'] ) . 'lae-backups/' . $slug . '-' . wp_date( 'Y-m-d_His' );
+		wp_mkdir_p( $backup_dir );
+
+		// 5. Sync récursive.
+		$stats = array( 'updated' => 0, 'created' => 0, 'skipped' => 0 );
+		self::sync_recursive( $source_root, $cfg['target_dir'], $backup_dir, '', $stats, $log );
+		$log[] = sprintf( '%d mis à jour, %d créés, %d ignorés', $stats['updated'], $stats['created'], $stats['skipped'] );
+		$log[] = 'Backup : ' . str_replace( ABSPATH, '', $backup_dir );
+
+		// 6. Nettoyage.
+		self::rm_recursive( $work );
+
+		// 7. Persistance de l'état.
+		update_option( self::OPT_PREFIX . $slug . '_sha', $remote_sha );
+		update_option( self::OPT_PREFIX . $slug . '_time', time() );
+		update_option( self::OPT_PREFIX . $slug . '_log', $log );
+
+		if ( function_exists( 'opcache_reset' ) ) { @opcache_reset(); }
+
+		return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => $stats );
+	}
+
+	/** Handler POST (admin-post.php?action=lae_github_sync_run&slug=theme). */
+	public static function handle_run() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'forbidden' );
+		check_admin_referer( 'lae_github_sync_run' );
+		$slug   = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : 'theme';
+		$result = self::sync( $slug );
+		$total  = isset( $result['stats']['updated'] )
+			? ( (int) $result['stats']['updated'] + (int) $result['stats']['created'] )
+			: 0;
+		$qs = $result['ok']
+			? 'tools.php?page=lae-sync&lae_synced=' . $total
+			: 'tools.php?page=lae-sync&lae_err=' . rawurlencode( $result['error'] );
+		wp_safe_redirect( admin_url( $qs ) );
+		exit;
+	}
+
+	/**
+	 * Sync INCRÉMENTALE : télécharge uniquement les fichiers modifiés entre deux
+	 * commits (API compare), un par un via leur raw_url.
+	 *
+	 * @return array array('fallback'=>true) si non applicable (compare KO,
+	 *               >300 fichiers tronqués) → l'appelant bascule sur le tarball.
+	 *               Sinon array('ok'=>bool, 'error'=>string, 'stats'=>array).
+	 */
+	private static function sync_incremental( $slug, $cfg, $base, $head, &$log ) {
+		$repo   = $cfg['repo'];
+		$subdir = isset( $cfg['subdir'] ) ? trim( (string) $cfg['subdir'], '/' ) : '';
+		$target = rtrim( (string) $cfg['target_dir'], '/' );
+		$prefix = '' !== $subdir ? $subdir . '/' : '';
+
+		$api  = 'https://api.github.com/repos/' . $repo . '/compare/' . rawurlencode( $base ) . '...' . rawurlencode( $head );
+		$resp = wp_remote_get( $api, array( 'timeout' => 20, 'headers' => self::api_headers() ) );
+		if ( is_wp_error( $resp ) ) {
+			$log[] = 'Incrémental : compare KO (' . $resp->get_error_message() . ')';
+			return array( 'fallback' => true );
+		}
+		$code = (int) wp_remote_retrieve_response_code( $resp );
+		if ( 200 !== $code ) {
+			$log[] = 'Incrémental : compare HTTP ' . $code . ' → tarball';
+			return array( 'fallback' => true );
+		}
+		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
+		if ( ! isset( $body['files'] ) || ! is_array( $body['files'] ) ) {
+			$log[] = 'Incrémental : réponse inattendue → tarball';
+			return array( 'fallback' => true );
+		}
+		if ( count( $body['files'] ) >= 300 ) {
+			$log[] = 'Incrémental : >300 fichiers (tronqué) → tarball';
+			return array( 'fallback' => true );
+		}
+
+		$upload     = wp_upload_dir();
+		$backup_dir = trailingslashit( $upload['basedir'] ) . 'lae-backups/' . $slug . '-inc-' . wp_date( 'Y-m-d_His' );
+		$stats      = array( 'updated' => 0, 'created' => 0, 'skipped' => 0, 'deleted' => 0 );
+		$fails      = array();
+
+		foreach ( $body['files'] as $f ) {
+			$path   = isset( $f['filename'] ) ? (string) $f['filename'] : '';
+			$status = isset( $f['status'] ) ? (string) $f['status'] : '';
+			if ( '' === $path ) continue;
+			if ( '' !== $prefix && 0 !== strpos( $path, $prefix ) ) { $stats['skipped']++; continue; } // hors thème
+			$rel = '' !== $prefix ? substr( $path, strlen( $prefix ) ) : $path;
+			if ( '' === $rel || false !== strpos( $rel, '..' ) ) { $stats['skipped']++; continue; }
+			if ( in_array( basename( $rel ), self::PROTECTED, true ) ) { $stats['skipped']++; continue; }
+			$dst = $target . '/' . $rel;
+
+			// Suppression.
+			if ( 'removed' === $status ) {
+				if ( file_exists( $dst ) ) {
+					wp_mkdir_p( dirname( $backup_dir . '/' . $rel ) );
+					@copy( $dst, $backup_dir . '/' . $rel );
+					@unlink( $dst );
+					$stats['deleted']++;
+				}
+				continue;
+			}
+
+			$ext = strtolower( pathinfo( $rel, PATHINFO_EXTENSION ) );
+			if ( ! in_array( $ext, self::ALLOWED_EXT, true ) ) { $stats['skipped']++; continue; }
+
+			// Renommage : retire l'ancien fichier.
+			if ( 'renamed' === $status && ! empty( $f['previous_filename'] ) && '' !== $prefix && 0 === strpos( $f['previous_filename'], $prefix ) ) {
+				$prev_rel = substr( $f['previous_filename'], strlen( $prefix ) );
+				if ( false === strpos( $prev_rel, '..' ) && file_exists( $target . '/' . $prev_rel ) ) {
+					@unlink( $target . '/' . $prev_rel );
+				}
+			}
+
+			// Téléchargement du contenu.
+			$gh_token = self::get_token();
+			if ( '' !== $gh_token ) {
+				// Dépôt PRIVÉ : API Contents authentifiée (média « raw »).
+				$enc  = implode( '/', array_map( 'rawurlencode', explode( '/', $path ) ) );
+				$curl = 'https://api.github.com/repos/' . $repo . '/contents/' . $enc . '?ref=' . rawurlencode( $head );
+				$dl   = wp_remote_get( $curl, array( 'timeout' => 45, 'headers' => self::api_headers( 'application/vnd.github.raw' ) ) );
+			} else {
+				// Dépôt PUBLIC : via raw_url (host GitHub vérifié).
+				$raw     = isset( $f['raw_url'] ) ? (string) $f['raw_url'] : '';
+				$ok_host = ( 0 === strpos( $raw, 'https://github.com/' . $repo . '/' )
+					|| 0 === strpos( $raw, 'https://raw.githubusercontent.com/' . $repo . '/' ) );
+				if ( ! $ok_host ) { $fails[] = $rel . ' (url non fiable)'; continue; }
+				$dl = wp_remote_get( $raw, array( 'timeout' => 45, 'headers' => array( 'User-Agent' => 'WordPress LAE-Sync' ) ) );
+			}
+			if ( is_wp_error( $dl ) || 200 !== (int) wp_remote_retrieve_response_code( $dl ) ) { $fails[] = $rel; continue; }
+			$data = wp_remote_retrieve_body( $dl );
+
+			$existed = file_exists( $dst );
+			if ( $existed && md5( $data ) === md5_file( $dst ) ) continue; // identique
+			if ( $existed ) {
+				wp_mkdir_p( dirname( $backup_dir . '/' . $rel ) );
+				@copy( $dst, $backup_dir . '/' . $rel );
+			}
+			wp_mkdir_p( dirname( $dst ) );
+			if ( false !== file_put_contents( $dst, $data ) ) {
+				if ( $existed ) { $stats['updated']++; } else { $stats['created']++; }
+			} else {
+				$fails[] = $rel . ' (écriture)';
+			}
+		}
+
+		$log[] = sprintf(
+			'Incrémental : %d créé(s), %d mis à jour, %d supprimé(s), %d ignoré(s)',
+			$stats['created'], $stats['updated'], $stats['deleted'], $stats['skipped']
+		);
+		if ( ! empty( $fails ) ) {
+			$log[] = 'Incrémental : ' . count( $fails ) . ' échec(s) : ' . implode( ', ', array_slice( $fails, 0, 8 ) );
+			return array( 'ok' => false, 'error' => count( $fails ) . ' fichier(s) non récupéré(s) — relance la SYNC', 'stats' => $stats );
+		}
+		if ( function_exists( 'opcache_reset' ) ) { @opcache_reset(); }
+		return array( 'ok' => true, 'stats' => $stats );
+	}
+
+	/** Sync récursive source → destination, avec backup automatique. */
+	private static function sync_recursive( $src, $dst, $backup, $rel, &$stats, &$log ) {
+		if ( ! is_dir( $src ) ) return;
+		foreach ( scandir( $src ) as $item ) {
+			if ( '.' === $item || '..' === $item ) continue;
+			$src_path = $src . '/' . $item;
+			$dst_path = $dst . '/' . $item;
+			$rel_path = '' === $rel ? $item : $rel . '/' . $item;
+
+			if ( in_array( $item, self::PROTECTED, true ) ) { $stats['skipped']++; continue; }
+
+			if ( is_dir( $src_path ) ) {
+				if ( ! is_dir( $dst_path ) ) wp_mkdir_p( $dst_path );
+				self::sync_recursive( $src_path, $dst_path, $backup . '/' . $item, $rel_path, $stats, $log );
+				continue;
+			}
+
+			$ext = strtolower( pathinfo( $item, PATHINFO_EXTENSION ) );
+			if ( ! in_array( $ext, self::ALLOWED_EXT, true ) ) { $stats['skipped']++; continue; }
+
+			$existed = file_exists( $dst_path );
+			if ( $existed && md5_file( $src_path ) === md5_file( $dst_path ) ) continue;
+			if ( $existed ) {
+				wp_mkdir_p( dirname( $backup . '/' . $rel_path ) );
+				@copy( $dst_path, $backup . '/' . $rel_path );
+			}
+			if ( copy( $src_path, $dst_path ) ) {
+				if ( $existed ) { $stats['updated']++; $log[] = 'UPD ' . $rel_path; }
+				else            { $stats['created']++; $log[] = 'NEW ' . $rel_path; }
+			}
+		}
+	}
+
+	private static function rm_recursive( $dir ) {
+		if ( ! is_dir( $dir ) ) return;
+		foreach ( scandir( $dir ) as $item ) {
+			if ( '.' === $item || '..' === $item ) continue;
+			$p = $dir . '/' . $item;
+			if ( is_dir( $p ) ) self::rm_recursive( $p );
+			else @unlink( $p );
+		}
+		@rmdir( $dir );
+	}
+}
+
+LAE_GitHub_Sync::init();

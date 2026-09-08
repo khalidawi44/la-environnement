@@ -1,0 +1,98 @@
+/*
+Theme Name: L.A Environnement
+Theme URI: https://github.com/khalidawi44/la-environnement
+Author: Advise Alliance Group
+Description: Thème du site L.A Environnement. Socle volontairement nu : le design est réalisé ensuite. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.8
+Requires PHP: 7.4
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: la-environnement
+*/
+
+:root {
+	--lae-fond: #ffffff;
+	--lae-encre: #14261c;
+	--lae-doux: #5b6b62;
+	--lae-accent: #2f7d4f;
+	--lae-trait: #e3e8e5;
+	--lae-largeur: 1120px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+	margin: 0;
+	background: var(--lae-fond);
+	color: var(--lae-encre);
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	font-size: 17px;
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; }
+a { color: var(--lae-accent); }
+
+.lae-shell {
+	width: 100%;
+	max-width: var(--lae-largeur);
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.lae-header {
+	border-bottom: 1px solid var(--lae-trait);
+	padding: 18px 0;
+}
+.lae-header__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+}
+.lae-marque {
+	font-weight: 700;
+	font-size: 20px;
+	letter-spacing: .01em;
+	text-decoration: none;
+	color: var(--lae-encre);
+}
+.lae-nav ul {
+	display: flex;
+	gap: 20px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	flex-wrap: wrap;
+}
+.lae-nav a {
+	text-decoration: none;
+	color: var(--lae-doux);
+	font-size: 15px;
+}
+.lae-nav a:hover { color: var(--lae-accent); }
+
+.lae-main { padding: 40px 0 64px; }
+.lae-titre { font-size: clamp(28px, 4vw, 42px); line-height: 1.2; margin: 0 0 8px; }
+.lae-meta { color: var(--lae-doux); font-size: 14px; margin: 0 0 28px; }
+
+.lae-liste { list-style: none; margin: 0; padding: 0; }
+.lae-liste li { padding: 18px 0; border-bottom: 1px solid var(--lae-trait); }
+.lae-liste h2 { margin: 0 0 4px; font-size: 21px; }
+.lae-liste a { text-decoration: none; }
+
+.lae-footer {
+	border-top: 1px solid var(--lae-trait);
+	padding: 28px 0;
+	color: var(--lae-doux);
+	font-size: 14px;
+}
+
+@media (max-width: 640px) {
+	body { font-size: 16px; }
+	.lae-main { padding: 28px 0 48px; }
+}

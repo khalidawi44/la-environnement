@@ -1,0 +1,29 @@
+# WordPress — on ne versionne QUE le thème (la-environnement-theme/).
+/wp-admin/
+/wp-includes/
+/wp-content/uploads/
+/wp-content/upgrade/
+/wp-content/cache/
+/index.php
+/wp-*.php
+/xmlrpc.php
+/license.txt
+/readme.html
+wp-config.php
+
+# Secrets — le dépôt est PUBLIC, rien de sensible ne doit y entrer.
+.env
+*.env
+*.jeton
+*.key
+*.pem
+deploy/.env
+
+# Système / éditeurs
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+.idea/
+.vscode/
+node_modules/
