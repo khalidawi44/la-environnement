@@ -28,7 +28,20 @@ add_action( 'init', function () {
 		'rewrite'       => array( 'slug' => 'prestations', 'with_front' => false ),
 		'menu_icon'     => 'dashicons-palmtree',
 		'menu_position' => 20,
+		'taxonomies'    => array( 'lae_famille' ),
 		'supports'      => array( 'title', 'editor', 'excerpt', 'thumbnail', 'page-attributes' ),
+	) );
+
+	register_taxonomy( 'lae_famille', 'lae_prestation', array(
+		'labels' => array(
+			'name'          => 'Familles',
+			'singular_name' => 'Famille',
+			'menu_name'     => 'Familles',
+		),
+		'public'       => true,
+		'show_in_rest' => true,
+		'hierarchical' => true,
+		'rewrite'      => array( 'slug' => 'famille', 'with_front' => false ),
 	) );
 
 	register_taxonomy( 'lae_type_chantier', 'lae_realisation', array(

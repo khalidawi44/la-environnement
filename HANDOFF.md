@@ -19,12 +19,22 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
 
 ## État actuel
 
-- **Design du thème intégré (v1.1.0)** : accueil composée de sections
-  (bandeau, réassurance, prestations, déroulé de chantier, réalisations,
-  zone d'intervention, bande devis), gabarits internes, pied de page
-  complet, barre d'appel mobile.
-- Deux types de contenu : **Prestations** et **Réalisations**
-  (+ taxonomie « type de chantier »), saisis depuis l'administration.
+- **Accueil cinématique (v1.2.0)** — même mécanique que l'accueil d'Alliance
+  Groupe, en vert : bandeau plein écran (vidéo), bandeau défilant accéléré par
+  la vitesse de scroll, grande image épinglée en Ken Burns, chapitres en
+  parallaxe, **scène unique** (l'image se dissout en poussière de feuilles, une
+  main paraît, les trois prestations phares en sortent, s'évaporent, la grille
+  filtrable prend leur place), réalisations, révélation, appel.
+  Fichier : `front-page.php`. Libs : `assets/js/lib/{gsap,ScrollTrigger,lenis}`.
+- Sans JavaScript, sans GSAP, ou sous « réduire les animations » : la page
+  s'affiche dans son **état final**, tout visible et cliquable.
+- L'accueil sectionné (calme) reste disponible : gabarit de page
+  « Accueil sobre (sections) » (`page-accueil-sobre.php`).
+- Design du thème intégré (v1.1.0) : gabarits internes, pied de page complet,
+  barre d'appel mobile.
+- Deux types de contenu : **Prestations** (+ taxonomie « Familles », qui
+  alimente les filtres de l'accueil) et **Réalisations** (+ taxonomie
+  « type de chantier »), saisis depuis l'administration.
 - Tout le contenu éditable est dans **Apparence → Personnaliser →
   L.A Environnement** : coordonnées, bandeau, réassurance, étapes, zone
   d'intervention, bande devis. **Un champ vide masque son bloc** — le site
@@ -52,6 +62,14 @@ Le design est en place, **le contenu réel manque** :
 2. Coordonnées : téléphone, e-mail, adresse, horaires, mention légale.
 3. Communes de la zone d'intervention.
 4. **Photos de chantier** — la section Réalisations ne vaut que par elles.
+5. **Médias de l'accueil cinématique** : la vidéo du bandeau, la grande image
+   épinglée, les trois images de chapitre, l'image qui se dissout, la main
+   ouverte, l'image ronde de la révélation. Sans elles la scène tourne, mais
+   sur des dégradés.
+6. Les titres et textes de l'accueil cinématique livrés par défaut sont
+   **génériques** (aucun nom, chiffre, certification ni référence client) :
+   ils sont là pour que la page se tienne. **À valider ou réécrire avec le
+   client**, dans Apparence → Personnaliser → L.A Environnement.
 
 Rien de tout cela n'est inventé ni pré-rempli : les réglages sont vides et
 les blocs correspondants restent masqués tant qu'ils ne sont pas remplis.

@@ -184,3 +184,61 @@ if ( ! function_exists( 'lae_url_contact' ) ) {
 		return $page ? get_permalink( $page ) : '';
 	}
 }
+
+/**
+ * Titre avec emphase : « Un jardin *tenu toute l'année* » devient
+ * « Un jardin <em>tenu toute l'année</em> ». Le texte est échappé AVANT
+ * l'insertion de la balise : rien de ce que saisit le client n'est du HTML.
+ *
+ * @param string $texte Titre brut.
+ * @return string Titre échappé, avec <em> autour des parties encadrées d'astérisques.
+ */
+if ( ! function_exists( 'lae_titre_em' ) ) {
+	function lae_titre_em( $texte ) {
+		$texte = esc_html( (string) $texte );
+		return preg_replace( '/\*(.+?)\*/u', '<em>$1</em>', $texte );
+	}
+}
+
+/**
+ * Balise <img> pour un média du personnalisateur.
+ * Renvoie une chaîne vide si aucun média n'est défini : le dégradé CSS
+ * prend alors le relais, aucune image cassée ne s'affiche.
+ *
+ * @param string $url    URL du média.
+ * @param string $alt    Texte alternatif.
+ * @param array  $attrs  Attributs supplémentaires (loading, class, decoding…).
+ * @return string
+ */
+if ( ! function_exists( 'lae_img' ) ) {
+	function lae_img( $url, $alt = '', $attrs = array() ) {
+		$url = trim( (string) $url );
+		if ( '' === $url ) {
+			return '';
+		}
+		$defaut = array( 'loading' => 'lazy', 'decoding' => 'async' );
+		$attrs  = array_merge( $defaut, (array) $attrs );
+		$html   = '<img src="' . esc_url( $url ) . '" alt="' . esc_attr( $alt ) . '"';
+		foreach ( $attrs as $cle => $val ) {
+			if ( '' === $val || null === $val ) {
+				continue;
+			}
+			$html .= ' ' . esc_attr( $cle ) . '="' . esc_attr( $val ) . '"';
+		}
+		return $html . '>';
+	}
+}
+
+/**
+ * Découpe une ligne en morceaux séparés par « | », déjà nettoyés.
+ *
+ * @param string $ligne Ligne brute.
+ * @param int    $n     Nombre de morceaux attendus (complétés par des chaînes vides).
+ * @return string[]
+ */
+if ( ! function_exists( 'lae_morceaux' ) ) {
+	function lae_morceaux( $ligne, $n = 3 ) {
+		$m = array_map( 'trim', explode( '|', (string) $ligne ) );
+		return array_pad( array_slice( $m, 0, $n ), $n, '' );
+	}
+}

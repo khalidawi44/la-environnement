@@ -14,6 +14,10 @@ Chantiers en attente, décisions reportées, idées à reprendre plus tard.
   Priorité n°1 : sans lui, le site s'affiche avec des sections masquées.
 - Photos de chantier (avant / après) pour la section Réalisations.
 - Logo : à défaut, le thème affiche le nom du site + une baseline.
+- Médias de l'accueil cinématique (vidéo du bandeau, image épinglée, images
+  de chapitre, image qui se dissout, main ouverte, image ronde finale).
+- Relire les textes génériques de l'accueil cinématique avec le client :
+  ils tiennent la page, ils n'engagent personne.
 - Nom de domaine définitif et bascule DNS.
 - Formulaire de contact : destinataire, champs, mentions RGPD.
 

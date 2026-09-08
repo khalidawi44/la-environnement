@@ -189,4 +189,71 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'section' => 'lae_appel',
 		'type'    => 'checkbox',
 	) );
+
+	// ── Accueil cinématique ─────────────────────────────────────────────
+	$wp_customize->add_section( 'lae_cine', array(
+		'title'       => 'Accueil cinématique',
+		'panel'       => $panneau,
+		'description' => 'La scène de la page d\'accueil. Chaque média absent est remplacé par un dégradé : rien ne casse, mais la page ne vaudra vraiment que le jour où les vraies photos et la vidéo seront là.',
+	) );
+
+	$ajoute( 'lae_cine_video', array(
+		'label'       => 'Vidéo du bandeau principal (URL)',
+		'section'     => 'lae_cine',
+		'sanitize'    => 'esc_url_raw',
+		'description' => 'MP4 court, sans son, qui tourne en boucle. Coller l\'URL du fichier depuis la médiathèque.',
+	) );
+	$ajoute( 'lae_cine_poster', array( 'label' => 'Affiche de la vidéo', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Image montrée le temps que la vidéo démarre.' ) );
+
+	$ajoute( 'lae_cine_marquee', array(
+		'label'       => 'Bandeau défilant',
+		'section'     => 'lae_cine',
+		'type'        => 'textarea',
+		'sanitize'    => 'lae_sanitize_multiligne',
+		'default'     => "Élagage\nAbattage\nCréation de jardin",
+		'description' => 'Un mot ou une expression par ligne. Le bandeau accélère avec le défilement.',
+	) );
+	$ajoute( 'lae_cine_matiere_image', array( 'label' => 'Matière de fond (bois, écorce, feuillage)', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Utilisée derrière le bandeau et derrière les prestations phares.' ) );
+
+	$ajoute( 'lae_cine_tab_image', array( 'label' => 'Grande image épinglée', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Format paysage. Elle respire lentement pendant qu\'on la traverse.' ) );
+	$ajoute( 'lae_cine_tab_surtitre', array( 'label' => 'Image épinglée — surtitre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_tab_titre', array( 'label' => 'Image épinglée — titre', 'section' => 'lae_cine', 'default' => 'Un jardin, *pas un chantier*', 'description' => 'Le texte entre *astérisques* est mis en italique et en couleur.' ) );
+	$ajoute( 'lae_cine_tab_texte', array( 'label' => 'Image épinglée — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+
+	$ajoute( 'lae_cine_chapitres', array(
+		'label'       => 'Chapitres',
+		'section'     => 'lae_cine',
+		'type'        => 'textarea',
+		'sanitize'    => 'lae_sanitize_multiligne',
+		'description' => 'Une ligne par chapitre : Titre | Texte | mot, mot, mot. Trois chapitres au maximum (une image par chapitre ci-dessous).',
+	) );
+	$ajoute( 'lae_cine_ch1_image', array( 'label' => 'Chapitre 1 — image', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw' ) );
+	$ajoute( 'lae_cine_ch2_image', array( 'label' => 'Chapitre 2 — image', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw' ) );
+	$ajoute( 'lae_cine_ch3_image', array( 'label' => 'Chapitre 3 — image', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw' ) );
+
+	$ajoute( 'lae_cine_scene_image', array( 'label' => 'Scène — image qui se dissout', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Elle part en poussière de feuilles au fil du défilement.' ) );
+	$ajoute( 'lae_cine_main_image', array( 'label' => 'Scène — la main', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Une main ouverte (terre, feuilles, jeune pousse) : les prestations en sortent.' ) );
+	$ajoute( 'lae_cine_scene_titre', array( 'label' => 'Scène — titre', 'section' => 'lae_cine', 'default' => 'Ce qui tient un arbre *ne se voit pas*' ) );
+	$ajoute( 'lae_cine_scene_texte', array( 'label' => 'Scène — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+
+	$ajoute( 'lae_cine_phares_surtitre', array( 'label' => 'Prestations phares — surtitre', 'section' => 'lae_cine', 'default' => 'Ce que nous faisons' ) );
+	$ajoute( 'lae_cine_phares_titre', array( 'label' => 'Prestations phares — titre', 'section' => 'lae_cine', 'default' => 'Trois métiers, *un seul interlocuteur*' ) );
+	$ajoute( 'lae_cine_phares_chapo', array( 'label' => 'Prestations phares — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_cine_phares_note', array( 'label' => 'Prestations phares — note sous les cartes', 'section' => 'lae_cine' ) );
+
+	$ajoute( 'lae_cine_avis', array(
+		'label'       => 'Avis (réels uniquement)',
+		'section'     => 'lae_cine',
+		'type'        => 'textarea',
+		'sanitize'    => 'lae_sanitize_multiligne',
+		'description' => 'Une ligne par avis : Nom | Texte de l\'avis | Date. À recopier depuis de VRAIS avis Google. Champ vide = aucune section d\'avis : mieux vaut rien qu\'un témoignage inventé.',
+	) );
+	$ajoute( 'lae_cine_avis_url', array( 'label' => 'Avis — lien vers la fiche Google', 'section' => 'lae_cine', 'sanitize' => 'esc_url_raw' ) );
+	$ajoute( 'lae_cine_avis_note', array( 'label' => 'Avis — note affichée', 'section' => 'lae_cine', 'description' => 'Exemple : 4,8. Laisser vide si la fiche n\'a pas encore de note.' ) );
+	$ajoute( 'lae_cine_avis_total', array( 'label' => 'Avis — nombre d\'avis', 'section' => 'lae_cine' ) );
+
+	$ajoute( 'lae_cine_arbre_image', array( 'label' => 'Révélation — image ronde', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Un arbre, un chantier fini, une équipe : l\'image qui apparaît en gros plan avant l\'appel.' ) );
+	$ajoute( 'lae_cine_arbre_surtitre', array( 'label' => 'Révélation — surtitre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_arbre_titre', array( 'label' => 'Révélation — titre', 'section' => 'lae_cine', 'default' => 'Parlons de *votre terrain*' ) );
+	$ajoute( 'lae_cine_arbre_texte', array( 'label' => 'Révélation — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 }, 20 );
