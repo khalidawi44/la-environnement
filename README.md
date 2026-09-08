@@ -172,6 +172,46 @@ faut un navigateur : à réserver au poste de travail.
 
 ---
 
+## Sécurité
+
+Trois niveaux, repris de la config Alliance Groupe.
+
+### 1. Le dépôt
+
+Le dépôt est **public** et il déploie en production : quiconque peut pousser
+sur `main` modifie le site en moins de 5 minutes. Il est donc dans le
+périmètre de production, et protégé comme tel — voir `SECURITY-SETUP.md`
+(2FA, protection de la branche `main`, accès en écriture limités).
+
+Le `.gitignore` n'exclut **aucun fichier du projet**. Il ne bloque que trois
+choses : les **secrets** (`wp-config.php`, `.env`, `.htaccess`, `*.key`,
+`*.pem`, `credentials.json`…), ce qui **n'est pas à nous** (cœur WordPress,
+plugins tiers, `vendor/`, `node_modules/`) et ce qui est **régénérable**
+(caches, builds, dumps SQL, sauvegardes de la sync).
+
+### 2. Le site
+
+`la-environnement-theme/inc/lae-hardening.php`, chargé par `functions.php`,
+applique un durcissement défensif :
+
+| | |
+|---|---|
+| `xmlrpc.php` | bloqué (403) — force brute et DDoS par pingback |
+| API REST | plus d'énumération des comptes pour les visiteurs non connectés |
+| `?author=N` et `/author/` | redirigés, l'identifiant de connexion ne fuit plus |
+| En-têtes HTTP | `nosniff`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, CSP `upgrade-insecure-requests`, HSTS en HTTPS |
+| Divulgations | `X-Pingback` et `X-Powered-By` retirés, version de WordPress masquée, liens RSD/WLW retirés |
+| Versions dans les URL CSS/JS | remplacées par une empreinte — la version disparaît **sans casser le cassage de cache** |
+| `.htaccess` | bloc balisé `LAE Hardening` posé automatiquement si le fichier est modifiable, sinon un bandeau admin renvoie vers `SECURITE-HTACCESS.txt` |
+
+### 3. La sync
+
+Détaillé plus haut (« Les garde-fous ») : whitelist de dépôts en dur,
+whitelist d'extensions, fichiers protégés jamais écrasés, rejet des chemins
+`..`, contrôle d'intégrité du tarball, backup avant tout écrasement.
+
+---
+
 ## Config de travail (reprise entre sessions)
 
 Reprise de la config du dépôt Alliance Groupe, allégée de ce qui lui est

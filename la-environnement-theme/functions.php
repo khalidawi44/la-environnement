@@ -30,6 +30,9 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'lae-style', get_stylesheet_uri(), array(), LAE_VERSION );
 } );
 
+// ── Sécurité ────────────────────────────────────────────────────────
+require_once get_template_directory() . '/inc/lae-hardening.php';
+
 // ── Mécanique de déploiement ────────────────────────────────────────
 // L'écran d'admin est chargé en premier : il définit lae_gh_json(),
 // utilisé par le moteur de sync pour l'import de contenu.

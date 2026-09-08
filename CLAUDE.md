@@ -28,6 +28,22 @@ identifiants, tokens, clés API, mots de passe, accès Hostinger, données
 personnelles du client ou de ses contacts.
 Les secrets vont dans `wp-config.php` (hors dépôt), ex. `LAE_GH_TOKEN`.
 
+Le `.gitignore` n'exclut aucun fichier du projet : il ne bloque que les
+secrets, ce qui n'est pas à nous (cœur WP, plugins tiers, dépendances) et le
+régénérable (caches, builds, dumps). Ne rien y ajouter qui masquerait du code
+du projet.
+
+## Sécurité du site
+`inc/lae-hardening.php` est le durcissement défensif (xmlrpc, énumération des
+comptes et auteurs, en-têtes HTTP, masquage des versions, bloc .htaccess).
+Ne pas le désactiver pour « débloquer » quelque chose sans comprendre ce qu'on
+rouvre. En particulier : le filtre sur `?ver=` REMPLACE la version par une
+empreinte, il ne la supprime pas — la supprimer figerait le CSS des visiteurs
+et aucune mise à jour du thème ne leur parviendrait.
+
+Checklist hors code (2FA, protection de `main`, sauvegardes, .htaccess) :
+`SECURITY-SETUP.md` et `SECURITE-HTACCESS.txt`.
+
 ## MCP Hostinger
 `.mcp.json` déclare les serveurs `hostinger-wordpress` (38 outils) et
 `hostinger-dns` (8), binaires scopés de `hostinger-api-mcp`. Ne PAS basculer

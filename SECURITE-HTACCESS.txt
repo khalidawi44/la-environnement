@@ -1,0 +1,85 @@
+============================================================
+ DURCISSEMENT .htaccess — L.A Environnement (Hostinger)
+============================================================
+
+Hostinger tourne sous LiteSpeed, qui lit les .htaccess comme Apache.
+Ce bloc y fonctionne donc tel quel.
+
+À SAVOIR AVANT DE COLLER :
+  Le thème applique DÉJÀ une partie de ce durcissement tout seul
+  (inc/lae-hardening.php, bloc balisé « LAE Hardening », écrit au premier
+  chargement de l'admin si le .htaccess est modifiable).
+  Ce fichier sert dans deux cas :
+    - le .htaccess n'était pas modifiable (un bandeau te le dit dans l'admin) ;
+    - tu veux le durcissement complet, au-delà de ce que PHP peut poser.
+
+OÙ COLLER :
+  Fichier .htaccess à la RACINE du site (là où il y a wp-config.php),
+  typiquement public_html/.htaccess
+  Colle ce bloc TOUT EN HAUT, AVANT la ligne « # BEGIN WordPress ».
+  (Dans le bloc WordPress, WordPress peut l'écraser.)
+
+  Accès : hPanel → Fichiers → Gestionnaire de fichiers → afficher les
+  fichiers cachés → éditer .htaccess dans public_html.
+
+  ⚠️ Fais une COPIE du .htaccess avant de modifier.
+
+------------------------------------------------------------
+COPIE À PARTIR D'ICI ⬇⬇⬇
+------------------------------------------------------------
+
+# ===== Sécurité L.A Environnement =====
+
+# 1) Bloquer xmlrpc.php (force brute + DDoS pingback)
+<Files xmlrpc.php>
+    Require all denied
+</Files>
+
+# 2) Bloquer les fichiers qui révèlent la version (readme/license)
+<FilesMatch "^(readme\.html|readme\.txt|license\.txt|wp-config-sample\.php)$">
+    Require all denied
+</FilesMatch>
+
+# 3) Bloquer les fichiers sensibles (config, env, git, logs, sauvegardes)
+<FilesMatch "(^\.|\.(env|ini|log|sh|sql|bak|swp|old|orig|save|dist)$|wp-config\.php)">
+    Require all denied
+</FilesMatch>
+RedirectMatch 403 (?i)/\.git
+RedirectMatch 403 (?i)/\.env
+
+# 4) Désactiver le listing des répertoires (dossiers ouverts)
+Options -Indexes
+
+# 5) Masquer la signature du serveur (selon hébergeur)
+ServerSignature Off
+
+# 6) En-têtes de sécurité (doublent ceux du thème, au cas où)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always unset X-Powered-By
+    Header always unset X-Pingback
+</IfModule>
+
+# ===== Fin sécurité L.A Environnement =====
+
+------------------------------------------------------------
+⬆⬆⬆ COPIE JUSQU'ICI
+------------------------------------------------------------
+
+APRÈS AVOIR COLLÉ + ENREGISTRÉ :
+  1. Recharge le site (Ctrl/Cmd+Maj+R) — vérifie qu'il s'affiche normalement.
+  2. Purge le cache LiteSpeed (hPanel, ou via le MCP Hostinger).
+
+CE QUI PEUT RESTER (selon l'hébergeur) :
+  - En-tête « Server: LiteSpeed » : la version ne se masque pas toujours via
+    .htaccess (config serveur). C'est un avertissement mineur, ignorable.
+
+EN CAS DE PÉPIN (erreur 500) :
+  - Retire le bloc que tu viens de coller (ou restaure ta copie) → le site
+    revient immédiatement.
+  - La directive la plus susceptible de poser souci selon l'hébergeur est
+    « ServerSignature Off » : si erreur, supprime juste cette ligne.
