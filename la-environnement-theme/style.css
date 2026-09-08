@@ -2,8 +2,8 @@
 Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
-Description: Thème du site L.A Environnement. Socle volontairement nu : le design est réalisé ensuite. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.0.0
+Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Design intégré, contenu piloté depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
+Version: 1.1.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -12,87 +12,804 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: la-environnement
 */
 
+/* ==========================================================================
+   1. Jetons de design
+   Palette : vert forêt (encre), vert feuille (accent), bois (accent chaud),
+   crème (fond). Aucune police externe : tout est en pile système (RGPD,
+   pas de requête vers un CDN tiers, zéro latence).
+   ========================================================================== */
+
 :root {
-	--lae-fond: #ffffff;
-	--lae-encre: #14261c;
-	--lae-doux: #5b6b62;
-	--lae-accent: #2f7d4f;
-	--lae-trait: #e3e8e5;
-	--lae-largeur: 1120px;
+	/* Couleurs */
+	--lae-fond:        #ffffff;
+	--lae-fond-doux:   #f7f5f0;
+	--lae-fond-vert:   #eef3ec;
+	--lae-encre:       #14261c;
+	--lae-encre-2:     #1b3a2a;
+	--lae-doux:        #55635b;
+	--lae-accent:      #2f7d4f;
+	--lae-accent-fonce:#235f3c;
+	--lae-accent-clair:#e3f0e7;
+	--lae-bois:        #a9762f;
+	--lae-bois-clair:  #f4ead9;
+	--lae-trait:       #e3e8e5;
+	--lae-trait-fort:  #cfd8d2;
+	--lae-blanc:       #ffffff;
+
+	/* Typographie fluide */
+	--lae-police: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--lae-t-xs:   0.8125rem;
+	--lae-t-sm:   0.9375rem;
+	--lae-t-base: 1.0625rem;
+	--lae-t-lg:   clamp(1.125rem, 0.4vw + 1.05rem, 1.25rem);
+	--lae-t-xl:   clamp(1.35rem, 1vw + 1.1rem, 1.65rem);
+	--lae-t-2xl:  clamp(1.7rem, 1.8vw + 1.25rem, 2.25rem);
+	--lae-t-3xl:  clamp(2.1rem, 3.2vw + 1.3rem, 3.25rem);
+
+	/* Rythme */
+	--lae-largeur:  1180px;
+	--lae-etroit:   760px;
+	--lae-gouttiere: 22px;
+	--lae-section:  clamp(56px, 7vw, 104px);
+
+	/* Formes */
+	--lae-rayon:    14px;
+	--lae-rayon-lg: 22px;
+	--lae-ombre:    0 1px 2px rgba(20, 38, 28, .04), 0 8px 24px -12px rgba(20, 38, 28, .18);
+	--lae-ombre-lg: 0 2px 4px rgba(20, 38, 28, .05), 0 24px 48px -24px rgba(20, 38, 28, .28);
+	--lae-transition: 180ms cubic-bezier(.2, .6, .3, 1);
 }
 
+/* ==========================================================================
+   2. Base
+   ========================================================================== */
+
 *, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
 body {
 	margin: 0;
 	background: var(--lae-fond);
 	color: var(--lae-encre);
-	font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-	font-size: 17px;
+	font-family: var(--lae-police);
+	font-size: var(--lae-t-base);
 	line-height: 1.65;
 	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
 }
 
-img { max-width: 100%; height: auto; }
-a { color: var(--lae-accent); }
+img, svg, video { max-width: 100%; height: auto; display: block; }
+
+h1, h2, h3, h4 {
+	margin: 0 0 .5em;
+	line-height: 1.15;
+	letter-spacing: -.015em;
+	color: var(--lae-encre-2);
+	text-wrap: balance;
+}
+h1 { font-size: var(--lae-t-3xl); }
+h2 { font-size: var(--lae-t-2xl); }
+h3 { font-size: var(--lae-t-xl); }
+h4 { font-size: var(--lae-t-lg); }
+
+p { margin: 0 0 1.1em; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--lae-accent-fonce); text-underline-offset: .2em; }
+a:hover { color: var(--lae-accent); }
+
+ul, ol { padding-left: 1.25em; }
+
+:focus-visible {
+	outline: 3px solid var(--lae-accent);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+::selection { background: var(--lae-accent-clair); color: var(--lae-encre-2); }
+
+.lae-saut-lien {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 999;
+	background: var(--lae-encre-2);
+	color: #fff;
+	padding: 12px 18px;
+	border-radius: 0 0 var(--lae-rayon) 0;
+}
+.lae-saut-lien:focus { left: 0; color: #fff; }
+
+.lae-invisible {
+	position: absolute !important;
+	width: 1px; height: 1px;
+	margin: -1px; padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ==========================================================================
+   3. Structure
+   ========================================================================== */
 
 .lae-shell {
 	width: 100%;
 	max-width: var(--lae-largeur);
 	margin: 0 auto;
-	padding: 0 20px;
+	padding: 0 var(--lae-gouttiere);
 }
+.lae-shell--etroit { max-width: var(--lae-etroit); }
+
+.lae-section { padding: var(--lae-section) 0; }
+.lae-section--doux  { background: var(--lae-fond-doux); }
+.lae-section--vert  { background: var(--lae-fond-vert); }
+
+.lae-section__tete {
+	max-width: 640px;
+	margin: 0 0 clamp(28px, 3vw, 48px);
+}
+.lae-section__tete--centre { margin-inline: auto; text-align: center; }
+
+.lae-surtitre {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 14px;
+	font-size: var(--lae-t-xs);
+	font-weight: 700;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	color: var(--lae-accent);
+}
+.lae-surtitre::before {
+	content: "";
+	width: 26px; height: 2px;
+	background: var(--lae-accent);
+	border-radius: 2px;
+}
+.lae-section__tete--centre .lae-surtitre::before { display: none; }
+
+.lae-chapo {
+	font-size: var(--lae-t-lg);
+	color: var(--lae-doux);
+	max-width: 62ch;
+}
+.lae-section__tete--centre .lae-chapo { margin-inline: auto; }
+
+.lae-grille {
+	display: grid;
+	gap: clamp(16px, 2vw, 26px);
+}
+.lae-grille--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.lae-grille--3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.lae-grille--4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+
+/* ==========================================================================
+   4. Boutons
+   ========================================================================== */
+
+.lae-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 14px 24px;
+	border: 1px solid transparent;
+	border-radius: 999px;
+	font: inherit;
+	font-weight: 650;
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background var(--lae-transition), color var(--lae-transition),
+	            border-color var(--lae-transition), transform var(--lae-transition),
+	            box-shadow var(--lae-transition);
+}
+.lae-btn:hover { transform: translateY(-1px); }
+.lae-btn:active { transform: translateY(0); }
+.lae-btn svg { width: 18px; height: 18px; flex: none; }
+
+.lae-btn--primaire {
+	background: var(--lae-accent);
+	color: #fff;
+	box-shadow: var(--lae-ombre);
+}
+.lae-btn--primaire:hover { background: var(--lae-accent-fonce); color: #fff; box-shadow: var(--lae-ombre-lg); }
+
+.lae-btn--secondaire {
+	background: transparent;
+	color: var(--lae-encre-2);
+	border-color: var(--lae-trait-fort);
+}
+.lae-btn--secondaire:hover { background: var(--lae-blanc); border-color: var(--lae-accent); color: var(--lae-accent-fonce); }
+
+.lae-btn--blanc {
+	background: #fff;
+	color: var(--lae-encre-2);
+	box-shadow: var(--lae-ombre);
+}
+.lae-btn--blanc:hover { background: var(--lae-accent-clair); color: var(--lae-accent-fonce); }
+
+.lae-btn--clair {
+	background: rgba(255,255,255,.12);
+	color: #fff;
+	border-color: rgba(255,255,255,.4);
+}
+.lae-btn--clair:hover { background: #fff; color: var(--lae-encre-2); }
+
+.lae-btn--tel { font-variant-numeric: tabular-nums; }
+
+.lae-lien-fleche {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	font-weight: 650;
+	text-decoration: none;
+}
+.lae-lien-fleche svg { width: 16px; height: 16px; transition: transform var(--lae-transition); }
+.lae-lien-fleche:hover svg { transform: translateX(3px); }
+
+/* ==========================================================================
+   5. En-tête et navigation
+   ========================================================================== */
 
 .lae-header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background: rgba(255,255,255,.94);
+	backdrop-filter: saturate(160%) blur(10px);
 	border-bottom: 1px solid var(--lae-trait);
-	padding: 18px 0;
 }
 .lae-header__inner {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 24px;
-	flex-wrap: wrap;
+	gap: 20px;
+	min-height: 74px;
 }
+
 .lae-marque {
-	font-weight: 700;
-	font-size: 20px;
-	letter-spacing: .01em;
+	display: inline-flex;
+	align-items: center;
+	gap: 11px;
+	font-weight: 800;
+	font-size: 1.15rem;
+	letter-spacing: -.01em;
+	color: var(--lae-encre-2);
 	text-decoration: none;
-	color: var(--lae-encre);
+	line-height: 1.1;
 }
+.lae-marque:hover { color: var(--lae-accent-fonce); }
+.lae-marque img { max-height: 48px; width: auto; }
+.lae-marque__mot { display: flex; flex-direction: column; }
+.lae-marque__baseline {
+	font-size: .6875rem;
+	font-weight: 600;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--lae-doux);
+}
+.lae-marque__glyphe {
+	width: 38px; height: 38px;
+	flex: none;
+	color: var(--lae-accent);
+}
+
+.lae-header__actions { display: flex; align-items: center; gap: 12px; }
+
 .lae-nav ul {
 	display: flex;
-	gap: 20px;
+	align-items: center;
+	gap: 4px;
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	flex-wrap: wrap;
 }
 .lae-nav a {
+	display: block;
+	padding: 9px 13px;
+	border-radius: 999px;
+	font-size: var(--lae-t-sm);
+	font-weight: 600;
+	color: var(--lae-encre-2);
 	text-decoration: none;
-	color: var(--lae-doux);
-	font-size: 15px;
+	transition: background var(--lae-transition), color var(--lae-transition);
 }
-.lae-nav a:hover { color: var(--lae-accent); }
+.lae-nav a:hover { background: var(--lae-accent-clair); color: var(--lae-accent-fonce); }
+.lae-nav .current-menu-item > a,
+.lae-nav .current_page_item > a {
+	background: var(--lae-accent-clair);
+	color: var(--lae-accent-fonce);
+}
 
-.lae-main { padding: 40px 0 64px; }
-.lae-titre { font-size: clamp(28px, 4vw, 42px); line-height: 1.2; margin: 0 0 8px; }
-.lae-meta { color: var(--lae-doux); font-size: 14px; margin: 0 0 28px; }
+.lae-burger {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 44px; height: 44px;
+	padding: 0;
+	background: transparent;
+	border: 1px solid var(--lae-trait-fort);
+	border-radius: 12px;
+	color: var(--lae-encre-2);
+	cursor: pointer;
+}
+.lae-burger svg { width: 22px; height: 22px; }
+.lae-burger__fermer { display: none; }
+.lae-burger[aria-expanded="true"] .lae-burger__ouvrir { display: none; }
+.lae-burger[aria-expanded="true"] .lae-burger__fermer { display: block; }
 
-.lae-liste { list-style: none; margin: 0; padding: 0; }
-.lae-liste li { padding: 18px 0; border-bottom: 1px solid var(--lae-trait); }
-.lae-liste h2 { margin: 0 0 4px; font-size: 21px; }
-.lae-liste a { text-decoration: none; }
+@media (max-width: 560px) {
+	.lae-header__inner { gap: 10px; min-height: 66px; }
+	.lae-marque { font-size: .98rem; gap: 8px; }
+	.lae-marque__glyphe { width: 30px; height: 30px; }
+	.lae-marque__baseline { font-size: .6rem; letter-spacing: .04em; }
+	.lae-btn { padding: 12px 18px; }
+	.lae-header__actions .lae-btn { padding: 12px; }
+}
+
+@media (max-width: 900px) {
+	.lae-burger { display: inline-flex; }
+	.lae-header__tel-texte { display: none; }
+	.lae-nav {
+		position: absolute;
+		left: 0; right: 0;
+		top: 100%;
+		background: var(--lae-blanc);
+		border-bottom: 1px solid var(--lae-trait);
+		box-shadow: var(--lae-ombre-lg);
+		padding: 10px var(--lae-gouttiere) 20px;
+		display: none;
+	}
+	.lae-nav.est-ouvert { display: block; }
+	.lae-nav ul { flex-direction: column; align-items: stretch; gap: 2px; }
+	.lae-nav a { padding: 13px 14px; border-radius: 10px; font-size: var(--lae-t-base); }
+}
+
+/* ==========================================================================
+   6. Hero
+   ========================================================================== */
+
+.lae-hero {
+	position: relative;
+	isolation: isolate;
+	background: var(--lae-encre-2);
+	color: #fff;
+	overflow: hidden;
+}
+.lae-hero__media {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+}
+.lae-hero__media img { width: 100%; height: 100%; object-fit: cover; }
+.lae-hero::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(120% 90% at 12% 0%, rgba(27,58,42,.72), rgba(27,58,42,.94)),
+		linear-gradient(180deg, rgba(20,38,28,.55), rgba(20,38,28,.9));
+}
+.lae-hero--sans-image::after {
+	background:
+		radial-gradient(90% 80% at 85% 10%, rgba(47,125,79,.55), transparent 60%),
+		linear-gradient(160deg, #1b3a2a 0%, #14261c 60%, #0f1d16 100%);
+}
+
+.lae-hero__inner {
+	position: relative;
+	padding: clamp(72px, 11vw, 148px) 0 clamp(64px, 9vw, 124px);
+	max-width: 780px;
+}
+.lae-hero h1 { color: #fff; margin-bottom: .35em; }
+.lae-hero__chapo {
+	font-size: var(--lae-t-lg);
+	color: rgba(255,255,255,.86);
+	max-width: 56ch;
+	margin-bottom: 2rem;
+}
+.lae-hero .lae-surtitre { color: #9ed8b4; }
+.lae-hero .lae-surtitre::before { background: #9ed8b4; }
+.lae-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.lae-hero__points {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 26px;
+	margin: 2.25rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: var(--lae-t-sm);
+	color: rgba(255,255,255,.82);
+}
+.lae-hero__points li { display: flex; align-items: center; gap: 9px; }
+.lae-hero__points svg { width: 17px; height: 17px; flex: none; color: #9ed8b4; }
+
+/* Bandeau de réassurance sous le hero */
+.lae-reassurance {
+	background: var(--lae-blanc);
+	border-bottom: 1px solid var(--lae-trait);
+}
+.lae-reassurance ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+	gap: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.lae-reassurance li {
+	display: flex;
+	align-items: flex-start;
+	gap: 13px;
+	padding: 26px 22px;
+	border-right: 1px solid var(--lae-trait);
+}
+.lae-reassurance li:last-child { border-right: 0; }
+.lae-reassurance svg { width: 24px; height: 24px; flex: none; color: var(--lae-accent); margin-top: 2px; }
+.lae-reassurance strong { display: block; color: var(--lae-encre-2); }
+.lae-reassurance span { font-size: var(--lae-t-sm); color: var(--lae-doux); }
+@media (max-width: 700px) {
+	.lae-reassurance li { border-right: 0; border-bottom: 1px solid var(--lae-trait); padding: 20px 0; }
+	.lae-reassurance li:last-child { border-bottom: 0; }
+}
+
+/* ==========================================================================
+   7. Cartes prestations
+   ========================================================================== */
+
+.lae-carte {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background: var(--lae-blanc);
+	border: 1px solid var(--lae-trait);
+	border-radius: var(--lae-rayon-lg);
+	overflow: hidden;
+	transition: border-color var(--lae-transition), box-shadow var(--lae-transition), transform var(--lae-transition);
+}
+.lae-carte:hover {
+	border-color: var(--lae-accent);
+	box-shadow: var(--lae-ombre-lg);
+	transform: translateY(-3px);
+}
+.lae-carte__media {
+	aspect-ratio: 4 / 3;
+	background: var(--lae-fond-vert);
+	overflow: hidden;
+}
+.lae-carte__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms cubic-bezier(.2,.6,.3,1); }
+.lae-carte:hover .lae-carte__media img { transform: scale(1.04); }
+.lae-carte__corps { padding: 26px 24px 28px; display: flex; flex-direction: column; flex: 1; }
+.lae-carte__icone {
+	width: 46px; height: 46px;
+	display: grid;
+	place-items: center;
+	margin-bottom: 16px;
+	border-radius: 13px;
+	background: var(--lae-accent-clair);
+	color: var(--lae-accent-fonce);
+}
+.lae-carte__icone svg { width: 24px; height: 24px; }
+.lae-carte h2, .lae-carte h3 { margin-bottom: .4em; font-size: var(--lae-t-xl); }
+.lae-carte h2 a, .lae-carte h3 a { color: inherit; text-decoration: none; }
+.lae-carte h2 a::after, .lae-carte h3 a::after { content: ""; position: absolute; inset: 0; }
+.lae-carte p { color: var(--lae-doux); font-size: var(--lae-t-sm); }
+.lae-carte__pied { margin-top: auto; padding-top: 18px; color: var(--lae-accent-fonce); font-size: var(--lae-t-sm); }
+
+/* ==========================================================================
+   8. Étapes (déroulé d'un chantier)
+   ========================================================================== */
+
+.lae-etapes {
+	counter-reset: etape;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: clamp(18px, 2vw, 26px);
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.lae-etape {
+	position: relative;
+	padding: 28px 24px;
+	background: var(--lae-blanc);
+	border: 1px solid var(--lae-trait);
+	border-radius: var(--lae-rayon);
+}
+.lae-etape::before {
+	counter-increment: etape;
+	content: counter(etape, decimal-leading-zero);
+	display: block;
+	margin-bottom: 12px;
+	font-size: 1.5rem;
+	font-weight: 800;
+	color: var(--lae-bois);
+	font-variant-numeric: tabular-nums;
+}
+.lae-etape h3 { font-size: var(--lae-t-lg); }
+.lae-etape p { margin: 0; color: var(--lae-doux); font-size: var(--lae-t-sm); }
+
+/* ==========================================================================
+   9. Réalisations
+   ========================================================================== */
+
+.lae-realisations { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.lae-realisation {
+	position: relative;
+	display: block;
+	border-radius: var(--lae-rayon-lg);
+	overflow: hidden;
+	background: var(--lae-encre-2);
+	text-decoration: none;
+	aspect-ratio: 3 / 2;
+}
+.lae-realisation img { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms cubic-bezier(.2,.6,.3,1); }
+.lae-realisation:hover img { transform: scale(1.05); }
+.lae-realisation__voile {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	padding: 22px;
+	background: linear-gradient(to top, rgba(15,29,22,.86) 0%, rgba(15,29,22,.25) 45%, transparent 75%);
+	color: #fff;
+}
+.lae-realisation__voile h3 { color: #fff; font-size: var(--lae-t-lg); margin: 0 0 4px; }
+.lae-realisation__meta { font-size: var(--lae-t-xs); color: rgba(255,255,255,.8); letter-spacing: .04em; text-transform: uppercase; }
+
+.lae-filtres { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; padding: 0; list-style: none; }
+.lae-filtres a {
+	display: inline-block;
+	padding: 8px 16px;
+	border: 1px solid var(--lae-trait-fort);
+	border-radius: 999px;
+	font-size: var(--lae-t-sm);
+	font-weight: 600;
+	text-decoration: none;
+	color: var(--lae-encre-2);
+}
+.lae-filtres a:hover, .lae-filtres .est-actif a { background: var(--lae-accent); border-color: var(--lae-accent); color: #fff; }
+
+/* ==========================================================================
+   10. Zone d'intervention
+   ========================================================================== */
+
+.lae-zone { display: grid; gap: clamp(28px, 4vw, 56px); grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); align-items: center; }
+.lae-zone__villes {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 22px 0 0;
+	padding: 0;
+	list-style: none;
+}
+.lae-zone__villes li {
+	padding: 7px 14px;
+	background: var(--lae-blanc);
+	border: 1px solid var(--lae-trait);
+	border-radius: 999px;
+	font-size: var(--lae-t-sm);
+	color: var(--lae-encre-2);
+}
+.lae-zone__carte {
+	border-radius: var(--lae-rayon-lg);
+	overflow: hidden;
+	border: 1px solid var(--lae-trait);
+	background: var(--lae-fond-vert);
+	min-height: 280px;
+	display: grid;
+	place-items: center;
+	color: var(--lae-accent);
+}
+.lae-zone__carte svg { width: 60%; max-width: 260px; height: auto; opacity: .5; }
+
+/* ==========================================================================
+   11. Bande d'appel (devis)
+   ========================================================================== */
+
+.lae-appel {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background: linear-gradient(140deg, var(--lae-accent-fonce) 0%, var(--lae-encre-2) 70%);
+	color: #fff;
+}
+.lae-appel__inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 28px;
+	padding: clamp(40px, 5vw, 66px) 0;
+}
+.lae-appel h2 { color: #fff; margin-bottom: .3em; }
+.lae-appel p { color: rgba(255,255,255,.85); margin: 0; max-width: 52ch; }
+.lae-appel__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.lae-appel__deco {
+	position: absolute;
+	right: -60px; bottom: -80px;
+	width: 340px;
+	color: rgba(255,255,255,.06);
+	z-index: -1;
+	pointer-events: none;
+}
+
+/* ==========================================================================
+   12. Pied de page
+   ========================================================================== */
 
 .lae-footer {
-	border-top: 1px solid var(--lae-trait);
-	padding: 28px 0;
-	color: var(--lae-doux);
-	font-size: 14px;
+	background: var(--lae-encre);
+	color: rgba(255,255,255,.74);
+	padding: clamp(44px, 5vw, 72px) 0 0;
+	font-size: var(--lae-t-sm);
+}
+.lae-footer__grille {
+	display: grid;
+	gap: 34px;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+	padding-bottom: 40px;
+}
+.lae-footer h2 {
+	font-size: var(--lae-t-xs);
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	color: rgba(255,255,255,.55);
+	margin-bottom: 16px;
+}
+.lae-footer a { color: rgba(255,255,255,.86); text-decoration: none; }
+.lae-footer a:hover { color: #fff; text-decoration: underline; }
+.lae-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.lae-footer .lae-marque { color: #fff; }
+.lae-footer .lae-marque__baseline { color: rgba(255,255,255,.55); }
+.lae-footer__contact li { display: flex; align-items: flex-start; gap: 10px; }
+.lae-footer__contact svg { width: 17px; height: 17px; flex: none; margin-top: 4px; color: #6fbf8e; }
+.lae-footer__bas {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 20px 0 24px;
+	border-top: 1px solid rgba(255,255,255,.12);
+	font-size: var(--lae-t-xs);
+	color: rgba(255,255,255,.55);
+}
+.lae-footer__bas ul { display: flex; flex-wrap: wrap; gap: 18px; }
+
+/* Barre d'appel mobile */
+.lae-barre-mobile {
+	position: fixed;
+	left: 0; right: 0; bottom: 0;
+	z-index: 90;
+	display: none;
+	gap: 1px;
+	background: var(--lae-trait);
+	box-shadow: 0 -6px 20px -12px rgba(20,38,28,.5);
+}
+.lae-barre-mobile a {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 14px 8px;
+	background: var(--lae-blanc);
+	font-size: var(--lae-t-sm);
+	font-weight: 650;
+	text-decoration: none;
+	color: var(--lae-encre-2);
+}
+.lae-barre-mobile a.est-primaire { background: var(--lae-accent); color: #fff; }
+.lae-barre-mobile svg { width: 18px; height: 18px; }
+@media (max-width: 700px) {
+	.lae-barre-mobile { display: flex; }
+	body { padding-bottom: 56px; }
 }
 
-@media (max-width: 640px) {
-	body { font-size: 16px; }
-	.lae-main { padding: 28px 0 48px; }
+/* ==========================================================================
+   13. Contenu éditorial (pages, articles)
+   ========================================================================== */
+
+.lae-page-tete {
+	background: var(--lae-fond-vert);
+	border-bottom: 1px solid var(--lae-trait);
+	padding: clamp(40px, 6vw, 84px) 0 clamp(32px, 4vw, 56px);
+}
+.lae-page-tete h1 { margin-bottom: .25em; }
+.lae-page-tete .lae-chapo { margin: 0; }
+
+.lae-fil {
+	font-size: var(--lae-t-xs);
+	color: var(--lae-doux);
+	margin-bottom: 14px;
+}
+.lae-fil a { color: var(--lae-doux); }
+
+.lae-contenu { padding: clamp(40px, 5vw, 72px) 0; }
+.lae-contenu > * { max-width: var(--lae-etroit); }
+.lae-contenu > .alignwide,
+.lae-contenu > .alignfull,
+.lae-contenu > .wp-block-gallery,
+.lae-contenu > figure { max-width: 100%; }
+.lae-contenu h2 { margin-top: 1.8em; }
+.lae-contenu h3 { margin-top: 1.5em; }
+.lae-contenu img { border-radius: var(--lae-rayon); }
+.lae-contenu blockquote {
+	margin: 1.8em 0;
+	padding: 4px 0 4px 22px;
+	border-left: 3px solid var(--lae-accent);
+	color: var(--lae-encre-2);
+	font-size: var(--lae-t-lg);
+}
+.lae-contenu figcaption { font-size: var(--lae-t-xs); color: var(--lae-doux); margin-top: 8px; }
+.lae-contenu table { width: 100%; border-collapse: collapse; }
+.lae-contenu th, .lae-contenu td { padding: 10px 12px; border-bottom: 1px solid var(--lae-trait); text-align: left; }
+
+.lae-articles { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); list-style: none; margin: 0; padding: 0; }
+.lae-article-meta { font-size: var(--lae-t-xs); color: var(--lae-doux); letter-spacing: .03em; text-transform: uppercase; margin-bottom: 8px; }
+
+.lae-pagination { margin-top: 40px; }
+.lae-pagination .nav-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.lae-pagination .page-numbers {
+	display: inline-grid;
+	place-items: center;
+	min-width: 42px; height: 42px;
+	padding: 0 12px;
+	border: 1px solid var(--lae-trait);
+	border-radius: 12px;
+	text-decoration: none;
+	color: var(--lae-encre-2);
+}
+.lae-pagination .current { background: var(--lae-accent); border-color: var(--lae-accent); color: #fff; }
+
+.lae-vide {
+	padding: clamp(48px, 7vw, 96px) 0;
+	text-align: center;
+	color: var(--lae-doux);
+}
+
+/* Formulaire de recherche */
+.lae-recherche { display: flex; gap: 8px; max-width: 420px; }
+.lae-recherche input[type="search"] {
+	flex: 1;
+	padding: 12px 16px;
+	font: inherit;
+	border: 1px solid var(--lae-trait-fort);
+	border-radius: 999px;
+	background: var(--lae-blanc);
+	color: var(--lae-encre);
+}
+.lae-recherche input[type="search"]:focus-visible { border-color: var(--lae-accent); }
+
+/* ==========================================================================
+   14. Accessibilité / impression
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		animation-duration: .01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: .01ms !important;
+	}
+	.lae-carte:hover, .lae-btn:hover { transform: none; }
+}
+
+@media print {
+	.lae-header, .lae-footer, .lae-barre-mobile, .lae-appel, .lae-hero__media { display: none !important; }
+	.lae-hero, .lae-appel { background: #fff !important; color: #000 !important; }
+	.lae-hero h1, .lae-hero__chapo { color: #000 !important; }
+	body { font-size: 11pt; background: #fff; padding: 0; }
+	a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; color: #444; }
+	.lae-section { padding: 12pt 0; }
+	* { box-shadow: none !important; }
 }

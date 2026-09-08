@@ -10,7 +10,10 @@ Chantiers en attente, décisions reportées, idées à reprendre plus tard.
 
 ## À trancher avec le client
 
-- Contenu réel du site (pages, textes, photos) — rien ne doit être inventé.
+- **Contenu réel du site (pages, textes, photos) — rien ne doit être inventé.**
+  Priorité n°1 : sans lui, le site s'affiche avec des sections masquées.
+- Photos de chantier (avant / après) pour la section Réalisations.
+- Logo : à défaut, le thème affiche le nom du site + une baseline.
 - Nom de domaine définitif et bascule DNS.
 - Formulaire de contact : destinataire, champs, mentions RGPD.
 
