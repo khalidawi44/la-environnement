@@ -106,6 +106,72 @@ define( 'LAE_GH_TOKEN', 'github_pat_xxxxxxxx' );
 
 ---
 
+## MCP Hostinger (piloter l'hébergement depuis Claude)
+
+Le dépôt déclare deux serveurs MCP Hostinger dans `.mcp.json`, chargés
+automatiquement à l'ouverture du projet dans Claude Code :
+
+| Serveur | Binaire | Outils |
+|---|---|---|
+| `hostinger-wordpress` | `hostinger-wordpress-mcp` | 38 |
+| `hostinger-dns` | `hostinger-dns-mcp` | 8 |
+
+Ce sont des **binaires scopés** du paquet `hostinger-api-mcp` (v1.57.2). Le
+binaire unifié `hostinger-api-mcp` existe aussi mais expose **382 outils** :
+inutile ici, et ça sature le contexte pour rien. Autres binaires disponibles si
+besoin : `hostinger-hosting-mcp` (64), `hostinger-vps-mcp` (64),
+`hostinger-domains-mcp` (40), `hostinger-mail-mcp` (38),
+`hostinger-billing-mcp` (9), `hostinger-horizons-mcp` (2).
+
+### Ce que ça permet
+
+Gestion **de l'hébergement**, pas des fichiers : lister et créer des
+installations WordPress, installer et activer plugins et thèmes, lancer les
+mises à jour, **purger le cache LiteSpeed**, basculer le mode maintenance,
+gérer Memcached, générer un lien de connexion admin, et gérer les
+enregistrements DNS.
+
+C'est **complémentaire** de la sync GitHub, pas un remplacement : l'API
+Hostinger ne dépose pas de fichiers arbitraires sur le site. Le déploiement du
+code reste le push sur `main` ; le MCP sert à piloter le reste (cache,
+maintenance, plugins, DNS).
+
+### Authentification
+
+Aucun secret n'est stocké dans ce dépôt (il est **public**). Deux méthodes,
+dans cet ordre de priorité :
+
+1. **OAuth** (par défaut, recommandé sur un poste de travail) — au premier
+   appel d'outil, une page Hostinger s'ouvre dans le navigateur. Les
+   identifiants sont ensuite stockés hors dépôt, dans
+   `~/.config/hostinger-mcp/credentials.json` (mode 0600), et partagés entre
+   tous les binaires Hostinger. Connexion immédiate :
+   `npx -y hostinger-api-mcp --login` — déconnexion : `--logout`.
+2. **Jeton d'API** (pour un environnement sans navigateur : CI, session
+   distante) — exporter `HOSTINGER_API_TOKEN` dans l'environnement. Quand elle
+   est présente, cette variable court-circuite entièrement OAuth. Ne **jamais**
+   l'écrire dans `.mcp.json` : le dépôt est public.
+
+Prérequis : Node.js. Le paquet déclare `engines: >=20`.
+
+### Ajouter les serveurs hors de ce dépôt
+
+```bash
+claude mcp add hostinger-wordpress -- npx -y -p hostinger-api-mcp hostinger-wordpress-mcp
+claude mcp add hostinger-dns       -- npx -y -p hostinger-api-mcp hostinger-dns-mcp
+```
+
+Il existe aussi un serveur hébergé par Hostinger, sans rien installer :
+
+```bash
+claude mcp add --transport http hostinger https://mcp.hostinger.com
+```
+
+Il expose l'API complète (382 outils) et s'authentifie en OAuth — donc il lui
+faut un navigateur : à réserver au poste de travail.
+
+---
+
 ## Structure
 
 ```

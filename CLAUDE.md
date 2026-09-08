@@ -28,6 +28,19 @@ identifiants, tokens, clés API, mots de passe, accès Hostinger, données
 personnelles du client ou de ses contacts.
 Les secrets vont dans `wp-config.php` (hors dépôt), ex. `LAE_GH_TOKEN`.
 
+## MCP Hostinger
+`.mcp.json` déclare les serveurs `hostinger-wordpress` (38 outils) et
+`hostinger-dns` (8), binaires scopés de `hostinger-api-mcp`. Ne PAS basculer
+sur le binaire unifié `hostinger-api-mcp` : 382 outils, il sature le contexte.
+
+Auth : OAuth par défaut (identifiants hors dépôt, `~/.config/hostinger-mcp/`),
+ou variable `HOSTINGER_API_TOKEN` dans l'environnement. Le jeton ne va JAMAIS
+dans `.mcp.json` ni nulle part dans le dépôt.
+
+Le MCP pilote l'hébergement (cache LiteSpeed, maintenance, plugins, thèmes,
+mises à jour, DNS) — il ne dépose PAS de fichiers. Le déploiement du code
+reste le push sur `main`.
+
 ## Ne pas casser la mécanique de sync
 `inc/lae-github-sync.php` est le cœur du déploiement. Avant d'y toucher :
 

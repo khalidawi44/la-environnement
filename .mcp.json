@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "hostinger-wordpress": {
+      "command": "npx",
+      "args": ["-y", "-p", "hostinger-api-mcp", "hostinger-wordpress-mcp"]
+    },
+    "hostinger-dns": {
+      "command": "npx",
+      "args": ["-y", "-p", "hostinger-api-mcp", "hostinger-dns-mcp"]
+    }
+  }
+}
