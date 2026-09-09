@@ -99,7 +99,17 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
   site Alliance Groupe présente L.A Environnement comme « Paysagiste ·
   Loire-Atlantique ». **À trancher avec le client** : c'est la zone
   d'intervention et tout le référencement local qui en dépendent.
-- 4 photos du propriétaire + 1 vidéo de 29 s sur la fiche : à récupérer.
+- 4 photos du propriétaire + 1 vidéo de 29 s. **Deux seulement sont
+  exploitables** et sont intégrées au thème (`jardin-piscine.webp`,
+  `pelouse-haie.webp`). Les deux autres n'ont rien à faire là :
+  une voiture sur un plateau de dépannage (géolocalisée La Varenne / Drain,
+  Maine-et-Loire) et un visuel Alliance Groupe (lion, bureau). **La fiche
+  Google du client est à nettoyer** : ces deux images desservent un paysagiste.
+- Le domaine est chez **Webador** et le client ne peut pas changer les DNS sans
+  payer. `paysagiste-environnement.com/contact` répond « Site introuvable » :
+  l'ancien site est perdu, son contenu n'est pas récupérable. Il faut donc une
+  nouvelle adresse — un sous-domaine d'alliancegroupe-inc.com est gratuit et
+  disponible tout de suite.
 
 ## Reste à faire côté contenu (bloquant)
 

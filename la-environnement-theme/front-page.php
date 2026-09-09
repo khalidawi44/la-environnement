@@ -31,6 +31,9 @@ $lae_hero_img   = lae_reglage( 'hero_image' );
 $lae_hero_video = lae_reglage( 'cine_video' );
 $lae_hero_post  = lae_reglage( 'cine_poster' );
 $lae_tab_img    = lae_reglage( 'cine_tab_image' );
+if ( '' === $lae_tab_img ) {
+	$lae_tab_img = $dir . '/assets/images/jardin-piscine.webp';
+}
 $lae_scene_img  = lae_reglage( 'cine_scene_image' );
 $lae_main_img   = lae_reglage( 'cine_main_image' );
 $lae_arbre_img  = lae_reglage( 'cine_arbre_image' );
@@ -152,7 +155,7 @@ $lae_contact    = lae_url_contact();
   .tab__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   .tab__img{position:absolute;inset:0}
   .tab__img img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
-  .tab__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,20,12,.62),rgba(4,20,12,.25) 40%,rgba(4,20,12,.9))}
+  .tab__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,20,12,.66),rgba(4,20,12,.38) 40%,rgba(4,20,12,.9))}
   .tab__cap{position:relative;z-index:2;text-align:center;padding:0 26px;max-width:900px}
   .tab__cap h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,6.4vw,4.6rem);line-height:1.02}
   .tab__cap h2 em{font-style:italic;color:var(--feuille-hi)}
@@ -728,6 +731,11 @@ if ( $lae_chs ) : ?>
   <?php foreach ( $lae_chs as $lae_i => $lae_ligne ) :
     list( $lae_t, $lae_p, $lae_meta ) = lae_morceaux( $lae_ligne, 3 );
     $lae_ch_img = lae_reglage( 'cine_ch' . ( $lae_i + 1 ) . '_image' );
+    if ( '' === $lae_ch_img && 2 === $lae_i ) {
+      // Chapitre « Les racines — le jardin qui tient » : la seule photo de
+      // jardin dont on soit sûr qu'elle vient de l'entreprise.
+      $lae_ch_img = $dir . '/assets/images/pelouse-haie.webp';
+    }
     ?>
     <article class="ch<?php echo $lae_ch_img ? '' : ' ch--nu'; ?>">
       <div class="ch__txt">
