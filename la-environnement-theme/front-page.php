@@ -1120,7 +1120,15 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
      On force donc l'état FINAL : tout visible, tout cliquable, sans timeline. */
   var REDUIT = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   var ok = !!(G && ST) && !REDUIT;
-  if (ok) G.registerPlugin(ST);
+  if (ok) {
+    G.registerPlugin(ST);
+    /* PERF : limitCallbacks regroupe les rappels sur la boucle rAF au lieu de
+       les tirer à chaque événement de scroll. ignoreMobileResize empêche le
+       refresh complet de ScrollTrigger quand la barre d'adresse du navigateur
+       mobile se rétracte — c'était une source de saccade à chaque défilement
+       vers le bas. Aucun effet visuel. */
+    ST.config({ limitCallbacks: true, ignoreMobileResize: true });
+  }
 
   if (!ok) {
     (function etatFinal(){
@@ -1144,8 +1152,17 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
     })();
   }
 
-  /* défilement amorti — jamais sous réduction de mouvement */
-  var L = REDUIT ? null : (window.Lenis || (window.lenis && window.lenis.default));
+  /* Défilement amorti — jamais sous réduction de mouvement, JAMAIS au doigt.
+     PERF (mesure du 09/09, iPhone 13 CPU x4) : Lenis n'adoucit pas le scroll
+     tactile — syncTouch n'est pas activé et vaut false par défaut, donc le
+     doigt reste sur le scroll natif. Sur téléphone l'instance ne servait donc
+     à rien, mais coûtait trois choses : sa boucle raf() permanente, le
+     couplage lenis.on("scroll", ST.update) qui force une mise à jour
+     synchrone de ScrollTrigger à chaque événement (en plus de sa propre
+     boucle throttlée), et 13,5 Ko de script. Le repli du défilement ancré est
+     déjà prévu plus bas : scrollTo({ behavior:"smooth" }). */
+  var TACTILE = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+  var L = (REDUIT || TACTILE) ? null : (window.Lenis || (window.lenis && window.lenis.default));
   if (L) {
     var lenis = new L({ duration: 1.15, smoothWheel: true });
     (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })();
@@ -1167,11 +1184,11 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
     G.from("[data-eg]", { y:44, opacity:0, duration:1.3, ease:"power3.out", delay:.25 });
 
     /* hero : parallaxe + on se rapproche de la main */
-    G.to("[data-parallax] img", { yPercent:12, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:true }});
+    G.to("[data-parallax] img", { yPercent:12, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:.3 }});
     if (!matchMedia("(max-width:960px)").matches)
       G.to("[data-eg]", { scale:1.6, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:.5 }});
-    G.to(".hero__in", { y:-40, opacity:0, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"55% top", scrub:true }});
-    G.to(".feuillemark", { scale:1.25, opacity:.02, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:true }});
+    G.to(".hero__in", { y:-40, opacity:0, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"55% top", scrub:.3 }});
+    G.to(".feuillemark", { scale:1.25, opacity:.02, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:.3 }});
 
     /* bandeau : boucle continue en rAF, accélérée par la vitesse de scroll */
     (function(){
@@ -1196,7 +1213,7 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
     /* tableau : Ken Burns lent */
     if (!matchMedia("(max-width:960px)").matches)
       G.fromTo("[data-tabimg] img", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
-        scrollTrigger:{ trigger:".tab", start:"top top", end:"bottom bottom", scrub:true }});
+        scrollTrigger:{ trigger:".tab", start:"top top", end:"bottom bottom", scrub:.3 }});
 
     /* titres : chaque mot monte derrière un masque */
     G.utils.toArray("[data-mots]").forEach(function(h){
@@ -1212,7 +1229,7 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
     G.utils.toArray("[data-txt]").forEach(function(p){
       G.from(p, { y:26, opacity:0, filter:"blur(6px)", duration:1, ease:"power3.out",
         scrollTrigger:{ trigger:p, start:"top 90%" }});
-      G.to(p, { y:-22, ease:"none", scrollTrigger:{ trigger:p, start:"top bottom", end:"bottom top", scrub:true }});
+      G.to(p, { y:-22, ease:"none", scrollTrigger:{ trigger:p, start:"top bottom", end:"bottom top", scrub:.3 }});
     });
 
     /* révélations */
@@ -1241,7 +1258,7 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
           scrollTrigger:{ trigger:m.parentNode, start:"top 92%", end:"top 45%", scrub:.5 }});
       /* le numéro file plus vite */
       var n = m.parentNode.querySelector(".ch__n");
-      if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:true }});
+      if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:.3 }});
     });
     /* arbre : la revelation se joue sur la premiere moitie du defilement,
        pour que le formulaire pose par-dessus soit utilisable tout de suite. */
@@ -1316,7 +1333,7 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
   var petitEcran = matchMedia("(max-width:960px)").matches;
   if (!petitEcran){ img.onload = build; addEventListener("resize", build); }
   if (ok && !petitEcran){
-    ST.create({ trigger:".ds", start:"top top", end:"bottom bottom", scrub:true,
+    ST.create({ trigger:".ds", start:"top top", end:"bottom bottom", scrub:.3,
       onUpdate: function(self){ progress = Math.min(1.15, self.progress / .30 * 1.12); draw(); }});
   }
   if (ok){

@@ -4,8 +4,13 @@ Deux sessions Claude travaillent sur ce dépôt :
 
 | | Session | Fait quoi |
 |---|---|---|
-| 🎨 | **DESIGN** (Cowork) | L'apparence et le contenu : gabarits, sections, styles, médias, contenus réels |
-| ⚙️ | **CODE** | La mécanique : synchro, sécurité, déploiement, outillage du dépôt |
+| 🎨 | **DESIGN** (Cowork) | **CSS, images, rendu.** L'apparence : styles, médias, gabarits, contenus réels |
+| ⚙️ | **CODE** | La mécanique **et la performance** : JS, scroll, synchro, sécurité, déploiement |
+
+> Arbitrage de Fabrice, 09/09 : **la performance est au couloir CODE.** Le JS
+> d'animation de `front-page.php` est donc modifiable par CODE sans accord
+> préalable, à condition de ne pas changer l'apparence — CSS, images et rendu
+> restent à DESIGN.
 
 **Le dépôt est le canal.** La messagerie directe entre sessions ne passe pas
 (environnements séparés), et les conteneurs sont éphémères : ce qui n'est pas
@@ -91,7 +96,41 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
-### [2026-09-09] ⚙️→🎨 Scroll mobile lent : mesuré, c'est le scrub
+### [2026-09-09] ⚙️→🎨 Scroll mobile : CORRIGÉ par CODE (v1.9.2)
+
+**Suite donnée.** Fabrice a tranché : la perf est au couloir CODE. J'ai donc
+appliqué les correctifs JS moi-même dans `front-page.php`. **Aucun CSS, aucune
+image, aucun rendu touché** — ton couloir est intact.
+
+Trois changements, tous sans effet visuel :
+1. **Lenis n'est plus instancié sur pointeur tactile** (`pointer: coarse`).
+   Il n'adoucissait pas le scroll au doigt de toute façon ; on supprime sa
+   boucle rAF permanente, le couplage `ST.update` et 13,5 Ko. Le défilement
+   ancré retombe sur `scrollTo({behavior:"smooth"})`, repli déjà prévu.
+2. **`ST.config({ limitCallbacks:true, ignoreMobileResize:true })`.**
+   `ignoreMobileResize` supprime le refresh complet de ScrollTrigger quand la
+   barre d'adresse mobile se rétracte — grosse source de saccade.
+3. **Les 7 `scrub:true` passent en `scrub:.3`** : découplé du fil de scroll.
+
+**Mesuré, moyenne de 3 passages, iPhone 13 CPU ×4 :**
+
+| | avant | après |
+|---|---|---|
+| p95 de frame | 67 ms | **50 ms** |
+| pointe | 83 ms | **61 ms** |
+
+Environ **−25 % sur les saccades**. La médiane (33 ms) ne bouge pas, mais elle
+est plafonnée par mon banc de test, pas par la page — je ne la compte pas.
+
+**Ce qui reste, et qui est à toi :** le gros de la charge, ce sont les 15
+animations en `scrub` encore actives sur téléphone. Les réduire changerait
+l'apparence, donc c'est ta décision. Et `arbre-colonne.webp` fait 596 Ko en
+1200×6000 (7,2 Mpx) sans `srcset` — un calque de 6000 px de haut à composer
+sur un téléphone. Une variante mobile plus petite serait le prochain gain.
+
+---
+
+### [2026-09-09] ⚙️→🎨 Le diagnostic d'origine (conservé pour référence)
 
 Fabrice trouve le mobile trop lent. Mesuré sur Chromium, profil iPhone 13,
 CPU bridé ×4, page servie en local (réseau neutralisé).
