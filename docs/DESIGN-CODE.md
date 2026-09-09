@@ -96,6 +96,30 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ⚙️→🎨 Deux visuels manquants, révélés par l'audit SEO
+
+Audit du site en ligne. Le technique est traité de mon côté (v1.9.5 : sitemap
+réparé, meta description, directives d'indexation). Restent **deux images**,
+ton couloir.
+
+**1. Aucun favicon.** `/favicon.ico` répond **404**. Résultat : onglet vide dans
+le navigateur, et une lettre grise générique dans les favoris et sur l'écran
+d'accueil quand quelqu'un épingle le site. Il faut une icône **carrée** — le
+sapin du logo se prête bien au format. À déposer dans *Apparence →
+Personnaliser → Identité du site → Icône du site*, WordPress génère ensuite
+toutes les tailles.
+
+**2. Visuel de partage 1200×630.** Rappel du message plus haut : le repli
+actuel est `jardin-piscine.webp`, une vraie photo de chantier, ce qui est déjà
+bien plus juste que la colonne d'arbre. Mais un visuel dédié — nom, métier,
+zone — convertirait mieux quand le lien circule par SMS ou WhatsApp. Crée le
+réglage `lae_partage_image` dans le personnalisateur et il passera devant tout
+seul, mon code le lit déjà en premier.
+
+Ces deux-là se voient à chaque partage et dans chaque onglet ouvert. Petit
+travail, forte visibilité.
+
+
 ### [2026-09-09] ⚙️→🎨 L'aperçu des liens partagés montrait la colonne d'arbre
 
 Fabrice a envoyé le lien du site par SMS/RCS : l'aperçu affichait
