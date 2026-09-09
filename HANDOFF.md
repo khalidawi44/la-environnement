@@ -124,7 +124,28 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
 - E-mail : **paysagisteenvironnement@gmail.com** — renseigné dans le thème,
   c'est lui qui reçoit les demandes du formulaire de contact.
 
-## Le nom de domaine n'est PAS perdu
+## Adresse du site : le sous-domaine est en place
+
+`la-environnement.alliancegroupe-inc.com` — créé le 09/09/2026 dans hPanel,
+sous le domaine de l'agence, comme `gwen-services`.
+
+- Répertoire : `/home/u495311222/domains/alliancegroupe-inc.com/public_html/la-environnement`
+- Vérifié : le nom résout (145.223.124.15) et répond en **HTTPS 200**.
+  L'enregistrement A a été créé automatiquement — il n'y a pas de joker DNS sur
+  le domaine (un sous-domaine au hasard ne résout pas), donc c'est bien celui-ci
+  qui a été posé.
+- Serveur Hostinger : server1746, Europe (France). IP du pack : 147.79.103.74.
+  Serveurs de noms Hostinger : `ns1.dns-parking.com`, `ns2.dns-parking.com`.
+
+**Reste à faire, et c'est pour Fabrice** : installer WordPress dans ce
+répertoire. L'installation demande de définir un identifiant et un mot de passe
+d'administration — Claude ne saisit pas de mots de passe. Une fois l'install
+faite, le thème s'y dépose (ZIP ou synchronisation GitHub).
+
+Penser ensuite à **changer l'adresse du site sur la fiche Google** du client :
+elle pointe encore sur `paysagiste-environnement.com`, qui est mort.
+
+## Le nom de domaine du client est inutilisable
 
 - `paysagiste-environnement.com` est enregistré du **06/04/2025 au 06/04/2027**.
   Il est payé, il est à jour.
@@ -132,12 +153,10 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
   `ns3.openprovider.eu` (registrar d'arrière-plan de Webador).
 - Le mail Webador indique le lien pour les modifier :
   `webador.fr/v2/redirect-website/subscription/domains`
-- **Il suffit donc de basculer les serveurs de noms vers Hostinger** pour que le
-  WordPress déjà en place réponde sur le vrai domaine. Le sous-domaine
-  `la-environnement.alliancegroupe-inc.com` n'est plus nécessaire que comme
-  solution de repli.
-- Relever les serveurs de noms exacts dans hPanel (site → « Continuer la
-  configuration » / connecter un domaine) plutôt que de les supposer.
+- **Mais l'accès à Webador est bloqué** : une facture impayée verrouille le
+  compte, et Fabrice a décidé de ne pas la payer. Les serveurs de noms ne
+  peuvent donc pas être modifiés. Le domaine est vivant mais inutilisable —
+  d'où le sous-domaine ci-dessus, qui est la solution retenue et non un repli.
 - Effet de bord à connaître : l'ancien site Webador, déjà hors ligne, ne
   reviendra pas. Aucune adresse e-mail du domaine n'est en jeu — le client
   utilise une adresse Gmail.
