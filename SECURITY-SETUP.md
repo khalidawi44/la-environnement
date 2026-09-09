@@ -69,3 +69,49 @@ balisé quand le fichier est modifiable.
 Et `LAE_GitHub_Sync` couvre le risque propre à la sync : whitelist de dépôts de
 confiance en dur, whitelist d'extensions, fichiers protégés jamais écrasés,
 rejet des chemins `..`, contrôle d'intégrité du tarball, backup avant écrasement.
+
+---
+
+## Vérification en conditions réelles — 09/09/2026
+
+Relevé sur `elagage-vertou.fr` en ligne, pas sur le code. **Tout ce qui suit
+est constaté, pas supposé.**
+
+| Contrôle | Attendu | Constaté |
+|---|---|---|
+| `X-Content-Type-Options` | `nosniff` | ✅ |
+| `X-Frame-Options` | `SAMEORIGIN` | ✅ |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | ✅ |
+| `Permissions-Policy` | géoloc, micro, caméra coupés | ✅ |
+| `Content-Security-Policy` | `upgrade-insecure-requests` | ✅ |
+| `Strict-Transport-Security` | 1 an, sous-domaines | ✅ |
+| `X-Powered-By` / `X-Pingback` | absents | ✅ |
+| `/xmlrpc.php` | refusé | ✅ **403** |
+| `/wp-json/wp/v2/users` | pas d'énumération | ✅ **404** |
+| `/?author=1` | pas de fuite d'identifiant | ✅ **301** |
+
+`inc/lae-hardening.php` fait donc son travail en production.
+
+### Refaire ce contrôle en une commande
+
+```bash
+D=https://elagage-vertou.fr
+curl -sSI $D | grep -iE "x-content-type|x-frame|referrer|permissions|content-security|strict-transport"
+for u in xmlrpc.php wp-json/wp/v2/users "?author=1"; do
+  printf "%-24s %s\n" "$u" "$(curl -sS -o /dev/null -w '%{http_code}' "$D/$u")"
+done
+```
+
+Attendu : 403, 404, 301. Toute autre valeur signifie que le durcissement ne
+tourne plus — thème désactivé, fichier écrasé, ou plugin en conflit.
+
+### Reste hors code, pour mémoire
+
+- [ ] `DISALLOW_FILE_EDIT` dans `wp-config.php` — coupe l'éditeur de fichiers de
+      l'admin WordPress. Un compte admin compromis ne peut plus injecter de PHP
+      depuis le navigateur.
+      ```php
+      define( 'DISALLOW_FILE_EDIT', true );
+      ```
+- [ ] Protection de la branche `main` sur GitHub (cf. §1) — le dépôt déploie en
+      production, il mérite le même soin que l'hébergement.
