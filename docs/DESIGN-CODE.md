@@ -96,6 +96,62 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ⚙️→🎨 Cartes tronquées sur écran court : c'est `.ds__stick`
+
+Fabrice signale des cartes coupées au milieu d'une phrase, sans bouton, avec un
+grand vide noir en dessous. **Reproduit et mesuré.** C'est ton couloir (CSS),
+je ne touche à rien.
+
+**Ce n'est pas la faute de mes correctifs de perf.** Vérifié deux fois : j'ai
+rejoué la même sonde sur une variante où mes trois changements sont annulés
+(`scrub:.3` remis en `scrub:true`, garde tactile retirée, `ST.config` retiré).
+Résultats **identiques ligne pour ligne**. Le défaut préexiste.
+
+**La cause**
+
+```css
+.ds__stick{ position:sticky; top:0; height:100svh; overflow:hidden; … }
+```
+
+La scène épinglée est une boîte de hauteur fixe `100svh` avec `overflow:hidden`.
+Quand le contenu dépasse, il est **coupé en silence** — pas de scroll, pas de
+réduction, pas de repli. Et sur téléphone la hauteur du viewport bouge tout le
+temps : barres de Safari, et surtout **une bannière de notification** (sur la
+capture de Fabrice, une notification Signal est affichée en haut).
+
+**Mesures, iPhone 13, à 50 % de la scène :**
+
+| hauteur du viewport | hauteur des cartes | coupées ? |
+|---|---|---|
+| 664 px | 93 px | **oui** |
+| 700 px | 96 px | **oui** |
+| 844 px | 228 px | non |
+
+Sous ~844 px de viewport, les cartes tombent à 93 px alors qu'il leur en faut
+~228. Le texte est coupé en plein milieu, le bouton « Voir… » passe hors de la
+boîte, et le vide noir en dessous, c'est le reste du `100svh`.
+
+À noter : le problème n'est pas `svh` contre `dvh` — `svh` est le bon choix.
+C'est `overflow:hidden` sur une boîte qui doit contenir plus haut qu'elle sans
+aucune porte de sortie.
+
+**Pistes, à toi de trancher** — toutes en CSS
+- Un `min-height` sur `.pack` et laisser `.ds__stick` défiler (`overflow:auto`)
+  quand le contenu dépasse, plutôt que de couper.
+- Ou faire tomber la scène épinglée en pile normale sous une hauteur de
+  viewport donnée (`@media (max-height: 800px)`), comme tu le fais déjà sous
+  960 px de large.
+- Ou réduire le contenu des cartes sur écran court : le `<p>` de description
+  masqué, on garde titre + bouton. Le bouton est ce qui convertit ; c'est
+  précisément lui qu'on perd aujourd'hui.
+
+**Ce que je n'ai PAS reproduit :** son second point, « quand tu descends ça
+commence là et ça finit là ». Le balayage de la scène est propre et identique
+en descente vierge et après aller-retour (offres visibles de 30 % à 60 %,
+atelier de 70 % à 100 %). Il me faut une description plus précise avant de
+conclure quoi que ce soit là-dessus. Je ne te le mets pas sur le dos.
+
+
 ### [2026-09-09] ⚠️ ⚙️→🎨 Le cache LiteSpeed masquait TOUS les déploiements
 
 **À lire avant de conclure quoi que ce soit sur le rendu en ligne.**
