@@ -42,7 +42,8 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute = function ( $id, $args ) use ( $wp_customize ) {
 		$type      = isset( $args['type'] ) ? $args['type'] : 'text';
 		$sanitize  = isset( $args['sanitize'] ) ? $args['sanitize'] : 'sanitize_text_field';
-		$defaut    = isset( $args['default'] ) ? $args['default'] : '';
+		// Le défaut vient de la table unique (inc/lae-defauts.php).
+		$defaut    = array_key_exists( 'default', $args ) ? $args['default'] : lae_defaut( $id );
 
 		$wp_customize->add_setting( $id, array(
 			'default'           => $defaut,
@@ -74,7 +75,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'panel' => $panneau,
 	) );
 
-	$ajoute( 'lae_baseline', array( 'default' => "Élagage · Abattage · Création de jardin",
+	$ajoute( 'lae_baseline', array(
 		'label'       => 'Baseline (sous le nom)',
 		'section'     => 'lae_identite',
 		'description' => 'Exemple : « Élagage · Abattage · Création de jardin ». Laisser vide pour n\'afficher que le nom.',
@@ -87,9 +88,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'description' => 'Ces informations alimentent l\'en-tête, le pied de page, la barre mobile et les données structurées Google.',
 	) );
 
-	$ajoute( 'lae_telephone', array( 'default' => "07 59 79 03 96", 'label' => 'Téléphone', 'section' => 'lae_coordonnees' ) );
-	$ajoute( 'lae_email', array( 'default' => "paysagisteenvironnement@gmail.com", 'label' => 'E-mail', 'section' => 'lae_coordonnees', 'sanitize' => 'sanitize_email' ) );
-	$ajoute( 'lae_adresse', array( 'default' => "Vertou (44)", 'label' => 'Adresse', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_telephone', array( 'label' => 'Téléphone', 'section' => 'lae_coordonnees' ) );
+	$ajoute( 'lae_email', array( 'label' => 'E-mail', 'section' => 'lae_coordonnees', 'sanitize' => 'sanitize_email' ) );
+	$ajoute( 'lae_adresse', array( 'label' => 'Adresse', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 	$ajoute( 'lae_horaires', array( 'label' => 'Horaires', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne', 'description' => 'Une ligne par créneau.' ) );
 	$ajoute( 'lae_siret', array( 'label' => 'Mention légale de pied de page', 'section' => 'lae_coordonnees', 'description' => 'Exemple : SIRET, numéro d\'assurance décennale. Affiché tel quel.' ) );
 	$ajoute( 'lae_url_contact', array( 'label' => 'URL de la page contact', 'section' => 'lae_coordonnees', 'sanitize' => 'esc_url_raw', 'description' => 'Vide = la page dont l\'adresse se termine par /contact est utilisée automatiquement.' ) );
@@ -100,13 +101,13 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'panel' => $panneau,
 	) );
 
-	$ajoute( 'lae_hero_surtitre', array( 'default' => "Élagage · Abattage · Création de jardin", 'label' => 'Surtitre', 'section' => 'lae_hero' ) );
-	$ajoute( 'lae_hero_titre', array( 'default' => "Un arbre trop grand, trop près, *trop vieux ?*", 'label' => 'Titre', 'section' => 'lae_hero', 'description' => 'Vide = le nom du site est utilisé.' ) );
-	$ajoute( 'lae_hero_chapo', array( 'default' => "On monte, on regarde, et on vous dit ce qu'il faut faire : tailler, haubaner ou abattre. Élagage en grimpe, démontage par câble, création et entretien de jardin.", 'label' => 'Texte d\'introduction', 'section' => 'lae_hero', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_hero_surtitre', array( 'label' => 'Surtitre', 'section' => 'lae_hero' ) );
+	$ajoute( 'lae_hero_titre', array( 'label' => 'Titre', 'section' => 'lae_hero', 'description' => 'Vide = le nom du site est utilisé.' ) );
+	$ajoute( 'lae_hero_chapo', array( 'label' => 'Texte d\'introduction', 'section' => 'lae_hero', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 	$ajoute( 'lae_hero_image', array( 'label' => 'Photo de fond', 'section' => 'lae_hero', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Format paysage, 1920 px de large minimum. Sans photo, un fond vert dégradé est utilisé.' ) );
 	$ajoute( 'lae_hero_btn2_texte', array( 'label' => 'Bouton secondaire — libellé', 'section' => 'lae_hero' ) );
 	$ajoute( 'lae_hero_btn2_url', array( 'label' => 'Bouton secondaire — lien', 'section' => 'lae_hero', 'sanitize' => 'esc_url_raw' ) );
-	$ajoute( 'lae_hero_points', array( 'default' => "Diagnostic sur place avant le devis\nDémontage par câble là où l'abattage direct est impossible\nDéchets verts évacués ou broyés sur place",
+	$ajoute( 'lae_hero_points', array(
 		'label'       => 'Points forts',
 		'section'     => 'lae_hero',
 		'type'        => 'textarea',
@@ -136,9 +137,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'description' => 'Les prestations se saisissent dans le menu « Prestations » de l\'administration.',
 	) );
 
-	$ajoute( 'lae_prestations_surtitre', array( 'label' => 'Surtitre', 'section' => 'lae_prestations_home', 'default' => "Nos prestations" ) );
-	$ajoute( 'lae_prestations_titre', array( 'label' => 'Titre', 'section' => 'lae_prestations_home', 'default' => "Tout ce qu'on fait *sur un terrain*" ) );
-	$ajoute( 'lae_prestations_chapo', array( 'default' => "Chaque prestation a sa fiche : ce qu'elle comprend, comment on procède, et ce qu'on laisse derrière nous.", 'label' => 'Texte d\'introduction', 'section' => 'lae_prestations_home', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_prestations_surtitre', array( 'label' => 'Surtitre', 'section' => 'lae_prestations_home' ) );
+	$ajoute( 'lae_prestations_titre', array( 'label' => 'Titre', 'section' => 'lae_prestations_home' ) );
+	$ajoute( 'lae_prestations_chapo', array( 'label' => 'Texte d\'introduction', 'section' => 'lae_prestations_home', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
 	// ── Accueil : déroulé d'un chantier ─────────────────────────────────
 	$wp_customize->add_section( 'lae_etapes', array(
@@ -147,7 +148,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'description' => 'Une ligne par étape, au format : Titre | Description',
 	) );
 
-	$ajoute( 'lae_etapes_titre', array( 'label' => 'Titre de la section', 'section' => 'lae_etapes', 'default' => 'Comment ça se passe' ) );
+	$ajoute( 'lae_etapes_titre', array( 'label' => 'Titre de la section', 'section' => 'lae_etapes' ) );
 	$ajoute( 'lae_etapes_items', array( 'label' => 'Étapes', 'section' => 'lae_etapes', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
 	// ── Accueil : réalisations ──────────────────────────────────────────
@@ -157,8 +158,8 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'description' => 'Les chantiers se saisissent dans le menu « Réalisations ».',
 	) );
 
-	$ajoute( 'lae_realisations_titre', array( 'label' => 'Titre', 'section' => 'lae_realisations_home', 'default' => "Des chantiers, *pas des images d'agence*" ) );
-	$ajoute( 'lae_realisations_chapo', array( 'default' => "Ce qu'il y avait, ce qu'on a fait, ce qu'il en reste. Photos prises sur place.", 'label' => 'Texte d\'introduction', 'section' => 'lae_realisations_home', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_realisations_titre', array( 'label' => 'Titre', 'section' => 'lae_realisations_home' ) );
+	$ajoute( 'lae_realisations_chapo', array( 'label' => 'Texte d\'introduction', 'section' => 'lae_realisations_home', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
 	// ── Zone d'intervention ─────────────────────────────────────────────
 	$wp_customize->add_section( 'lae_zone', array(
@@ -166,9 +167,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'panel' => $panneau,
 	) );
 
-	$ajoute( 'lae_zone_titre', array( 'label' => 'Titre', 'section' => 'lae_zone', 'default' => 'Zone d\'intervention' ) );
-	$ajoute( 'lae_zone_texte', array( 'default' => "Basé à Vertou, au sud-est de Nantes. On se déplace sur le secteur pour voir l'arbre ou le terrain avant tout devis — dites-nous où vous êtes.", 'label' => 'Texte', 'section' => 'lae_zone', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
-	$ajoute( 'lae_zone_communes', array( 'default' => "Vertou", 'label' => 'Communes', 'section' => 'lae_zone', 'description' => 'Séparées par des virgules.' ) );
+	$ajoute( 'lae_zone_titre', array( 'label' => 'Titre', 'section' => 'lae_zone' ) );
+	$ajoute( 'lae_zone_texte', array( 'label' => 'Texte', 'section' => 'lae_zone', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_zone_communes', array( 'label' => 'Communes', 'section' => 'lae_zone', 'description' => 'Séparées par des virgules.' ) );
 
 	// ── Bande d'appel ───────────────────────────────────────────────────
 	$wp_customize->add_section( 'lae_appel', array(
@@ -176,9 +177,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'panel' => $panneau,
 	) );
 
-	$ajoute( 'lae_appel_titre', array( 'label' => 'Titre', 'section' => 'lae_appel', 'default' => "On vient voir *votre arbre*" ) );
-	$ajoute( 'lae_appel_texte', array( 'default' => "Un appel, une visite sur place, un devis écrit. La suite vous appartient.", 'label' => 'Texte', 'section' => 'lae_appel', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
-	$ajoute( 'lae_appel_btn_texte', array( 'label' => 'Libellé du bouton', 'section' => 'lae_appel', 'default' => "Demander mon devis" ) );
+	$ajoute( 'lae_appel_titre', array( 'label' => 'Titre', 'section' => 'lae_appel' ) );
+	$ajoute( 'lae_appel_texte', array( 'label' => 'Texte', 'section' => 'lae_appel', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_appel_btn_texte', array( 'label' => 'Libellé du bouton', 'section' => 'lae_appel' ) );
 
 	$wp_customize->add_setting( 'lae_appel_partout', array(
 		'default'           => true,
@@ -210,7 +211,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'section'     => 'lae_cine',
 		'type'        => 'textarea',
 		'sanitize'    => 'lae_sanitize_multiligne',
-		'default'     => "Élagage\nAbattage\nCréation de jardin",
+
 		'description' => 'Un mot ou une expression par ligne. Le bandeau accélère avec le défilement.',
 	) );
 	$ajoute( 'lae_cine_colonne_image', array(
@@ -223,11 +224,11 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute( 'lae_cine_matiere_image', array( 'label' => 'Matière de fond (bois, écorce, feuillage)', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Utilisée derrière le bandeau et derrière les prestations phares.' ) );
 
 	$ajoute( 'lae_cine_tab_image', array( 'label' => 'Grande image épinglée', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Format paysage. Elle respire lentement pendant qu\'on la traverse.' ) );
-	$ajoute( 'lae_cine_tab_surtitre', array( 'default' => "De la cime aux racines", 'label' => 'Image épinglée — surtitre', 'section' => 'lae_cine' ) );
-	$ajoute( 'lae_cine_tab_titre', array( 'label' => 'Image épinglée — titre', 'section' => 'lae_cine', 'default' => "Un arbre, ça se lit *avant de se couper*", 'description' => 'Le texte entre *astérisques* est mis en italique et en couleur.' ) );
-	$ajoute( 'lae_cine_tab_texte', array( 'default' => "Un houppier déséquilibré, une fourche à écorce incluse, un collet enterré : ce qui décide d'une taille ou d'un abattage se voit d'en haut et se vérifie en bas. Le premier travail, c'est de regarder.", 'label' => 'Image épinglée — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_cine_tab_surtitre', array( 'label' => 'Image épinglée — surtitre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_tab_titre', array( 'label' => 'Image épinglée — titre', 'section' => 'lae_cine', 'description' => 'Le texte entre *astérisques* est mis en italique et en couleur.' ) );
+	$ajoute( 'lae_cine_tab_texte', array( 'label' => 'Image épinglée — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
-	$ajoute( 'lae_cine_chapitres', array( 'default' => "La cime — *l'élagage en grimpe* | Taille douce, éclaircie, réduction de couronne, haubanage. On travaille à la corde là où la nacelle ne passe pas, et on respecte la physiologie de l'arbre : ni étêtage, ni plaie ouverte laissée telle quelle. | Taille douce, Éclaircie, Haubanage\nLe tronc — *l'abattage maîtrisé* | Abattage direct quand la place le permet, démontage par câble quand elle ne le permet pas : arbre en limite de propriété, au-dessus d'une toiture, coincé entre deux murs. On sécurise, puis on descend pièce par pièce. | Démontage, Rétention, Sécurisation\nLes racines — *le jardin qui tient* | Création, plantation, engazonnement, massifs, et l'entretien qui va avec. Un jardin se dessine pour durer : les essences sont choisies pour le sol et l'exposition, pas pour la photo du premier printemps. | Création, Plantation, Entretien",
+	$ajoute( 'lae_cine_chapitres', array(
 		'label'       => 'Chapitres',
 		'section'     => 'lae_cine',
 		'type'        => 'textarea',
@@ -240,27 +241,27 @@ add_action( 'customize_register', function ( $wp_customize ) {
 
 	$ajoute( 'lae_cine_scene_image', array( 'label' => 'Scène — image qui se dissout', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Elle part en poussière de feuilles au fil du défilement.' ) );
 	$ajoute( 'lae_cine_main_image', array( 'label' => 'Scène — la main', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Une main ouverte (terre, feuilles, jeune pousse) : les prestations en sortent.' ) );
-	$ajoute( 'lae_cine_scene_titre', array( 'label' => 'Scène — titre', 'section' => 'lae_cine', 'default' => "Ce qui tient un arbre *ne se voit pas d'en bas*" ) );
-	$ajoute( 'lae_cine_scene_texte', array( 'default' => "Le système racinaire fait la moitié de l'arbre. C'est lui qui décide si on taille, si on haubane, ou s'il faut abattre.", 'label' => 'Scène — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_cine_scene_titre', array( 'label' => 'Scène — titre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_scene_texte', array( 'label' => 'Scène — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
-	$ajoute( 'lae_cine_phares_surtitre', array( 'label' => 'Prestations phares — surtitre', 'section' => 'lae_cine', 'default' => "Nos trois métiers" ) );
-	$ajoute( 'lae_cine_phares_titre', array( 'label' => 'Prestations phares — titre', 'section' => 'lae_cine', 'default' => "Un grimpeur, un abatteur, *un jardinier*" ) );
-	$ajoute( 'lae_cine_phares_chapo', array( 'default' => "La même personne du premier appel au dernier passage. Vous ne racontez pas deux fois votre chantier.", 'label' => 'Prestations phares — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
-	$ajoute( 'lae_cine_phares_note', array( 'default' => "Arbre remarquable, accès impossible, urgence après tempête : ça se regarde sur place", 'label' => 'Prestations phares — note sous les cartes', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_phares_surtitre', array( 'label' => 'Prestations phares — surtitre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_phares_titre', array( 'label' => 'Prestations phares — titre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_phares_chapo', array( 'label' => 'Prestations phares — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_cine_phares_note', array( 'label' => 'Prestations phares — note sous les cartes', 'section' => 'lae_cine' ) );
 
-	$ajoute( 'lae_cine_avis', array( 'default' => "Djessy Azs | Je recommande travail efficace et de qualité. À l'écoute de nôtres demande de bon conseil personnalisé. Nous sommes très satisfaits de son travail et nous recommandions vivement son service ! | Mai 2025",
+	$ajoute( 'lae_cine_avis', array(
 		'label'       => 'Avis (réels uniquement)',
 		'section'     => 'lae_cine',
 		'type'        => 'textarea',
 		'sanitize'    => 'lae_sanitize_multiligne',
 		'description' => 'Une ligne par avis : Nom | Texte de l\'avis | Date. À recopier depuis de VRAIS avis Google. Champ vide = aucune section d\'avis : mieux vaut rien qu\'un témoignage inventé.',
 	) );
-	$ajoute( 'lae_cine_avis_url', array( 'default' => "https://www.google.com/maps/place/?q=place_id:ChIJd15eFR_nBUgRqwOuCR9Hlrs", 'label' => 'Avis — lien vers la fiche Google', 'section' => 'lae_cine', 'sanitize' => 'esc_url_raw' ) );
-	$ajoute( 'lae_cine_avis_note', array( 'default' => "5,0", 'label' => 'Avis — note affichée', 'section' => 'lae_cine', 'description' => 'Exemple : 4,8. Laisser vide si la fiche n\'a pas encore de note.' ) );
-	$ajoute( 'lae_cine_avis_total', array( 'default' => "1", 'label' => 'Avis — nombre d\'avis', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_avis_url', array( 'label' => 'Avis — lien vers la fiche Google', 'section' => 'lae_cine', 'sanitize' => 'esc_url_raw' ) );
+	$ajoute( 'lae_cine_avis_note', array( 'label' => 'Avis — note affichée', 'section' => 'lae_cine', 'description' => 'Exemple : 4,8. Laisser vide si la fiche n\'a pas encore de note.' ) );
+	$ajoute( 'lae_cine_avis_total', array( 'label' => 'Avis — nombre d\'avis', 'section' => 'lae_cine' ) );
 
 	$ajoute( 'lae_cine_arbre_image', array( 'label' => 'Révélation — image ronde', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Un arbre, un chantier fini, une équipe : l\'image qui apparaît en gros plan avant l\'appel.' ) );
-	$ajoute( 'lae_cine_arbre_surtitre', array( 'default' => "Devis", 'label' => 'Révélation — surtitre', 'section' => 'lae_cine' ) );
-	$ajoute( 'lae_cine_arbre_titre', array( 'label' => 'Révélation — titre', 'section' => 'lae_cine', 'default' => "Dites-nous *ce qui vous inquiète*" ) );
-	$ajoute( 'lae_cine_arbre_texte', array( 'default' => "Une branche au-dessus du toit, un arbre qui penche depuis la tempête, un jardin à reprendre entièrement. On se déplace, on regarde, et vous repartez avec un devis écrit.", 'label' => 'Révélation — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_cine_arbre_surtitre', array( 'label' => 'Révélation — surtitre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_arbre_titre', array( 'label' => 'Révélation — titre', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_arbre_texte', array( 'label' => 'Révélation — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 }, 20 );

@@ -74,7 +74,12 @@ if ( ! function_exists( 'lae_icones_disponibles' ) ) {
  * @param string $defaut Valeur par défaut.
  */
 if ( ! function_exists( 'lae_reglage' ) ) {
-	function lae_reglage( $cle, $defaut = '' ) {
+	function lae_reglage( $cle, $defaut = null ) {
+		// WordPress n'utilise pas le 'default' d'add_setting() comme repli de
+		// get_theme_mod() : on passe explicitement la valeur livrée.
+		if ( null === $defaut ) {
+			$defaut = lae_defaut( $cle );
+		}
 		$valeur = get_theme_mod( 'lae_' . $cle, $defaut );
 		return is_string( $valeur ) ? trim( $valeur ) : $valeur;
 	}

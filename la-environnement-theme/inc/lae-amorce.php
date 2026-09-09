@@ -170,8 +170,43 @@ if ( ! function_exists( 'lae_amorce_pages' ) ) {
  * Crée les pages, l'accueil statique et les trois menus.
  * Comme les prestations : une seule fois, et jamais par-dessus l'existant.
  */
+/**
+ * Nom du site et slogan.
+ *
+ * Hostinger installe WordPress avec le nom de domaine comme titre
+ * (« elagage-vertou.fr ») : on le remplace, mais uniquement si le client n'a
+ * pas déjà choisi le sien.
+ */
+if ( ! function_exists( 'lae_amorce_identite' ) ) {
+	function lae_amorce_identite() {
+
+		$titre = trim( (string) get_option( 'blogname' ) );
+		$hote  = preg_replace( '#^www\.#', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+
+		$generique = (
+			'' === $titre
+			|| 0 === strcasecmp( $titre, $hote )
+			|| 0 === strcasecmp( $titre, 'Mon site WordPress' )
+			|| 0 === strcasecmp( $titre, 'Un site utilisant WordPress' )
+			|| 0 === strcasecmp( $titre, 'My WordPress Site' )
+			|| 0 === strcasecmp( $titre, 'Just another WordPress site' )
+		);
+
+		if ( $generique ) {
+			update_option( 'blogname', 'L.A Environnement' );
+		}
+
+		$slogan = trim( (string) get_option( 'blogdescription' ) );
+		if ( '' === $slogan || 0 === strcasecmp( $slogan, 'Un site utilisant WordPress' ) || 0 === strcasecmp( $slogan, 'Just another WordPress site' ) ) {
+			update_option( 'blogdescription', lae_defaut( 'baseline' ) );
+		}
+	}
+}
+
 if ( ! function_exists( 'lae_amorce_structure' ) ) {
 	function lae_amorce_structure() {
+
+		lae_amorce_identite();
 
 		$ids = array();
 		foreach ( lae_amorce_pages() as $slug => $page ) {
@@ -281,7 +316,18 @@ add_action( 'after_switch_theme', 'lae_amorce_contenu' );
    Le premier chargement d'une page d'administration rattrape l'amorce — une
    seule fois, l'option posée juste avant fait office de verrou. */
 add_action( 'admin_init', function () {
-	if ( ! get_option( 'lae_amorce_faite' ) && current_user_can( 'manage_options' ) ) {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	if ( ! get_option( 'lae_amorce_faite' ) ) {
 		lae_amorce_contenu();
+	}
+
+	/* Verrou distinct : sur un site déjà amorcé, le titre livré par
+	   l'hébergeur (le nom de domaine) n'avait jamais été corrigé. */
+	if ( ! get_option( 'lae_identite_faite' ) ) {
+		update_option( 'lae_identite_faite', 1, false );
+		lae_amorce_identite();
 	}
 } );
