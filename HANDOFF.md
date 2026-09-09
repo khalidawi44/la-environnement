@@ -22,9 +22,13 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
 - **La colonne (v1.3.0)** — le décor unique de l'accueil : une vidéo qui
   occupe tout l'écran derrière TOUTE la page, et un arbre haut de plusieurs
   écrans que l'on descend en défilant (cime en haut de page, racines en bas).
-  L'arbre livré est un dessin vectoriel du thème
-  (`assets/images/arbre-colonne.svg`) ; une photo verticale le remplace depuis
-  le personnalisateur (« Arbre en colonne »).
+  L'arbre livré est un **rendu 3D** (Blender / Cycles, 1200 x 6000 px, fond
+  transparent) : `assets/images/arbre-colonne.webp`, 463 Ko. Le script qui le
+  produit est versionné dans `outils/arbre-blender.py` — il se rejoue avec
+  `blender -b -noaudio --python outils/arbre-blender.py`, ce qui permet de
+  regénérer l'arbre (autre essence, autre saison) sans repartir de zéro.
+  Une photo verticale le remplace depuis le personnalisateur (« Arbre en
+  colonne »).
 - **Le site est livré rempli** : `inc/lae-amorce.php` crée à la première
   activation les 3 familles, les 6 prestations du métier avec leurs textes,
   les pages (Accueil, Notre façon de travailler, Contact, Mentions légales),

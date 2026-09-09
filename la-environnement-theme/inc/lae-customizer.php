@@ -218,7 +218,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'section'     => 'lae_cine',
 		'type'        => 'image',
 		'sanitize'    => 'esc_url_raw',
-		'description' => 'La photo que l\'on descend en défilant : cime en haut, racines en bas. Très haute et étroite (au moins 1200 × 6000 px). Sans photo, le thème utilise son propre dessin d\'arbre.',
+		'description' => 'La photo que l\'on descend en défilant : cime en haut, racines en bas. Très haute et étroite (au moins 1200 × 6000 px). Sans photo, le thème utilise son rendu 3D livré (1200 x 6000, fond transparent).',
 	) );
 	$ajoute( 'lae_cine_matiere_image', array( 'label' => 'Matière de fond (bois, écorce, feuillage)', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Utilisée derrière le bandeau et derrière les prestations phares.' ) );
 

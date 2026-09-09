@@ -531,7 +531,9 @@ $lae_contact    = lae_url_contact();
   .card__media--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8));display:grid;place-items:center}
   .card__glyphe{color:var(--feuille-hi);opacity:.85}
   .card__glyphe svg{width:44px;height:44px}
-  .ch__media--nu{background:linear-gradient(150deg,rgba(18,48,30,.55),rgba(4,20,12,.75))}
+  /* Chapitre sans photo : une seule colonne, le texte se pose sur l'arbre. */
+  .ch--nu{grid-template-columns:1fr;max-width:640px}
+  .ch--nu:nth-child(even){margin-left:auto}
   .rz__vue--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8))}
   .pack--nu .pack__txt{display:block}
   /* Le nom colle à son icône : la règle d'Alliance Groupe écartait les deux
@@ -562,7 +564,7 @@ $lae_contact    = lae_url_contact();
   .lae-colonne{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--ink)}
   .lae-colonne__video{position:absolute;inset:0}
   .lae-colonne__video video,.lae-colonne__video img{width:100%;height:100%;object-fit:cover}
-  .lae-colonne__arbre{position:absolute;left:50%;top:0;width:min(128vw,1450px);
+  .lae-colonne__arbre{position:absolute;left:50%;top:0;width:min(64vw,760px);
     transform:translate3d(-50%,0,0);opacity:.85;will-change:transform;
     filter:drop-shadow(0 0 60px rgba(47,125,79,.35))}
   .lae-colonne__arbre img{width:100%;height:auto}
@@ -571,7 +573,7 @@ $lae_contact    = lae_url_contact();
   .lae-colonne__voile{position:absolute;inset:0;
     background:radial-gradient(130% 80% at 50% 30%,rgba(4,20,12,.1),rgba(4,20,12,.5) 70%,rgba(4,20,12,.72)),
                linear-gradient(180deg,rgba(4,20,12,.42),rgba(4,20,12,.12) 40%,rgba(4,20,12,.5))}
-  @media(max-width:960px){.lae-colonne__arbre{width:200vw;opacity:.7}}
+  @media(max-width:960px){.lae-colonne__arbre{width:118vw;opacity:.72}}
 
   /* Les fonds pleins des scènes deviennent des voiles : sans cela la colonne
      serait masquée précisément là où la descente doit se sentir. */
@@ -603,7 +605,7 @@ document.documentElement.classList.add('js-cine');
 $lae_col_video = lae_reglage( 'cine_video' );
 $lae_col_arbre = lae_reglage( 'cine_colonne_image' );
 if ( '' === $lae_col_arbre ) {
-    $lae_col_arbre = $dir . '/assets/images/arbre-colonne.svg';
+	$lae_col_arbre = $dir . '/assets/images/arbre-colonne.webp';
 }
 ?>
 <div class="lae-colonne" aria-hidden="true">
@@ -615,7 +617,7 @@ if ( '' === $lae_col_arbre ) {
     <div class="lae-colonne__video"><?php echo lae_img( $lae_hero_post, '', array( 'loading' => '' ) ); ?></div>
   <?php endif; ?>
 
-  <div class="lae-colonne__arbre"><img src="<?php echo esc_url( $lae_col_arbre ); ?>" alt="" decoding="async"></div>
+  <div class="lae-colonne__arbre"><img src="<?php echo esc_url( $lae_col_arbre ); ?>" alt="" width="1200" height="6000" decoding="async" fetchpriority="low"></div>
   <div class="lae-colonne__voile"></div>
 </div>
 
@@ -721,7 +723,7 @@ if ( $lae_chs ) : ?>
     list( $lae_t, $lae_p, $lae_meta ) = lae_morceaux( $lae_ligne, 3 );
     $lae_ch_img = lae_reglage( 'cine_ch' . ( $lae_i + 1 ) . '_image' );
     ?>
-    <article class="ch">
+    <article class="ch<?php echo $lae_ch_img ? '' : ' ch--nu'; ?>">
       <div class="ch__txt">
         <div class="ch__n" data-rv><?php echo esc_html( sprintf( '%02d', $lae_i + 1 ) ); ?></div>
         <h3 class="ch__t" data-mots><?php echo lae_titre_em( $lae_t ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
@@ -734,7 +736,9 @@ if ( $lae_chs ) : ?>
           </div>
         <?php endif; ?>
       </div>
-      <div class="ch__media<?php echo $lae_ch_img ? '' : ' ch__media--nu'; ?>" data-media><?php echo lae_img( $lae_ch_img, '' ); ?></div>
+      <?php if ( $lae_ch_img ) : ?>
+        <div class="ch__media" data-media><?php echo lae_img( $lae_ch_img, '' ); ?></div>
+      <?php endif; ?>
     </article>
   <?php endforeach; ?>
 </section>
