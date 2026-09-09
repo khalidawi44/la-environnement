@@ -95,10 +95,11 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
 - Note : **5,0 sur 1 avis** (un seul, réel, de Djessy Azs, mai 2025, avec
   réponse du propriétaire). Recopié dans le thème.
 - Pas d'adresse publiée sur la fiche (établissement sans vitrine).
-- Le point de la fiche est situé en **Vendée** (46,754 / -1,470), alors que le
-  site Alliance Groupe présente L.A Environnement comme « Paysagiste ·
-  Loire-Atlantique ». **À trancher avec le client** : c'est la zone
-  d'intervention et tout le référencement local qui en dépendent.
+- **Le point de la fiche Google est faux.** Il est en Vendée (46,754 / -1,470),
+  alors que l'enregistrement du domaine donne l'entreprise à **Vertou (44120),
+  Loire-Atlantique** — environ 80 km plus au nord. C'est un problème de
+  référencement local sérieux : Google place l'entreprise loin de sa zone.
+  À corriger sur la fiche, c'est prioritaire.
 - 4 photos du propriétaire + 1 vidéo de 29 s. **Deux seulement sont
   exploitables** et sont intégrées au thème (`jardin-piscine.webp`,
   `pelouse-haie.webp`). Les deux autres n'ont rien à faire là :
@@ -110,6 +111,36 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
   l'ancien site est perdu, son contenu n'est pas récupérable. Il faut donc une
   nouvelle adresse — un sous-domaine d'alliancegroupe-inc.com est gratuit et
   disponible tout de suite.
+
+## Identité de l'entreprise (enregistrement du domaine, Webador/Openprovider)
+
+- Raison sociale : **L A environnement**
+- Contact : **Anthony Lamarque**
+- Adresse déclarée : 554 route de Clisson, **44120 Vertou**, France.
+  **Non publiée sur le site** : la fiche Google du client n'en publie pas non
+  plus, c'est visiblement son choix. Seule la commune apparaît, ce qui suffit
+  au référencement local. À rediscuter avec lui s'il veut l'afficher.
+- Téléphone : +33 7 59 79 03 96 (cohérent avec la fiche Google)
+- E-mail : **paysagisteenvironnement@gmail.com** — renseigné dans le thème,
+  c'est lui qui reçoit les demandes du formulaire de contact.
+
+## Le nom de domaine n'est PAS perdu
+
+- `paysagiste-environnement.com` est enregistré du **06/04/2025 au 06/04/2027**.
+  Il est payé, il est à jour.
+- Serveurs de noms actuels : `ns1.openprovider.nl`, `ns2.openprovider.be`,
+  `ns3.openprovider.eu` (registrar d'arrière-plan de Webador).
+- Le mail Webador indique le lien pour les modifier :
+  `webador.fr/v2/redirect-website/subscription/domains`
+- **Il suffit donc de basculer les serveurs de noms vers Hostinger** pour que le
+  WordPress déjà en place réponde sur le vrai domaine. Le sous-domaine
+  `la-environnement.alliancegroupe-inc.com` n'est plus nécessaire que comme
+  solution de repli.
+- Relever les serveurs de noms exacts dans hPanel (site → « Continuer la
+  configuration » / connecter un domaine) plutôt que de les supposer.
+- Effet de bord à connaître : l'ancien site Webador, déjà hors ligne, ne
+  reviendra pas. Aucune adresse e-mail du domaine n'est en jeu — le client
+  utilise une adresse Gmail.
 
 ## Reste à faire côté contenu (bloquant)
 

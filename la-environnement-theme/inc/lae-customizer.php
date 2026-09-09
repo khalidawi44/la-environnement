@@ -88,8 +88,8 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	) );
 
 	$ajoute( 'lae_telephone', array( 'default' => "07 59 79 03 96", 'label' => 'Téléphone', 'section' => 'lae_coordonnees' ) );
-	$ajoute( 'lae_email', array( 'label' => 'E-mail', 'section' => 'lae_coordonnees', 'sanitize' => 'sanitize_email' ) );
-	$ajoute( 'lae_adresse', array( 'label' => 'Adresse', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_email', array( 'default' => "paysagisteenvironnement@gmail.com", 'label' => 'E-mail', 'section' => 'lae_coordonnees', 'sanitize' => 'sanitize_email' ) );
+	$ajoute( 'lae_adresse', array( 'default' => "Vertou (44)", 'label' => 'Adresse', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 	$ajoute( 'lae_horaires', array( 'label' => 'Horaires', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne', 'description' => 'Une ligne par créneau.' ) );
 	$ajoute( 'lae_siret', array( 'label' => 'Mention légale de pied de page', 'section' => 'lae_coordonnees', 'description' => 'Exemple : SIRET, numéro d\'assurance décennale. Affiché tel quel.' ) );
 	$ajoute( 'lae_url_contact', array( 'label' => 'URL de la page contact', 'section' => 'lae_coordonnees', 'sanitize' => 'esc_url_raw', 'description' => 'Vide = la page dont l\'adresse se termine par /contact est utilisée automatiquement.' ) );
@@ -167,8 +167,8 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	) );
 
 	$ajoute( 'lae_zone_titre', array( 'label' => 'Titre', 'section' => 'lae_zone', 'default' => 'Zone d\'intervention' ) );
-	$ajoute( 'lae_zone_texte', array( 'label' => 'Texte', 'section' => 'lae_zone', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
-	$ajoute( 'lae_zone_communes', array( 'label' => 'Communes', 'section' => 'lae_zone', 'description' => 'Séparées par des virgules.' ) );
+	$ajoute( 'lae_zone_texte', array( 'default' => "Basé à Vertou, au sud-est de Nantes. On se déplace sur le secteur pour voir l'arbre ou le terrain avant tout devis — dites-nous où vous êtes.", 'label' => 'Texte', 'section' => 'lae_zone', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_zone_communes', array( 'default' => "Vertou", 'label' => 'Communes', 'section' => 'lae_zone', 'description' => 'Séparées par des virgules.' ) );
 
 	// ── Bande d'appel ───────────────────────────────────────────────────
 	$wp_customize->add_section( 'lae_appel', array(
