@@ -145,6 +145,27 @@ faite, le thème s'y dépose (ZIP ou synchronisation GitHub).
 Penser ensuite à **changer l'adresse du site sur la fiche Google** du client :
 elle pointe encore sur `paysagiste-environnement.com`, qui est mort.
 
+## Fabriquer le ZIP du thème — piège à éviter
+
+L'archive doit contenir **un seul dossier à la racine** : `la-environnement-theme/`,
+avec `style.css` à sa racine à lui.
+
+```
+zip -qr la-environnement-theme-X.Y.Z.zip la-environnement-theme
+```
+
+Ne JAMAIS y ajouter `outils/` ni quoi que ce soit d'autre au même niveau. Avec
+deux dossiers à la racine, WordPress ne sait pas lequel est le thème et affiche
+« Aucune feuille de style n'a été trouvée » — un message trompeur qui envoie
+chercher le problème dans le thème alors qu'il est dans l'emballage. L'erreur a
+été commise de la v1.5.0 à la v1.8.0 ; corrigée le 09/09/2026.
+
+Vérification en une ligne avant d'envoyer :
+
+```
+unzip -l le.zip | awk 'NR>3{print $4}' | cut -d/ -f1 | sort -u   # doit afficher UNE seule ligne
+```
+
 ## Le nom de domaine du client est inutilisable
 
 - `paysagiste-environnement.com` est enregistré du **06/04/2025 au 06/04/2027**.
