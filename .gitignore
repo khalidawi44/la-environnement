@@ -119,3 +119,6 @@ __pycache__/
 
 # Dossier local prive (jamais publie)
 _local-prive/
+
+# Paquets de thème générés : ils se reconstruisent, ils n'ont rien à faire ici.
+*.zip
