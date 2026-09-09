@@ -201,7 +201,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'label'       => 'Vidéo de fond (URL)',
 		'section'     => 'lae_cine',
 		'sanitize'    => 'esc_url_raw',
-		'description' => 'MP4 court, sans son, en boucle. Elle occupe tout l\'écran derrière TOUTE la page, pas seulement le bandeau. Coller l\'URL du fichier depuis la médiathèque.',
+		'description' => 'MP4 court, sans son, en boucle. Elle occupe tout l\'écran derrière TOUTE la page, pas seulement le bandeau. Laisser vide utilise la boucle de canopée livrée avec le thème ; coller l\'URL d\'un fichier de la médiathèque pour la remplacer.',
 	) );
 	$ajoute( 'lae_cine_poster', array( 'label' => 'Affiche de la vidéo', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Image montrée le temps que la vidéo démarre.' ) );
 

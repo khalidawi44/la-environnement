@@ -19,6 +19,12 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
 
 ## État actuel
 
+- **La vidéo de fond est livrée** : `assets/video/canopee.mp4` (536 Ko, 5 s,
+  bouclable) — une canopée vue d'en bas, agitée par le vent, rendue avec
+  Blender (`outils/canopee-blender.py`). Trois houppiers à des profondeurs
+  différentes pour la parallaxe, mouvement en sinusoïdes qui bouclent, étalonnage
+  vert sombre à l'encodage. Le réglage « Vidéo de fond » du personnalisateur la
+  remplace ; laissé vide, c'est elle qui tourne.
 - **La colonne (v1.3.0)** — le décor unique de l'accueil : une vidéo qui
   occupe tout l'écran derrière TOUTE la page, et un arbre haut de plusieurs
   écrans que l'on descend en défilant (cime en haut de page, racines en bas).
@@ -85,7 +91,7 @@ Le design est en place, **le contenu réel manque** :
 4. **Photos de chantier** — la section Réalisations ne vaut que par elles.
 4 bis. **Mentions légales** : la page est créée mais VIDE de contenu réel
    (SIRET, hébergeur, assurance). Obligatoire avant mise en ligne.
-5. **Médias de l'accueil cinématique** : la vidéo du bandeau, la grande image
+5. **Médias de l'accueil cinématique** : la grande image
    épinglée, les trois images de chapitre, l'image qui se dissout, la main
    ouverte, l'image ronde de la révélation. Sans elles la scène tourne, mais
    sur des dégradés.

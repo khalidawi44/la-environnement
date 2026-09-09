@@ -562,7 +562,9 @@ $lae_contact    = lae_url_contact();
      de page, racines en bas. Tout le reste passe par-dessus.
      ========================================================== */
   .lae-colonne{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--ink)}
-  .lae-colonne__video{position:absolute;inset:0}
+  /* La vidéo passe sous l'arbre et sous le texte : elle donne le mouvement,
+     jamais le premier plan. Sans cette retenue, plus rien ne se lit. */
+  .lae-colonne__video{position:absolute;inset:0;opacity:.5}
   .lae-colonne__video video,.lae-colonne__video img{width:100%;height:100%;object-fit:cover}
   .lae-colonne__arbre{position:absolute;left:50%;top:0;width:min(64vw,760px);
     transform:translate3d(-50%,0,0);opacity:.85;will-change:transform;
@@ -571,8 +573,8 @@ $lae_contact    = lae_url_contact();
   /* Assez de voile pour que le texte reste lisible, assez peu pour que l'arbre
      se voie : c'est lui qui porte la descente. */
   .lae-colonne__voile{position:absolute;inset:0;
-    background:radial-gradient(130% 80% at 50% 30%,rgba(4,20,12,.1),rgba(4,20,12,.5) 70%,rgba(4,20,12,.72)),
-               linear-gradient(180deg,rgba(4,20,12,.42),rgba(4,20,12,.12) 40%,rgba(4,20,12,.5))}
+    background:radial-gradient(130% 80% at 50% 30%,rgba(4,20,12,.3),rgba(4,20,12,.66) 70%,rgba(4,20,12,.84)),
+               linear-gradient(180deg,rgba(4,20,12,.58),rgba(4,20,12,.3) 40%,rgba(4,20,12,.66))}
   @media(max-width:960px){.lae-colonne__arbre{width:118vw;opacity:.72}}
 
   /* Les fonds pleins des scènes deviennent des voiles : sans cela la colonne
@@ -603,6 +605,10 @@ document.documentElement.classList.add('js-cine');
    un dessin vectoriel du thème ; une photo d'arbre en colonne le remplace dès
    qu'elle est déposée dans le personnalisateur. */
 $lae_col_video = lae_reglage( 'cine_video' );
+if ( '' === $lae_col_video && file_exists( get_template_directory() . '/assets/video/canopee.mp4' ) ) {
+	// Boucle livrée avec le thème : le site bouge dès l'installation.
+	$lae_col_video = $dir . '/assets/video/canopee.mp4';
+}
 $lae_col_arbre = lae_reglage( 'cine_colonne_image' );
 if ( '' === $lae_col_arbre ) {
 	$lae_col_arbre = $dir . '/assets/images/arbre-colonne.webp';

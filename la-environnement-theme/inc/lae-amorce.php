@@ -206,7 +206,7 @@ if ( ! function_exists( 'lae_amorce_structure' ) ) {
 					array( 'page', 'accueil', 'Accueil' ),
 					array( 'archive', 'lae_prestation', 'Prestations' ),
 					array( 'archive', 'lae_realisation', 'Réalisations' ),
-					array( 'page', 'a-propos', 'Notre façon de travailler' ),
+					array( 'page', 'a-propos', 'Notre méthode' ),
 					array( 'page', 'contact', 'Contact' ),
 				),
 			),
@@ -215,7 +215,7 @@ if ( ! function_exists( 'lae_amorce_structure' ) ) {
 				'entrees' => array(
 					array( 'archive', 'lae_prestation', 'Prestations' ),
 					array( 'archive', 'lae_realisation', 'Réalisations' ),
-					array( 'page', 'a-propos', 'Notre façon de travailler' ),
+					array( 'page', 'a-propos', 'Notre méthode' ),
 					array( 'page', 'contact', 'Contact' ),
 				),
 			),
