@@ -27,6 +27,45 @@ Mesuré avant/après sur iPhone 13 CPU ×4 : p95 de frame 67 → 50 ms, pointe
 tactile, `ST.config({limitCallbacks, ignoreMobileResize})`, et les `scrub:true`
 passés en `scrub:.3`.
 
+🧩 **CAUSE RACINE trouvée le 09/09 au soir — deux couches de cache, pas une.**
+Le site est derrière **LiteSpeed** (serveur) *et* le **CDN Hostinger**
+(`x-hcdn-cache-status`). Les pages HTML partaient avec
+`cache-control: public, max-age=604800` — **7 jours**. D'où :
+- un correctif déployé restait invisible jusqu'à une semaine ;
+- **chaque nœud du CDN gardait sa propre copie** : deux relevés successifs
+  depuis la même machine pouvaient se contredire, et deux visiteurs voir deux
+  versions différentes le même jour ;
+- purger LiteSpeed ne servait à rien, le CDN resservait sa copie.
+
+Corrigé en **v1.9.8** : le HTML passe à
+`max-age=0, s-maxage=300, stale-while-revalidate=60`. Un push est désormais
+visible en 5 minutes maximum. Les statiques gardent leur cache long, ils
+portent une empreinte `?ver=`.
+
+⚠️ **Reste une action manuelle, une seule fois :** les copies stockées AVANT
+la v1.9.8 gardent leur TTL de 7 jours. Il faut **purger le CDN Hostinger une
+fois depuis hPanel** pour les évacuer. Après ça, plus jamais.
+
+⚠️ **Le cron serveur est la condition d'existence du déploiement.** Une page
+servie depuis le cache ne fait pas démarrer WordPress, donc WP-Cron ne tourne
+pas, donc la sync ne s'exécute pas. Plus le cache est efficace, moins on
+déploie. À créer dans hPanel → Tâches Cron, toutes les 5 min :
+```
+wget -q -O - https://elagage-vertou.fr/wp-cron.php?doing_wp_cron >/dev/null 2>&1
+```
+(Note : WordPress pose un verrou de 60 s entre deux exécutions du cron —
+inutile de l'appeler plus souvent, les appels rapprochés ne font rien.)
+
+⚠️ **Piège de mesure, deux fois tombé dedans le 09/09.** Ne jamais vérifier un
+correctif en cherchant un texte qui est AUSSI affiché dans la page : le chapô
+du hero sert de meta description *et* de texte visible, donc un `grep` sur son
+contenu matche toujours. Vérifier la **balise**, pas le texte :
+```bash
+curl -sS https://elagage-vertou.fr/ | grep -oiE "<meta name=.description.[^>]*>"
+```
+Et comparer systématiquement l'URL normale avec un rendu frais (`?nc=alea`) :
+si les deux diffèrent, c'est du cache, pas du code.
+
 ⚠️ **Leçon du 09/09 — le cache masquait tous les déploiements.** Le thème était
 déployé et le site servait l'ancienne page depuis le cache LiteSpeed (`hit`,
 `age: 24180`, `max-age: 604800`). Corrigé en v1.9.3 : `purge_caches()` purge
