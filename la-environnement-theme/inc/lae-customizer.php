@@ -87,7 +87,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'description' => 'Ces informations alimentent l\'en-tête, le pied de page, la barre mobile et les données structurées Google.',
 	) );
 
-	$ajoute( 'lae_telephone', array( 'label' => 'Téléphone', 'section' => 'lae_coordonnees' ) );
+	$ajoute( 'lae_telephone', array( 'default' => "07 59 79 03 96", 'label' => 'Téléphone', 'section' => 'lae_coordonnees' ) );
 	$ajoute( 'lae_email', array( 'label' => 'E-mail', 'section' => 'lae_coordonnees', 'sanitize' => 'sanitize_email' ) );
 	$ajoute( 'lae_adresse', array( 'label' => 'Adresse', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 	$ajoute( 'lae_horaires', array( 'label' => 'Horaires', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne', 'description' => 'Une ligne par créneau.' ) );
@@ -248,16 +248,16 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute( 'lae_cine_phares_chapo', array( 'default' => "La même personne du premier appel au dernier passage. Vous ne racontez pas deux fois votre chantier.", 'label' => 'Prestations phares — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 	$ajoute( 'lae_cine_phares_note', array( 'default' => "Arbre remarquable, accès impossible, urgence après tempête : ça se regarde sur place", 'label' => 'Prestations phares — note sous les cartes', 'section' => 'lae_cine' ) );
 
-	$ajoute( 'lae_cine_avis', array(
+	$ajoute( 'lae_cine_avis', array( 'default' => "Djessy Azs | Je recommande travail efficace et de qualité. À l'écoute de nôtres demande de bon conseil personnalisé. Nous sommes très satisfaits de son travail et nous recommandions vivement son service ! | Mai 2025",
 		'label'       => 'Avis (réels uniquement)',
 		'section'     => 'lae_cine',
 		'type'        => 'textarea',
 		'sanitize'    => 'lae_sanitize_multiligne',
 		'description' => 'Une ligne par avis : Nom | Texte de l\'avis | Date. À recopier depuis de VRAIS avis Google. Champ vide = aucune section d\'avis : mieux vaut rien qu\'un témoignage inventé.',
 	) );
-	$ajoute( 'lae_cine_avis_url', array( 'label' => 'Avis — lien vers la fiche Google', 'section' => 'lae_cine', 'sanitize' => 'esc_url_raw' ) );
-	$ajoute( 'lae_cine_avis_note', array( 'label' => 'Avis — note affichée', 'section' => 'lae_cine', 'description' => 'Exemple : 4,8. Laisser vide si la fiche n\'a pas encore de note.' ) );
-	$ajoute( 'lae_cine_avis_total', array( 'label' => 'Avis — nombre d\'avis', 'section' => 'lae_cine' ) );
+	$ajoute( 'lae_cine_avis_url', array( 'default' => "https://www.google.com/maps/place/?q=place_id:ChIJd15eFR_nBUgRqwOuCR9Hlrs", 'label' => 'Avis — lien vers la fiche Google', 'section' => 'lae_cine', 'sanitize' => 'esc_url_raw' ) );
+	$ajoute( 'lae_cine_avis_note', array( 'default' => "5,0", 'label' => 'Avis — note affichée', 'section' => 'lae_cine', 'description' => 'Exemple : 4,8. Laisser vide si la fiche n\'a pas encore de note.' ) );
+	$ajoute( 'lae_cine_avis_total', array( 'default' => "1", 'label' => 'Avis — nombre d\'avis', 'section' => 'lae_cine' ) );
 
 	$ajoute( 'lae_cine_arbre_image', array( 'label' => 'Révélation — image ronde', 'section' => 'lae_cine', 'type' => 'image', 'sanitize' => 'esc_url_raw', 'description' => 'Un arbre, un chantier fini, une équipe : l\'image qui apparaît en gros plan avant l\'appel.' ) );
 	$ajoute( 'lae_cine_arbre_surtitre', array( 'default' => "Devis", 'label' => 'Révélation — surtitre', 'section' => 'lae_cine' ) );

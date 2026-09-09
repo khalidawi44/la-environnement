@@ -81,6 +81,26 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
 2. Lancer la première sync (*Outils → SYNC GitHub* → « Synchroniser maintenant »).
 3. Vérifier que l'état passe à **À jour**.
 
+## Fiche Google de l'entreprise — source de vérité
+
+Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs`) :
+
+- Nom exact affiché : **L A environnement** (sans point après le L)
+- Catégorie Google : **Paysagiste**
+- Téléphone : **07 59 79 03 96** — renseigné dans le thème
+- Site déclaré : **paysagiste-environnement.com** — c'est le domaine « cassé ».
+  Diagnostic : le certificat HTTPS est **auto-signé**, donc tout navigateur
+  affiche un avertissement de sécurité avant d'ouvrir la page. Ce n'est pas le
+  domaine qui est mort, c'est son certificat.
+- Note : **5,0 sur 1 avis** (un seul, réel, de Djessy Azs, mai 2025, avec
+  réponse du propriétaire). Recopié dans le thème.
+- Pas d'adresse publiée sur la fiche (établissement sans vitrine).
+- Le point de la fiche est situé en **Vendée** (46,754 / -1,470), alors que le
+  site Alliance Groupe présente L.A Environnement comme « Paysagiste ·
+  Loire-Atlantique ». **À trancher avec le client** : c'est la zone
+  d'intervention et tout le référencement local qui en dépendent.
+- 4 photos du propriétaire + 1 vidéo de 29 s sur la fiche : à récupérer.
+
 ## Reste à faire côté contenu (bloquant)
 
 Le design est en place, **le contenu réel manque** :
