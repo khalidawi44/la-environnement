@@ -123,6 +123,8 @@ class LAE_GitHub_Sync {
 
 	public static function init() {
 		add_action( 'admin_post_lae_github_sync_run', array( __CLASS__, 'handle_run' ) );
+		// Purge différée, au plus tôt dans la réponse.
+		add_action( 'send_headers', array( __CLASS__, 'purge_differee' ), 1 );
 
 		// Cron auto-sync toutes les 5 min, en arrière-plan, zéro clic.
 		// Déclenché par n'importe quelle visite du site (WP-Cron classique).
@@ -131,6 +133,18 @@ class LAE_GitHub_Sync {
 		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
 			wp_schedule_event( time() + 60, self::CRON_INTERVAL, self::CRON_HOOK );
 		}
+	}
+
+	/**
+	 * Purge différée : si une sync a demandé une purge alors que les en-têtes
+	 * étaient déjà partis (cas de wp-cron.php), on l'émet sur la première
+	 * réponse de page qui suit. Le serveur LiteSpeed lit l'en-tête là.
+	 */
+	public static function purge_differee() {
+		if ( ! get_option( 'lae_purge_en_attente' ) ) return;
+		if ( headers_sent() ) return;
+		header( 'X-LiteSpeed-Purge: *' );
+		delete_option( 'lae_purge_en_attente' );
 	}
 
 	/** Ajoute l'intervalle 5 min aux schedules WP-Cron disponibles. */
@@ -576,11 +590,36 @@ class LAE_GitHub_Sync {
 	public static function purge_caches() {
 		$faits = array();
 
-		// LiteSpeed (celui d'Hostinger). Action documentée du plugin ;
-		// sans plugin actif, do_action est un no-op inoffensif.
+		// ── LiteSpeed, deux chemins, parce qu'un seul ne suffit pas ──
+		//
+		// Constat du 09/09 : la v1.9.6 était bien déployée sur le disque et le
+		// site servait encore une page vieille de 42 minutes. Le hook du plugin
+		// n'avait rien purgé, alors que `x-litespeed-cache` était bien émis.
+		//
+		// Explication : sur Hostinger le cache LiteSpeed est appliqué par le
+		// SERVEUR. Le plugin WordPress peut être présent sans être actif — dans
+		// ce cas `do_action('litespeed_purge_all')` ne déclenche rien du tout,
+		// et la purge échouait en silence en se croyant faite.
+		//
+		// Le serveur LiteSpeed, lui, obéit à un en-tête de réponse, quel que
+		// soit l'état du plugin. On fait donc les deux.
+
+		// 1. Le plugin, s'il est réellement actif.
 		if ( defined( 'LSCWP_V' ) || has_action( 'litespeed_purge_all' ) ) {
 			do_action( 'litespeed_purge_all' );
-			$faits[] = 'LiteSpeed';
+			$faits[] = 'LiteSpeed (plugin)';
+		}
+
+		// 2. Le serveur, via son en-tête de purge. Fonctionne sans plugin.
+		if ( ! headers_sent() ) {
+			header( 'X-LiteSpeed-Purge: *' );
+			$faits[] = 'LiteSpeed (serveur)';
+		} else {
+			// La sync tourne le plus souvent dans wp-cron.php, où les en-têtes
+			// peuvent déjà être partis. On arme alors la purge pour la
+			// prochaine réponse de page, qui elle sera bien lue par le serveur.
+			update_option( 'lae_purge_en_attente', 1, false );
+			$faits[] = 'LiteSpeed (serveur, différé)';
 		}
 
 		// Cache objet / persistant éventuel.
