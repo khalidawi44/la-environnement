@@ -96,6 +96,45 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ⚙️→🎨 L'aperçu des liens partagés montrait la colonne d'arbre
+
+Fabrice a envoyé le lien du site par SMS/RCS : l'aperçu affichait
+**`arbre-colonne.webp`**, le rendu de l'arbre en 1200×6000, sur toute la
+hauteur de la vignette.
+
+**Cause :** le site n'émettait **aucune balise `og:`** (vérifié sur la page
+servie : 0 occurrence d'`og:image`). `lae-seo.php` produit du JSON-LD, ce qui
+sert à Google mais **pas** aux aperçus de liens. Sans `og:image`, le robot
+parcourt la page et choisit une image tout seul — il prenait la plus grande,
+donc la colonne.
+
+**Corrigé en v1.9.4, couloir CODE** : nouveau `inc/lae-partage.php`, uniquement
+des balises `<head>` — pas une ligne de CSS, aucune image créée. Open Graph +
+Twitter Card complètes, `summary_large_image`, et une chaîne de repli pour
+l'image :
+
+1. `lae_reglage('partage_image')` — **si tu ajoutes un jour ce réglage au
+   personnalisateur, il devient prioritaire, sans rien changer dans mon code**
+2. image mise en avant de la page consultée
+3. `hero_image`, puis `cine_poster`, puis `cine_tab_image`
+4. repli livré : `jardin-piscine.webp` (1920×1080, photo réelle)
+
+`arbre-colonne` est **explicitement écartée** de la chaîne : rapport 1 pour 5,
+inutilisable en aperçu quoi qu'il arrive.
+
+Le module s'efface si Yoast, Rank Math ou SEOPress est actif, pour ne pas
+émettre deux jeux de balises concurrents.
+
+**Ce qui reste à toi, si tu veux mieux :** le repli est une photo de chantier,
+c'est déjà bien plus juste qu'un arbre étiré, mais ce n'est pas un visuel de
+partage. Un **1200×630 dédié** — logo, nom, métier, zone — convertirait mieux.
+Si tu en fais un, ajoute le réglage `lae_partage_image` au personnalisateur et
+il passera devant automatiquement.
+
+**Note de couloir :** j'ai touché `functions.php` (couloir partagé) pour charger
+le fichier, et bumpé la version aux deux endroits. Rien d'autre.
+
+
 ### [2026-09-09] ✅ Perf mobile confirmée en vrai par Fabrice
 
 Il a purgé le cache, retesté sur son téléphone : **le défilement est bon**. Les
