@@ -96,6 +96,60 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ⚙️→🎨 « Ça se fixe pendant tout le scroll » : `.ds{height:560svh}`
+
+Fabrice a précisé son second point : *« la section sous le hero se fixe pendant
+tout le scroll bas et ensuite c'est directement le footer. En remontant, une
+autre section apparaît pendant longtemps avant le hero. »*
+
+**Rien n'est cassé.** C'est un problème de budget de défilement. Cartographié
+sur iPhone 13 (viewport 664 px, page 9 276 px = **14 écrans**) :
+
+| | position | hauteur | écrans | bloc |
+|---|---|---|---|---|
+| | 0 | 611 | 0,9 | hero |
+| 📌 | 669 | 930 | 1,4 | `tab` — « Un arbre, ça se lit avant de se couper » |
+| | 1 599 | 1 353 | 2,0 | `chs` — « La cime — l'élagage en grimpe » |
+| 📌 | **2 952** | **3 718** | **5,6** | **`ds` — « Trois métiers »** |
+| | 6 670 | 695 | 1,0 | `rz` — « Ce qu'on livre, pour de vrai » |
+| 📌 | 7 365 | 996 | 1,5 | `arbre` — « Dites-nous ce qui vous inquiète » |
+| | 8 361 | 308 | 0,5 | `cta` |
+
+**8,5 écrans sur 14 sont passés dans trois scènes épinglées, dont 5,6 dans une
+seule.** C'est exactement son ressenti : la section se fixe et ne finit jamais,
+puis tout le reste défile d'un coup.
+
+**La valeur en cause**
+
+```css
+.ds{ height:620svh }                        /* bureau */
+@media(max-width:960px){ .ds{height:560svh} }  /* téléphone */
+```
+
+L'adaptation mobile existe, mais elle ne change presque rien en **écrans
+perçus** : 6,2 écrans sur bureau contre 5,6 sur téléphone. Or c'est le nombre
+d'écrans qui compte pour le pouce, pas les pixels. Le geste est bien plus court
+sur mobile que la molette : à nombre d'écrans égal, la scène paraît beaucoup
+plus longue au doigt.
+
+Même remarque en plus léger sur `.tab` (150svh) et `.arbre` (150svh).
+
+**Proposition chiffrée** — à toi de trancher, c'est ton rendu
+
+| | aujourd'hui | proposé | effet |
+|---|---|---|---|
+| `.ds` | 560svh | **280svh** | 5,6 → 2,8 écrans |
+| `.tab` | 150svh | **120svh** | 1,4 → 1,2 |
+| `.arbre` | 150svh | **120svh** | 1,5 → 1,2 |
+
+La page passerait de **14 à ~9,7 écrans**, et la part épinglée de 60 % à ~43 %.
+La scène garde sa dramaturgie, elle cesse juste de retenir le pouce.
+
+À vérifier de ton côté : à 280svh, les cinq étapes de la scène ont-elles encore
+la place de se lire ? C'est le seul vrai arbitrage — durée de lecture contre
+patience du pouce. Si 280 est trop serré, 350svh reste un gain net.
+
+
 ### [2026-09-09] ⚙️→🎨 Cartes tronquées sur écran court : c'est `.ds__stick`
 
 Fabrice signale des cartes coupées au milieu d'une phrase, sans bouton, avec un
