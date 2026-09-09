@@ -305,7 +305,11 @@ $lae_contact    = lae_url_contact();
   .arbre__img{position:absolute;z-index:1;width:min(58vw,520px);opacity:0;border-radius:50%;
     box-shadow:0 0 0 1px rgba(127,176,74,.5),0 70px 150px -50px rgba(127,176,74,.55)}
   .arbre__veil{position:absolute;inset:0;z-index:2;pointer-events:none;
-    background:radial-gradient(52% 52% at 50% 50%,rgba(4,20,12,.5),rgba(4,20,12,.68) 68%,rgba(4,20,12,.8))}
+    background:radial-gradient(52% 52% at 50% 50%,rgba(4,20,12,.16),rgba(4,20,12,.34) 68%,rgba(4,20,12,.44));
+    /* Le voile s'éteint avant le bas du bloc épinglé : c'est son bord net qui
+       traçait une ligne en travers de la page quand la scène sortait. */
+    -webkit-mask-image:linear-gradient(180deg,#000 58%,transparent);
+            mask-image:linear-gradient(180deg,#000 58%,transparent)}
   .arbre__panel{position:relative;z-index:3;width:100%;max-width:720px;padding:0 28px;text-align:center}
   .arbre__panel .eyebrow{display:inline-block;margin-bottom:14px}
   .arbre__lead{color:var(--muted);font-size:clamp(.96rem,2.1vw,1.08rem);line-height:1.62;
@@ -618,6 +622,8 @@ $lae_contact    = lae_url_contact();
      serait masquée précisément là où la descente doit se sentir. */
   .mq{background:rgba(6,26,16,.5)}
   .ds__stick{background:radial-gradient(70% 70% at 50% 40%,rgba(15,36,24,.3),rgba(4,20,12,.62))}
+  /* Le bord bas de ce voile faisait une ligne franche en travers de la page :
+     il s'éteint progressivement au lieu de s'arrêter net. */
   .arbre__stick{background:radial-gradient(60% 60% at 50% 45%,rgba(15,36,24,.16),rgba(4,20,12,.5))}
   .ds__photo--nu{background:linear-gradient(155deg,rgba(18,48,30,.75),rgba(4,20,12,.9) 68%)}
   .pack,.card,.rz__card{background:rgba(11,29,19,.9);backdrop-filter:blur(2px)}
