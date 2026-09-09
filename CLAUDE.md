@@ -84,6 +84,29 @@ structure, gabarits, styles de base. Ne pas y empiler de design non validé.
   `function_exists`), pour rester copiable seule.
 - Capacité admin requise partout : `manage_options`.
 
+## Deux sessions travaillent ici — DESIGN et CODE
+- 🎨 **DESIGN** (Cowork) : gabarits, sections, styles, médias, contenus réels.
+- ⚙️ **CODE** : synchro, sécurité, déploiement, outillage du dépôt.
+
+**Le dépôt est le canal.** La messagerie directe entre les deux sessions ne
+passe pas (environnements séparés) et les conteneurs sont éphémères : ce qui
+n'est pas commité n'existe pas pour l'autre.
+
+Trois règles, détaillées dans `docs/DESIGN-CODE.md` :
+1. **Tout va sur `main`, tout de suite.** Du travail gardé hors de `main` n'est
+   pas en attente, c'est une régression en attente — le site déploie en 5 min.
+   Pas de bundle, pas de branche qui dort.
+2. **Chacun son couloir.** Pour toucher aux fichiers de l'autre : laisser un
+   message dans `docs/DESIGN-CODE.md`. Le faire quand même si c'est urgent,
+   mais jamais en silence.
+3. **La version se bump à deux endroits, ensemble** : en-tête `Version:` de
+   `style.css` ET `LAE_VERSION` dans `functions.php`. `remote_theme_version()`
+   compare les deux et refuse une version plus ancienne que l'installée.
+
+Les messages ouverts sont affichés automatiquement au démarrage de chaque
+session par `.claude/hooks/session-start.sh`. Y répondre dans
+`docs/DESIGN-CODE.md`, puis déplacer le bloc traité dans « Traité ».
+
 ## Reprise de session
 - Lire `HANDOFF.md` en premier, puis `BACKLOG.md`. Les mettre à jour **avant
   de fermer** une session : sur Claude Code web le conteneur est neuf à chaque

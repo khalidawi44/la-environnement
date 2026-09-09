@@ -1,6 +1,6 @@
 # HANDOFF — L.A Environnement
 
-> Dernière mise à jour : 2026-09-08 — branche de travail : `main` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-09-09 — branche de travail : `main` (tampon auto à chaque commit).
 > Document de reprise pour toute nouvelle session Claude (PC, web ou mobile).
 > Lire ce fichier en premier, puis `BACKLOG.md` pour ce qui est en réserve.
 

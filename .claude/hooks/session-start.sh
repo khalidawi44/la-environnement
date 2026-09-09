@@ -61,6 +61,25 @@ if [ -f .WORKING_ON.md ]; then
 	echo
 fi
 
+# --- Canal DESIGN <-> CODE : messages ouverts --------------------------------
+# Les deux sessions (design Cowork, code) se parlent par le depot : la
+# messagerie directe ne passe pas entre leurs environnements. Ce bloc affiche
+# les messages ouverts pour que personne n'ait a penser a aller les lire.
+if [ -f docs/DESIGN-CODE.md ]; then
+	MSG="$(awk '/OUVERT:DEBUT/{f=1;next} /OUVERT:FIN/{f=0} f' docs/DESIGN-CODE.md | sed '/^[[:space:]]*$/d')"
+	if [ -n "$MSG" ]; then
+		echo "## 📬 Messages ouverts entre DESIGN et CODE (docs/DESIGN-CODE.md)"
+		awk '/OUVERT:DEBUT/{f=1;next} /OUVERT:FIN/{f=0} f' docs/DESIGN-CODE.md
+		echo "→ Repondre dans docs/DESIGN-CODE.md, puis deplacer le bloc traite dans « Traite »."
+	else
+		echo "## 📬 Canal DESIGN <-> CODE : aucun message ouvert."
+	fi
+	echo
+	echo "Rappel des couloirs : DESIGN = gabarits, sections, styles, medias."
+	echo "CODE = sync, securite, deploiement, outillage. Detail : docs/DESIGN-CODE.md"
+	echo
+fi
+
 # --- Reprise rapide depuis HANDOFF.md ----------------------------------------
 if [ -f HANDOFF.md ]; then
 	echo "## Reprise rapide (en-tête HANDOFF.md)"
