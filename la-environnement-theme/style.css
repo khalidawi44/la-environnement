@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.3.0
+Version: 1.4.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -812,4 +812,85 @@ ul, ol { padding-left: 1.25em; }
 	a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; color: #444; }
 	.lae-section { padding: 12pt 0; }
 	* { box-shadow: none !important; }
+}
+
+/* ==========================================================================
+   15. Formulaire de contact
+   ========================================================================== */
+
+.lae-contact { max-width: var(--lae-etroit); }
+
+.lae-contact__form label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: var(--lae-t-sm);
+	font-weight: 650;
+	color: var(--lae-encre-2);
+}
+.lae-contact__form input[type="text"],
+.lae-contact__form input[type="tel"],
+.lae-contact__form input[type="email"],
+.lae-contact__form select,
+.lae-contact__form textarea {
+	width: 100%;
+	padding: 13px 16px;
+	font: inherit;
+	color: var(--lae-encre);
+	background: var(--lae-blanc);
+	border: 1px solid var(--lae-trait-fort);
+	border-radius: 12px;
+	transition: border-color var(--lae-transition), box-shadow var(--lae-transition);
+}
+.lae-contact__form input:focus-visible,
+.lae-contact__form select:focus-visible,
+.lae-contact__form textarea:focus-visible {
+	border-color: var(--lae-accent);
+	box-shadow: 0 0 0 3px var(--lae-accent-clair);
+	outline: none;
+}
+.lae-contact__form textarea { resize: vertical; min-height: 150px; }
+.lae-contact__form p { margin: 0 0 18px; }
+
+.lae-contact__duo {
+	display: grid;
+	gap: 0 18px;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
+/* Champ leurre : invisible pour un humain, rempli par les robots. */
+.lae-contact__leurre {
+	position: absolute !important;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.lae-contact__accord label {
+	display: flex;
+	align-items: flex-start;
+	gap: 11px;
+	font-weight: 400;
+	font-size: var(--lae-t-sm);
+	color: var(--lae-doux);
+	line-height: 1.5;
+}
+.lae-contact__accord input { margin-top: 3px; flex: none; }
+
+.lae-contact__retour {
+	padding: 14px 18px;
+	margin-bottom: 24px;
+	border-radius: 12px;
+	border: 1px solid;
+	font-size: var(--lae-t-sm);
+}
+.lae-contact__retour--ok {
+	background: var(--lae-accent-clair);
+	border-color: var(--lae-accent);
+	color: var(--lae-accent-fonce);
+}
+.lae-contact__retour--erreur {
+	background: #fdf0ec;
+	border-color: #d0764f;
+	color: #8a3d1c;
 }

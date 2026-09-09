@@ -19,7 +19,7 @@ Chantiers en attente, décisions reportées, idées à reprendre plus tard.
 - Relire les textes génériques de l'accueil cinématique avec le client :
   ils tiennent la page, ils n'engagent personne.
 - Nom de domaine définitif et bascule DNS.
-- Formulaire de contact : destinataire, champs, mentions RGPD.
+- ~~Formulaire de contact~~ — fait (v1.4.0, sans plugin, sans stockage). Reste à trancher : destinataire, champs, mentions RGPD.
 
 ## Technique
 

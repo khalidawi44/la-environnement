@@ -26,8 +26,14 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
   (`assets/images/arbre-colonne.svg`) ; une photo verticale le remplace depuis
   le personnalisateur (« Arbre en colonne »).
 - **Le site est livré rempli** : `inc/lae-amorce.php` crée à la première
-  activation les 3 familles et les 6 prestations du métier, avec leurs textes.
-  Idempotent : ne tourne qu'une fois, et jamais si des prestations existent.
+  activation les 3 familles, les 6 prestations du métier avec leurs textes,
+  les pages (Accueil, Notre façon de travailler, Contact, Mentions légales),
+  l'accueil statique et les 3 menus. Idempotent : ne tourne qu'une fois, ne
+  recrée pas une page existante, ne remplace pas un menu déjà en place.
+- **Formulaire de contact** (`inc/lae-contact.php`, raccourci `[lae_contact]`) :
+  sans plugin, sans stockage. Le message part par e-mail à l'adresse du
+  personnalisateur ; rien n'est enregistré sur le site. Jeton de session,
+  champ leurre et limite de 3 envois par heure et par IP.
 - **Tous les textes sont réels** (plus aucun « à écrire avec le client ») et
   modifiables dans le personnalisateur.
 - **Accueil cinématique (v1.2.0)** — même mécanique que l'accueil d'Alliance
@@ -73,6 +79,8 @@ Le design est en place, **le contenu réel manque** :
 2. Coordonnées : téléphone, e-mail, adresse, horaires, mention légale.
 3. Communes de la zone d'intervention.
 4. **Photos de chantier** — la section Réalisations ne vaut que par elles.
+4 bis. **Mentions légales** : la page est créée mais VIDE de contenu réel
+   (SIRET, hébergeur, assurance). Obligatoire avant mise en ligne.
 5. **Médias de l'accueil cinématique** : la vidéo du bandeau, la grande image
    épinglée, les trois images de chapitre, l'image qui se dissout, la main
    ouverte, l'image ronde de la révélation. Sans elles la scène tourne, mais

@@ -90,6 +90,9 @@ if ( ! function_exists( 'lae_amorce_contenu' ) ) {
 		}
 		update_option( 'lae_amorce_faite', 1, false );
 
+		// Pages, accueil statique et menus : indépendants des prestations.
+		lae_amorce_structure();
+
 		$deja = get_posts( array(
 			'post_type'      => 'lae_prestation',
 			'post_status'    => 'any',
@@ -135,6 +138,138 @@ if ( ! function_exists( 'lae_amorce_contenu' ) ) {
 			}
 			update_post_meta( $post_id, '_lae_icone', $p['icone'] );
 		}
+	}
+}
+
+
+/** Les pages livrées avec le site. */
+if ( ! function_exists( 'lae_amorce_pages' ) ) {
+	function lae_amorce_pages() {
+		return array(
+			'accueil' => array(
+				'titre'   => 'Accueil',
+				'contenu' => '',
+			),
+			'a-propos' => array(
+				'titre'   => 'Notre façon de travailler',
+				'contenu' => "<!-- wp:paragraph --><p>Un arbre n'est pas un poteau de bois. C'est un organisme vivant qui répond à chaque coupe, qui cicatrise mal une plaie mal placée, et qui met des années à montrer les conséquences d'une mauvaise intervention. C'est ce qui décide de notre manière de travailler.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>On regarde avant de couper</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Aucun devis ne se chiffre au téléphone. On vient voir l'arbre : son état sanitaire, l'équilibre de son houppier, la présence de bois mort, l'état du collet et ce qu'on devine du système racinaire. On regarde aussi ce qu'il y a autour — une toiture, une ligne, une limite de propriété, un accès étroit. C'est cet ensemble qui dit s'il faut tailler, haubaner, ou abattre.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>On coupe le moins possible</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Une taille douce enlève ce qui gêne et ce qui menace, pas un tiers de l'arbre. L'étêtage, lui, ne règle rien : l'arbre repart en gourmands mal accrochés, plus dangereux que les branches qu'on vient de lui prendre. Quand un arbre peut être conservé, on le conserve — et on vous dit ce qu'il faudra surveiller.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>On travaille à la corde</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>La nacelle ne va pas partout : fond de jardin, terrain en pente, arbre cerné de constructions. La grimpe permet d'atteindre ce qu'aucune machine n'atteint, et de descendre les pièces en rétention plutôt que de les laisser tomber. C'est plus long, et c'est souvent la seule manière de faire proprement.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Le chantier est fini quand le terrain est net</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Les branches partent au broyage — le broyat peut rester chez vous en paillage — ou sont évacuées. Le bois de chauffage est débité et laissé sur place si vous le souhaitez. Allées dégagées, sciure ramassée : il ne doit rien rester à ramasser après nous.</p><!-- /wp:paragraph -->",
+			),
+			'contact' => array(
+				'titre'   => 'Contact',
+				'contenu' => "<!-- wp:paragraph --><p>Dites-nous ce qui vous amène : l'arbre, son emplacement, ce qui vous inquiète. Nous vous rappelons pour convenir d'une visite sur place — c'est là que le devis se fait.</p><!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->[lae_contact]<!-- /wp:shortcode -->",
+			),
+			'mentions-legales' => array(
+				'titre'   => 'Mentions légales',
+				'contenu' => "<!-- wp:paragraph --><p><strong>Page à compléter avant la mise en ligne.</strong> Les mentions ci-dessous sont obligatoires : elles doivent porter les informations réelles de l'entreprise.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Éditeur du site</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Dénomination, forme juridique, adresse du siège, téléphone, e-mail, numéro SIRET, numéro de TVA intracommunautaire le cas échéant, nom du responsable de la publication.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Hébergement</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Nom, adresse et téléphone de l'hébergeur.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Assurance professionnelle</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Assureur, numéro de police, couverture géographique.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Données personnelles</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Le formulaire de contact envoie votre demande par e-mail et n'enregistre rien sur le site. Vous pouvez demander l'accès, la rectification ou l'effacement des informations que vous nous avez transmises en écrivant à l'adresse indiquée ci-dessus.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Cookies</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Ce site ne dépose aucun cookie de mesure d'audience ni de publicité, et ne charge aucune police ni ressource hébergée par un tiers.</p><!-- /wp:paragraph -->",
+			),
+		);
+	}
+}
+
+/**
+ * Crée les pages, l'accueil statique et les trois menus.
+ * Comme les prestations : une seule fois, et jamais par-dessus l'existant.
+ */
+if ( ! function_exists( 'lae_amorce_structure' ) ) {
+	function lae_amorce_structure() {
+
+		$ids = array();
+		foreach ( lae_amorce_pages() as $slug => $page ) {
+			$existante = get_page_by_path( $slug );
+			if ( $existante ) {
+				$ids[ $slug ] = (int) $existante->ID;
+				continue;
+			}
+			$id = wp_insert_post( array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $page['titre'],
+				'post_name'    => $slug,
+				'post_content' => $page['contenu'],
+			), true );
+			if ( ! is_wp_error( $id ) ) {
+				$ids[ $slug ] = (int) $id;
+			}
+		}
+
+		// Accueil statique : sans cela WordPress affiche la liste des articles.
+		if ( isset( $ids['accueil'] ) && 'page' !== get_option( 'show_on_front' ) ) {
+			update_option( 'show_on_front', 'page' );
+			update_option( 'page_on_front', $ids['accueil'] );
+		}
+
+		// Menus.
+		$menus = array(
+			'principal' => array(
+				'nom'     => 'Menu principal',
+				'entrees' => array(
+					array( 'page', 'accueil', 'Accueil' ),
+					array( 'archive', 'lae_prestation', 'Prestations' ),
+					array( 'archive', 'lae_realisation', 'Réalisations' ),
+					array( 'page', 'a-propos', 'Notre façon de travailler' ),
+					array( 'page', 'contact', 'Contact' ),
+				),
+			),
+			'pied' => array(
+				'nom'     => 'Pied de page',
+				'entrees' => array(
+					array( 'archive', 'lae_prestation', 'Prestations' ),
+					array( 'archive', 'lae_realisation', 'Réalisations' ),
+					array( 'page', 'a-propos', 'Notre façon de travailler' ),
+					array( 'page', 'contact', 'Contact' ),
+				),
+			),
+			'legal' => array(
+				'nom'     => 'Mentions légales',
+				'entrees' => array(
+					array( 'page', 'mentions-legales', 'Mentions légales' ),
+				),
+			),
+		);
+
+		$emplacements = get_theme_mod( 'nav_menu_locations', array() );
+
+		foreach ( $menus as $cle => $menu ) {
+			if ( ! empty( $emplacements[ $cle ] ) && wp_get_nav_menu_object( $emplacements[ $cle ] ) ) {
+				continue; // un menu est déjà en place à cet emplacement
+			}
+
+			$objet = wp_get_nav_menu_object( $menu['nom'] );
+			$menu_id = $objet ? (int) $objet->term_id : (int) wp_create_nav_menu( $menu['nom'] );
+			if ( ! $menu_id || is_wp_error( $menu_id ) ) {
+				continue;
+			}
+
+			if ( ! $objet ) {
+				foreach ( $menu['entrees'] as $entree ) {
+					list( $genre, $cible, $libelle ) = $entree;
+
+					if ( 'page' === $genre ) {
+						if ( ! isset( $ids[ $cible ] ) ) {
+							continue;
+						}
+						wp_update_nav_menu_item( $menu_id, 0, array(
+							'menu-item-title'     => $libelle,
+							'menu-item-object'    => 'page',
+							'menu-item-object-id' => $ids[ $cible ],
+							'menu-item-type'      => 'post_type',
+							'menu-item-status'    => 'publish',
+						) );
+					} else {
+						wp_update_nav_menu_item( $menu_id, 0, array(
+							'menu-item-title'  => $libelle,
+							'menu-item-object' => $cible,
+							'menu-item-type'   => 'post_type_archive',
+							'menu-item-status' => 'publish',
+						) );
+					}
+				}
+			}
+
+			$emplacements[ $cle ] = $menu_id;
+		}
+
+		set_theme_mod( 'nav_menu_locations', $emplacements );
 	}
 }
 
