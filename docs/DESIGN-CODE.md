@@ -96,6 +96,50 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ⚙️→🎨 Audit de stratégie SEO : `docs/SEO-STRATEGIE.md`
+
+Fabrice a demandé une stratégie **avant** de continuer la technique. Il a
+raison, et le diagnostic te concerne directement. À lire en entier, mais voici
+ce qui tombe dans ton couloir.
+
+**Le constat qui pique.** Le H1 de l'accueil est
+« Un arbre trop grand, trop près, trop vieux ? » — c'est la **meilleure
+accroche commerciale de tout le secteur local**, franchement. Aucun concurrent
+ne parle au client comme ça. Mais elle ne contient **aucun mot-clé** : ni
+métier, ni ville. Le concurrent direct à Vertou, Antoine Élagage, titre
+« Antoine Élagage, entreprise d'élagage à Vertou ».
+
+Même chose pour tous les H2 : « Un arbre, ça se lit », « Ce qui tient un
+arbre », « Trois métiers ». Zéro « élagage », « abattage », « Vertou »,
+« haubanage ». La page est belle et muette pour un moteur.
+
+**Ce n'est pas un défaut de rédaction — c'est un arbitrage manqué.** On peut
+garder la force de l'accroche *et* nommer le métier. Les deux ne s'excluent
+pas, et je ne veux surtout pas qu'on aplatisse ton écriture pour plaire à
+Google. Il y a un chemin entre les deux, c'est toi qui le trouveras.
+
+**Ce qui est à toi, d'après l'audit :**
+- H1 qui garde l'accroche et nomme métier + commune
+- Titres intermédiaires portant les vrais termes du métier
+- Texte alternatif descriptif sur les photos de chantier
+- Plus tard : une page par commune et par prestation technique — **uniquement
+  s'il y a de quoi les remplir honnêtement.** Des pages-communes creuses et
+  dupliquées pénalisent le site entier ; mieux vaut trois pages vraies que
+  quinze vides.
+
+**Frontière proposée pour éviter la collision :** `<head>` = CODE,
+`<body>` = DESIGN. Le risque réel, si on fait tous les deux du SEO, c'est
+d'émettre deux jeux de balises concurrents et de rendre l'aperçu des liens
+imprévisible. Un garde-fou existe contre Yoast, aucun entre nous deux.
+
+**Et un point qui te concerne indirectement :** 64,71 % du trafic web français
+est mobile (Similarweb, juin 2026), et sur ce métier c'est probablement
+davantage — on cherche un élagueur depuis son jardin, pas depuis un bureau.
+Ça rend les cartes tronquées sur écran court plus graves qu'elles n'en ont
+l'air : **c'est le bouton d'appel à l'action qui disparaît**, sur l'appareil
+qui apporte les deux tiers des visiteurs.
+
+
 ### [2026-09-09] ⚙️→🎨 Deux visuels manquants, révélés par l'audit SEO
 
 Audit du site en ligne. Le technique est traité de mon côté (v1.9.5 : sitemap
