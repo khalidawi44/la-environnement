@@ -218,3 +218,23 @@ les blocs correspondants restent masqués tant qu'ils ne sont pas remplis.
 
 *(À compléter à chaque session : ce qui a été fait, ce qui a été décidé, ce
 qui a été mis de côté et pourquoi.)*
+
+## v1.9.0 — piège WordPress à ne jamais réintroduire
+
+`get_theme_mod( 'lae_x' )` ne retombe **pas** sur le `'default'` déclaré dans
+`add_setting()`. Sur une installation neuve, tout réglage jamais enregistré
+renvoie le second argument de `get_theme_mod()` — donc `''`. Résultat : le site
+tournait, mais sans téléphone, sans e-mail, sans titre de héros, sans chapitres.
+
+Source unique désormais : `inc/lae-defauts.php` → `lae_defauts()` / `lae_defaut( $cle )`
+(clés **sans** le préfixe `lae_`, filtre `lae_defauts`).
+- `lae_reglage( $cle )` y prend son repli quand aucun second argument n'est passé.
+- Le personnalisateur n'a plus un seul `'default' =>` littéral : `$ajoute()` lit la table.
+- Un second argument explicite reste prioritaire (titres propres aux archives).
+
+**Règle** : un nouveau réglage de contenu se déclare dans `inc/lae-defauts.php`,
+jamais dans `$ajoute()`.
+
+`lae_amorce_identite()` corrige le titre posé par l'hébergeur (le nom de domaine)
+en « L.A Environnement ». Verrou `lae_identite_faite`, séparé de `lae_amorce_faite`,
+pour rattraper les sites déjà amorcés.
