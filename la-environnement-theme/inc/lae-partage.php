@@ -67,8 +67,22 @@ function lae_partage_dimensions( $url ) {
 	return array( (int) $meta['width'], (int) $meta['height'] );
 }
 
-/** Description courte de la page courante. */
+/**
+ * Description courte de la page courante.
+ *
+ * En accueil, l'accroche du site (« Élagage · Abattage · Création de jardin »)
+ * ne fait que 40 caractères : Google la complète alors avec un morceau de page
+ * pris au hasard. On préfère le chapô du hero, écrit par le client et long
+ * d'environ 170 caractères — la bonne longueur pour un extrait de résultat.
+ */
 function lae_partage_description() {
+	if ( ( is_front_page() || is_home() ) && function_exists( 'lae_reglage' ) ) {
+		$chapo = lae_reglage( 'hero_chapo' );
+		if ( is_string( $chapo ) && '' !== trim( $chapo ) ) {
+			$chapo = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $chapo ) ) );
+			if ( '' !== $chapo ) return wp_html_excerpt( $chapo, 200, '…' );
+		}
+	}
 	if ( is_singular() ) {
 		$p = get_post();
 		if ( $p ) {

@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LAE_VERSION', '1.9.5' );
+define( 'LAE_VERSION', '1.9.6' );
 
 /** Supports WordPress de base. */
 add_action( 'after_setup_theme', function () {

@@ -44,8 +44,11 @@ add_filter( 'wp_robots', function ( $robots ) {
 	$robots['index']              = true;
 	$robots['follow']             = true;
 	$robots['max-image-preview']  = 'large';
-	$robots['max-snippet']        = -1;
-	$robots['max-video-preview']  = -1;
+	// Des CHAÎNES, pas des entiers : wp_robots() n'écrit « clé:valeur » que
+	// pour une chaîne. Avec l'entier -1 il produisait « max-snippet » tout
+	// court, directive invalide que Google ignore. Constaté en ligne le 09/09.
+	$robots['max-snippet']        = '-1';
+	$robots['max-video-preview']  = '-1';
 	return $robots;
 }, 20 );
 
@@ -64,6 +67,33 @@ add_action( 'wp_head', function () {
 	if ( '' === $desc ) return;
 	printf( '<meta name="description" content="%s">' . "\n", esc_attr( $desc ) );
 }, 4 );
+
+/* ---- 3 bis. Le sitemap doit répondre 200, pas 404 ----
+ * Constaté en ligne le 09/09 : /wp-sitemap.xml renvoyait un contenu XML
+ * parfaitement valide… avec un statut HTTP 404. Un robot n'en lit pas une
+ * ligne : pour lui la page n'existe pas. Le sitemap paraissait réparé et ne
+ * l'était pas.
+ *
+ * Cause : les règles de réécriture avaient été calculées alors que le sitemap
+ * était désactivé. On les régénère une fois à chaque changement de version, et
+ * on force le statut quand une requête de sitemap est effectivement servie —
+ * ceinture et bretelles, parce qu'un sitemap en 404 est invisible et
+ * silencieux. */
+add_action( 'template_redirect', function () {
+	if ( '' === (string) get_query_var( 'sitemap' ) ) return;
+	global $wp_query;
+	if ( $wp_query ) {
+		$wp_query->is_404 = false;
+	}
+	status_header( 200 );
+}, 0 );
+
+add_action( 'admin_init', function () {
+	if ( ! defined( 'LAE_VERSION' ) ) return;
+	if ( get_option( 'lae_rewrite_version' ) === LAE_VERSION ) return;
+	flush_rewrite_rules( true );
+	update_option( 'lae_rewrite_version', LAE_VERSION, false );
+} );
 
 /* ---- 4. Le sitemap n'annonce que ce qui a un sens ----
  * Les types techniques et les taxonomies vides encombrent l'index sans
