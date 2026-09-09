@@ -26,8 +26,37 @@ def matiere(nom, couleur, rugosite=0.8):
     p.inputs["Roughness"].default_value = rugosite
     return m
 
-bois    = matiere("bois",    (0.045, 0.085, 0.05, 1.0), 0.93)
-feuille = matiere("feuille", (0.05,  0.20,  0.075, 1.0), 0.6)
+def matiere_feuille(nom, couleur):
+    """Une feuille vue d'en bas est traversée par la lumière, pas éclairée.
+
+    Sans composante translucide, tout le houppier tombe en silhouette noire :
+    c'est exactement ce qui rendait la première boucle illisible. Le mélange
+    diffus / translucide rend le vert lumineux du contre-jour.
+    """
+    m = bpy.data.materials.new(nom); m.use_nodes = True
+    nt = m.node_tree
+    for n in list(nt.nodes):
+        if n.type != 'OUTPUT_MATERIAL':
+            nt.nodes.remove(n)
+    sortie = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
+
+    diffus = nt.nodes.new("ShaderNodeBsdfDiffuse")
+    diffus.inputs["Color"].default_value = couleur
+
+    trans = nt.nodes.new("ShaderNodeBsdfTranslucent")
+    trans.inputs["Color"].default_value = (
+        min(couleur[0] * 1.9, 1.0), min(couleur[1] * 1.55, 1.0), min(couleur[2] * 1.7, 1.0), 1.0
+    )
+
+    melange = nt.nodes.new("ShaderNodeMixShader")
+    melange.inputs["Fac"].default_value = 0.55      # majorité de translucide : contre-jour
+    nt.links.new(diffus.outputs[0], melange.inputs[1])
+    nt.links.new(trans.outputs[0],  melange.inputs[2])
+    nt.links.new(melange.outputs[0], sortie.inputs["Surface"])
+    return m
+
+bois    = matiere("bois", (0.075, 0.11, 0.07, 1.0), 0.93)
+feuille = matiere_feuille("feuille", (0.085, 0.28, 0.115, 1.0))
 
 def objet(prefixe):
     for o in bpy.data.objects:
@@ -36,7 +65,13 @@ def objet(prefixe):
 
 # ── trois houppiers à des profondeurs différentes : la parallaxe fait le relief ──
 couches = []
-for i, (graine, y, ech) in enumerate(((21, 0.0, 1.0), (9, 6.0, 0.72), (34, -5.5, 1.25))):
+# Quatre houppiers à des profondeurs différentes : la parallaxe fait le relief.
+# Le ciel dégagé à droite est voulu : c'est là que le texte de la page se lit.
+for i, (graine, y, ech, x) in enumerate((
+        (21,  0.0, 1.00,  0.0),
+        (9,   6.0, 0.72,  3.4),
+        (34, -5.5, 1.25, -2.2),
+        (57,  2.5, 0.88,  5.6))):
     bpy.ops.curve.tree_add(
         do_update=True, chooseSet='0', bevel=True, prune=False,
         showLeaves=True, useArm=False, bevelRes=1, resU=2,
@@ -58,7 +93,7 @@ for i, (graine, y, ech) in enumerate(((21, 0.0, 1.0), (9, 6.0, 0.72), (34, -5.5,
         f.name = f"feuillage{i}"
     for o in (tronc, f):
         if o:
-            o.location = (0, y, 0)
+            o.location = (x, y, 0)
             o.scale = (ech, ech, ech)
     couches.append((tronc, f, i))
 
@@ -66,21 +101,22 @@ for i, (graine, y, ech) in enumerate(((21, 0.0, 1.0), (9, 6.0, 0.72), (34, -5.5,
 # X=180° : l'objectif regarde vers le haut (par défaut il regarde vers le bas).
 bpy.ops.object.camera_add(location=(1.5, -0.7, 7.4), rotation=(math.radians(171), 0, math.radians(-8)))
 cam = objet("camera")
-cam.data.lens = 13
+cam.data.lens = 12
 bpy.context.scene.camera = cam
 
 # ── la lumière traverse le feuillage ──
 bpy.ops.object.light_add(type='SUN', location=(4, 3, 26))
 soleil = objet("sun")
-soleil.data.energy = 9.0
+soleil.data.energy = 7.5
 soleil.data.angle = math.radians(3)
 soleil.data.color = (1.0, 0.98, 0.78)
 soleil.rotation_euler = (math.radians(16), 0, math.radians(30))
 
 monde = bpy.context.scene.world
 monde.use_nodes = True
-monde.node_tree.nodes["Background"].inputs[0].default_value = (0.10, 0.26, 0.16, 1.0)
-monde.node_tree.nodes["Background"].inputs[1].default_value = 2.6
+# Ciel clair : c'est lui qui éclaire le dessous des feuilles.
+monde.node_tree.nodes["Background"].inputs[0].default_value = (0.30, 0.46, 0.40, 1.0)
+monde.node_tree.nodes["Background"].inputs[1].default_value = 1.6
 
 # ── le vent : rotations sinusoïdales, un tour complet sur la boucle ──
 for tronc, f, i in couches:
@@ -113,12 +149,15 @@ for img in range(IMAGES + 1):
 sc = bpy.context.scene
 sc.frame_start = 1
 sc.frame_end = IMAGES          # l'image IMAGES+1 est identique à la 1re : on l'exclut
+if os.environ.get("LAE_UNE"):   # rendu d'une seule image, pour juger l'éclairage
+    sc.frame_start = int(os.environ["LAE_UNE"])
+    sc.frame_end   = int(os.environ["LAE_UNE"])
 sc.render.fps = 24
 sc.render.engine = 'CYCLES'
 sc.cycles.device = 'CPU'
-sc.cycles.samples = int(os.environ.get("LAE_SAMPLES", "10"))
+sc.cycles.samples = int(os.environ.get("LAE_SAMPLES", "24"))
 sc.cycles.use_denoising = False
-sc.cycles.max_bounces = 2
+sc.cycles.max_bounces = 4
 sc.render.resolution_x = W
 sc.render.resolution_y = H
 sc.render.image_settings.file_format = 'PNG'

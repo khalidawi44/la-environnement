@@ -238,3 +238,42 @@ jamais dans `$ajoute()`.
 `lae_amorce_identite()` corrige le titre posé par l'hébergeur (le nom de domaine)
 en « L.A Environnement ». Verrou `lae_identite_faite`, séparé de `lae_amorce_faite`,
 pour rattraper les sites déjà amorcés.
+
+## v1.9.1 — « on voit rien » : trois causes, pas une
+
+1. **La boucle vidéo était en silhouette.** Dans `outils/canopee-blender.py`, les
+   feuilles avaient un Principled BSDF opaque et le soleil venait d'au-dessus :
+   vues d'en bas, elles ne pouvaient être que noires (luminance médiane 18/255).
+   Corrigé par un matériau **translucide** (mélange Diffuse / Translucent, 55 %),
+   un ciel clair qui éclaire le dessous des feuilles, et un soleil ramené à 7,5.
+2. **L'arbre en colonne était sombre pour la même raison** (médiane 40/255).
+   Remonté en gamma 2.15 + saturation 1.18 → médiane 106.
+3. **Les voiles noircissaient tout l'écran** pour protéger le texte. Remplacés
+   par une protection locale : ombre portée sur les mots, halo doux derrière les
+   blocs de texte, fond de colonne en dégradé de sous-bois plutôt qu'en aplat noir,
+   et une colonne de lumière derrière le tronc.
+
+**Règle** : on protège les mots, jamais tout l'écran. Un voile global au-delà de
+~.45 d'opacité annule la vidéo et l'arbre — c'est-à-dire tout ce qui fait le site.
+
+## Garde-fou anti-régression de la sync (important)
+
+Le dépôt GitHub est resté en **thème 1.0.0** (les commits ne partent pas, voir
+ci-dessous). La sync toutes les 5 minutes aurait donc **écrasé le thème installé
+par la version 1.0.0** : `style.css`, `functions.php`, `header/footer/index/page/
+single/404.php` remplacés par leurs versions d'origine, les fichiers plus récents
+laissés en place → site hybride cassé.
+
+`LAE_GitHub_Sync::remote_theme_version()` lit maintenant le `Version:` du
+`style.css` du dépôt, et `sync()` **refuse** d'appliquer une version inférieure à
+`LAE_VERSION`, en le disant dans le journal. À vérifier après chaque reprise :
+le dépôt doit être à jour AVANT de compter sur la sync.
+
+## Push GitHub : toujours bloqué
+
+`git push` → « not in this session's authorized repository set » (403).
+Connecteur GitHub MCP : lecture OK (`get_me`, `list_commits`), écriture refusée
+(« Resource not accessible by integration » sur `git/trees`).
+Il manque l'autorisation en écriture côté sources de la session / connecteur.
+Tant que ce n'est pas fait : livraison par ZIP, et le garde-fou ci-dessus protège
+le site.

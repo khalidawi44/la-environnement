@@ -87,6 +87,30 @@ class LAE_GitHub_Sync {
 		return is_string( $t ) ? trim( $t ) : '';
 	}
 
+	/**
+	 * Version du thème telle qu'elle se trouve dans le dépôt.
+	 *
+	 * Sert de garde-fou anti-régression : si le dépôt est en retard sur le
+	 * thème installé, la sync l'écraserait par une version plus ancienne.
+	 *
+	 * @return string Version trouvée, ou '' si illisible.
+	 */
+	public static function remote_theme_version( $cfg ) {
+		$sous = isset( $cfg['subdir'] ) ? trim( (string) $cfg['subdir'], '/' ) : '';
+		$url  = 'https://raw.githubusercontent.com/' . $cfg['repo'] . '/' . $cfg['branch']
+			. '/' . ( '' !== $sous ? $sous . '/' : '' ) . 'style.css';
+
+		$rep = wp_remote_get( $url, array(
+			'timeout' => 12,
+			'headers' => self::api_headers( 'text/plain' ),
+		) );
+		if ( is_wp_error( $rep ) || 200 !== (int) wp_remote_retrieve_response_code( $rep ) ) {
+			return '';
+		}
+		$entete = substr( (string) wp_remote_retrieve_body( $rep ), 0, 2048 );
+		return preg_match( '/^\s*Version:\s*([0-9][0-9.]*)/mi', $entete, $m ) ? $m[1] : '';
+	}
+
 	/** En-têtes API GitHub, avec Authorization si un token est configuré. */
 	public static function api_headers( $accept = 'application/vnd.github+json' ) {
 		$h = array( 'Accept' => $accept, 'User-Agent' => 'WordPress LAE-Sync' );
@@ -377,6 +401,28 @@ class LAE_GitHub_Sync {
 			return array( 'ok' => false, 'error' => 'API GitHub injoignable', 'log' => $log, 'sha' => '', 'stats' => array() );
 		}
 		$log[] = 'SHA distant : ' . $remote_sha;
+
+		// 1a. Jamais de régression : un dépôt en retard n'écrase pas le thème
+		//     installé. C'est exactement ce qui serait arrivé après un dépôt
+		//     manuel du thème alors que les commits n'étaient pas poussés.
+		if ( defined( 'LAE_VERSION' ) && isset( $cfg['target_dir'] )
+			&& untrailingslashit( $cfg['target_dir'] ) === untrailingslashit( get_stylesheet_directory() ) ) {
+
+			$version_depot = self::remote_theme_version( $cfg );
+			if ( '' !== $version_depot && version_compare( $version_depot, LAE_VERSION, '<' ) ) {
+				$log[] = 'ARRÊT : le dépôt est en ' . $version_depot . ', le site en ' . LAE_VERSION
+					. '. La sync écraserait le thème par une version plus ancienne.';
+				update_option( self::OPT_PREFIX . $slug . '_time', time() );
+				update_option( self::OPT_PREFIX . $slug . '_log', $log );
+				return array(
+					'ok'    => false,
+					'error' => 'Dépôt en retard (' . $version_depot . ' < ' . LAE_VERSION . ') : sync refusée.',
+					'log'   => $log,
+					'sha'   => self::get_local_sha( $slug ),
+					'stats' => array(),
+				);
+			}
+		}
 
 		// 1b. Sync incrémentale : ne récupère QUE les fichiers modifiés depuis
 		//     le dernier SHA connu. Évite le tarball complet quand le dépôt grossit.

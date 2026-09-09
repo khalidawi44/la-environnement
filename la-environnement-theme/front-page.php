@@ -35,6 +35,10 @@ if ( '' === $lae_tab_img ) {
 	$lae_tab_img = $dir . '/assets/images/jardin-piscine.webp';
 }
 $lae_scene_img  = lae_reglage( 'cine_scene_image' );
+if ( '' === $lae_scene_img ) {
+	// Sans photo, la scène n'était qu'un aplat vert : on sert celle du thème.
+	$lae_scene_img = $dir . '/assets/images/pelouse-haie.webp';
+}
 $lae_main_img   = lae_reglage( 'cine_main_image' );
 $lae_arbre_img  = lae_reglage( 'cine_arbre_image' );
 $lae_bois_img   = lae_reglage( 'cine_matiere_image' );
@@ -564,32 +568,62 @@ $lae_contact    = lae_url_contact();
      écrans de haut que l'on descend en défilant : cime en haut
      de page, racines en bas. Tout le reste passe par-dessus.
      ========================================================== */
-  .lae-colonne{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--ink)}
+  /* Un aplat noir sous la vidéo faisait un trou dans la page dès que l'image
+     était sombre : le fond garde maintenant une profondeur de sous-bois. */
+  .lae-colonne{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+    background:
+      radial-gradient(80% 55% at 50% 8%,#1d4429,transparent 68%),
+      radial-gradient(70% 60% at 50% 100%,#12301c,transparent 72%),
+      linear-gradient(180deg,#0c2416,#071a0f 52%,#0b2114)}
+  /* Une colonne de lumière suit le tronc : sans elle, les scènes basses
+     tombaient sur un fond noir plat. */
+  .lae-colonne__lueur{position:absolute;left:50%;top:0;bottom:0;width:min(70vw,860px);
+    transform:translateX(-50%);pointer-events:none;
+    background:radial-gradient(46% 52% at 50% 42%,rgba(94,166,96,.3),rgba(47,125,79,.12) 58%,transparent 76%);
+    mix-blend-mode:screen}
   /* La vidéo passe sous l'arbre et sous le texte : elle donne le mouvement,
      jamais le premier plan. Sans cette retenue, plus rien ne se lit. */
-  .lae-colonne__video{position:absolute;inset:0;opacity:.5}
+  .lae-colonne__video{position:absolute;inset:0;opacity:.85}
   .lae-colonne__video video,.lae-colonne__video img{width:100%;height:100%;object-fit:cover}
   .lae-colonne__arbre{position:absolute;left:50%;top:0;width:min(64vw,760px);
-    transform:translate3d(-50%,0,0);opacity:.85;will-change:transform;
-    filter:drop-shadow(0 0 60px rgba(47,125,79,.35))}
+    transform:translate3d(-50%,0,0);opacity:.95;will-change:transform;
+    filter:drop-shadow(0 0 70px rgba(47,125,79,.28))}
   .lae-colonne__arbre img{width:100%;height:auto}
   /* Assez de voile pour que le texte reste lisible, assez peu pour que l'arbre
      se voie : c'est lui qui porte la descente. */
   .lae-colonne__voile{position:absolute;inset:0;
-    background:radial-gradient(130% 80% at 50% 30%,rgba(4,20,12,.3),rgba(4,20,12,.66) 70%,rgba(4,20,12,.84)),
-               linear-gradient(180deg,rgba(4,20,12,.58),rgba(4,20,12,.3) 40%,rgba(4,20,12,.66))}
-  @media(max-width:960px){.lae-colonne__arbre{width:118vw;opacity:.72}}
+    background:radial-gradient(130% 80% at 50% 30%,rgba(4,20,12,.06),rgba(4,20,12,.34) 72%,rgba(4,20,12,.52)),
+               linear-gradient(180deg,rgba(4,20,12,.34),rgba(4,20,12,.05) 42%,rgba(4,20,12,.36))}
+  @media(max-width:960px){.lae-colonne__arbre{width:118vw;opacity:.85}}
+
+  /* ----------------------------------------------------------
+     LISIBILITÉ : on protège les mots, pas tout l'écran.
+     Assombrir la page entière tuait la vidéo et l'arbre ; l'ombre
+     portée ne noircit que le pourtour immédiat du texte.
+     ---------------------------------------------------------- */
+  .hero__t,.stitle,.lead,.hero__sub,.eyebrow,.hero__points,.hero__scroll,.chs__t,.chs__p{
+    text-shadow:0 1px 2px rgba(2,12,7,.72),0 2px 22px rgba(2,12,7,.6)}
+  .eyebrow{text-shadow:0 1px 2px rgba(2,12,7,.9),0 0 14px rgba(2,12,7,.85)}
+  .hero__t,.stitle{text-shadow:0 2px 3px rgba(2,12,7,.78),0 4px 34px rgba(2,12,7,.68)}
+  /* Un halo doux derrière les blocs de texte centrés : il suit le texte,
+     il ne recouvre pas la scène. */
+  .hero__in::before,.at__head::before,.of__in::before,.rz__in::before{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(1100px,116%);height:130%;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 58% at 50% 50%,rgba(3,16,9,.66),rgba(3,16,9,.28) 62%,transparent 78%)}
+  .hero__in,.at__head,.of__in,.rz__in{position:relative}
+
 
   /* Les fonds pleins des scènes deviennent des voiles : sans cela la colonne
      serait masquée précisément là où la descente doit se sentir. */
-  .mq{background:rgba(6,26,16,.72)}
-  .ds__stick{background:radial-gradient(70% 70% at 50% 40%,rgba(15,36,24,.62),rgba(4,20,12,.9))}
-  .arbre__stick{background:radial-gradient(60% 60% at 50% 45%,rgba(15,36,24,.35),rgba(4,20,12,.78))}
+  .mq{background:rgba(6,26,16,.5)}
+  .ds__stick{background:radial-gradient(70% 70% at 50% 40%,rgba(15,36,24,.3),rgba(4,20,12,.62))}
+  .arbre__stick{background:radial-gradient(60% 60% at 50% 45%,rgba(15,36,24,.16),rgba(4,20,12,.5))}
   .ds__photo--nu{background:linear-gradient(155deg,rgba(18,48,30,.75),rgba(4,20,12,.9) 68%)}
   .pack,.card,.rz__card{background:rgba(11,29,19,.9);backdrop-filter:blur(2px)}
   .hero__veil{background:
-    linear-gradient(180deg,rgba(4,20,12,.72),rgba(4,20,12,.12) 34%,rgba(4,20,12,.42) 68%,rgba(4,20,12,.9)),
-    radial-gradient(120% 80% at 22% 60%,transparent 38%,rgba(4,20,12,.55))}
+    linear-gradient(180deg,rgba(4,20,12,.5),rgba(4,20,12,.02) 34%,rgba(4,20,12,.2) 68%,rgba(4,20,12,.66)),
+    radial-gradient(120% 80% at 22% 60%,transparent 44%,rgba(4,20,12,.3))}
 </style>
 
 <script>
@@ -626,6 +660,7 @@ if ( '' === $lae_col_arbre ) {
     <div class="lae-colonne__video"><?php echo lae_img( $lae_hero_post, '', array( 'loading' => '' ) ); ?></div>
   <?php endif; ?>
 
+  <div class="lae-colonne__lueur"></div>
   <div class="lae-colonne__arbre"><img src="<?php echo esc_url( $lae_col_arbre ); ?>" alt="" width="1200" height="6000" decoding="async" fetchpriority="low"></div>
   <div class="lae-colonne__voile"></div>
 </div>
