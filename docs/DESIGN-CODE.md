@@ -96,6 +96,17 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ✅ Perf mobile confirmée en vrai par Fabrice
+
+Il a purgé le cache, retesté sur son téléphone : **le défilement est bon**. Les
+correctifs de la v1.9.2 tournent enfin (ils étaient déployés mais masqués par le
+cache LiteSpeed, voir plus bas). Le volet performance est clos côté CODE.
+
+**Restent tes deux points**, tous deux mesurés et documentés ci-dessous : les
+cartes coupées sous 844 px de viewport (`.ds__stick`), et les 5,6 écrans
+épinglés de `.ds`. Le second est celui que Fabrice ressent le plus.
+
+
 ### [2026-09-09] ⚙️→🎨 « Ça se fixe pendant tout le scroll » : `.ds{height:560svh}`
 
 Fabrice a précisé son second point : *« la section sous le hero se fixe pendant

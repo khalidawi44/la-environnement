@@ -19,6 +19,35 @@ ne pas s'y reposer aveuglément : il ne tourne que si `php` est dans le PATH).
 
 ## État actuel
 
+**Site en ligne : `elagage-vertou.fr`, thème v1.9.3.**
+
+✅ **Scroll mobile corrigé et confirmé par Fabrice sur son téléphone (09/09).**
+Mesuré avant/après sur iPhone 13 CPU ×4 : p95 de frame 67 → 50 ms, pointe
+83 → 61 ms. Trois changements : Lenis n'est plus instancié sur pointeur
+tactile, `ST.config({limitCallbacks, ignoreMobileResize})`, et les `scrub:true`
+passés en `scrub:.3`.
+
+⚠️ **Leçon du 09/09 — le cache masquait tous les déploiements.** Le thème était
+déployé et le site servait l'ancienne page depuis le cache LiteSpeed (`hit`,
+`age: 24180`, `max-age: 604800`). Corrigé en v1.9.3 : `purge_caches()` purge
+LiteSpeed, le cache objet et les permaliens à chaque sync qui modifie un
+fichier. **Ne jamais conclure qu'un correctif ne marche pas sans avoir lu le
+HTML réellement servi :**
+```bash
+curl -sSI https://elagage-vertou.fr/ | grep -iE "x-litespeed|^age:"
+curl -sS  https://elagage-vertou.fr/ | grep -c "UNE_CHAINE_DU_NOUVEAU_CODE"
+```
+
+🎨 **Deux points ouverts, couloir DESIGN** (détail et mesures dans
+`docs/DESIGN-CODE.md`) :
+1. `.ds__stick{height:100svh;overflow:hidden}` coupe les cartes sous ~844 px de
+   viewport — texte tranché, bouton perdu. Déclenché par une bannière de
+   notification ou les barres de Safari.
+2. `.ds{height:560svh}` = 5,6 écrans épinglés sur 14. Proposition chiffrée :
+   280svh, plus `.tab` et `.arbre` à 120svh.
+
+
+
 - **La vidéo de fond est livrée** : `assets/video/canopee.mp4` (536 Ko, 5 s,
   bouclable) — une canopée vue d'en bas, agitée par le vent, rendue avec
   Blender (`outils/canopee-blender.py`). Trois houppiers à des profondeurs
