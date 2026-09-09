@@ -440,6 +440,12 @@ class LAE_GitHub_Sync {
 				update_option( self::OPT_PREFIX . $slug . '_log', $log );
 				if ( ! empty( $inc['ok'] ) ) {
 					update_option( self::OPT_PREFIX . $slug . '_sha', $remote_sha );
+					$n_modif = (int) ( $inc['stats']['created'] ?? 0 ) + (int) ( $inc['stats']['updated'] ?? 0 ) + (int) ( $inc['stats']['deleted'] ?? 0 );
+					if ( $n_modif > 0 ) {
+						$purges = self::purge_caches();
+						$log[]  = 'Caches purgés : ' . ( $purges ? implode( ', ', $purges ) : 'aucun' );
+						update_option( self::OPT_PREFIX . $slug . '_log', $log );
+					}
 					return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => $inc['stats'] );
 				}
 				// Échec partiel : on n'avance PAS le SHA → la prochaine sync réessaie.
@@ -543,7 +549,56 @@ class LAE_GitHub_Sync {
 
 		if ( function_exists( 'opcache_reset' ) ) { @opcache_reset(); }
 
+		if ( ( (int) $stats['updated'] + (int) $stats['created'] ) > 0 ) {
+			$purges = self::purge_caches();
+			$log[]  = 'Caches purgés : ' . ( $purges ? implode( ', ', $purges ) : 'aucun' );
+			update_option( self::OPT_PREFIX . $slug . '_log', $log );
+		}
+
 		return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => $stats );
+	}
+
+	/**
+	 * Purge les caches de page après une sync qui a modifié des fichiers.
+	 *
+	 * SANS ÇA LA SYNC NE SERT À RIEN DE VISIBLE. Constat du 09/09 : le thème
+	 * était bien en v1.9.2 sur le disque (style.css servi à jour), mais le HTML
+	 * rendu venait du cache LiteSpeed, généré 6 h 43 plus tôt et valable
+	 * 7 jours (`x-litespeed-cache: hit`, `age: 24180`, `max-age: 604800`).
+	 * Les correctifs PHP étaient déployés et invisibles.
+	 *
+	 * Pire : les fichiers statiques (CSS, JS, images) sont servis directement
+	 * et se mettent à jour tout de suite, alors que le HTML reste figé. Le site
+	 * peut donc tourner en état MIXTE — nouveau CSS sur ancien HTML.
+	 *
+	 * @return array Noms des caches purgés.
+	 */
+	public static function purge_caches() {
+		$faits = array();
+
+		// LiteSpeed (celui d'Hostinger). Action documentée du plugin ;
+		// sans plugin actif, do_action est un no-op inoffensif.
+		if ( defined( 'LSCWP_V' ) || has_action( 'litespeed_purge_all' ) ) {
+			do_action( 'litespeed_purge_all' );
+			$faits[] = 'LiteSpeed';
+		}
+
+		// Cache objet / persistant éventuel.
+		if ( function_exists( 'wp_cache_flush' ) ) {
+			wp_cache_flush();
+			$faits[] = 'cache objet';
+		}
+
+		// Règles de réécriture : un nouveau gabarit ou CPT peut en dépendre.
+		if ( function_exists( 'flush_rewrite_rules' ) ) {
+			flush_rewrite_rules( false );
+			$faits[] = 'permaliens';
+		}
+
+		// Point d'extension pour tout autre cache (CDN, plugin tiers).
+		$faits = apply_filters( 'lae_github_sync_purge', $faits );
+
+		return is_array( $faits ) ? $faits : array();
 	}
 
 	/** Handler POST (admin-post.php?action=lae_github_sync_run&slug=theme). */

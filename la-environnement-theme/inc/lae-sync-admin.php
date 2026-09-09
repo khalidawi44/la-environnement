@@ -27,6 +27,15 @@ function lae_gh_raw( $url ) {
 	return wp_remote_retrieve_body( $resp );
 }
 
+/** Purge manuelle des caches, depuis l'écran SYNC GitHub. */
+add_action( 'admin_post_lae_purge_cache', function () {
+	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'forbidden' );
+	check_admin_referer( 'lae_purge_cache' );
+	$faits = class_exists( 'LAE_GitHub_Sync' ) ? LAE_GitHub_Sync::purge_caches() : array();
+	wp_safe_redirect( admin_url( 'tools.php?page=lae-sync&lae_purge=' . rawurlencode( $faits ? implode( ', ', $faits ) : 'aucun' ) ) );
+	exit;
+} );
+
 add_action( 'admin_menu', function () {
 	add_management_page(
 		'SYNC GitHub',
@@ -53,6 +62,13 @@ function lae_render_sync_page() {
 		);
 	}
 
+	if ( isset( $_GET['lae_purge'] ) ) {
+		printf(
+			'<div class="notice notice-success is-dismissible"><p>Caches purgés : %s</p></div>',
+			esc_html( sanitize_text_field( wp_unslash( $_GET['lae_purge'] ) ) )
+		);
+	}
+
 	$repos = LAE_GitHub_Sync::get_repos();
 	$next  = LAE_GitHub_Sync::get_next_cron_run();
 
@@ -63,6 +79,17 @@ function lae_render_sync_page() {
 	echo '<p><strong>Prochaine vérification automatique :</strong> ';
 	echo $next ? esc_html( wp_date( 'd/m/Y H:i:s', $next ) ) : '<span style="color:#b32d2e">cron non planifié</span>';
 	echo '</p>';
+
+	echo '<div class="card" style="max-width:900px;padding:16px;margin:16px 0">';
+	echo '<h2 style="margin-top:0">Purger les caches</h2>';
+	echo '<p>La sync purge désormais les caches toute seule dès qu\'elle modifie un fichier. '
+		. 'Ce bouton sert si le site affiche encore une ancienne page : le HTML peut être servi '
+		. 'depuis le cache LiteSpeed alors que les fichiers du thème sont déjà à jour.</p>';
+	echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+	wp_nonce_field( 'lae_purge_cache' );
+	echo '<input type="hidden" name="action" value="lae_purge_cache">';
+	submit_button( 'Purger maintenant', 'secondary', 'submit', false );
+	echo '</form></div>';
 
 	foreach ( $repos as $slug => $cfg ) {
 		$remote = LAE_GitHub_Sync::get_remote_sha( $slug );

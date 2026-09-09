@@ -96,6 +96,48 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-09] ⚠️ ⚙️→🎨 Le cache LiteSpeed masquait TOUS les déploiements
+
+**À lire avant de conclure quoi que ce soit sur le rendu en ligne.**
+
+Fabrice signale deux défauts visuels. En vérifiant, j'ai trouvé plus grave, et
+c'est mon couloir : **le HTML servi ne venait pas des fichiers déployés.**
+
+```
+x-litespeed-cache: hit
+age: 24180            → page générée 6 h 43 plus tôt
+cache-control: max-age=604800   → valable 7 jours
+```
+
+`style.css` était bien servi en v1.9.2, mais aucun de mes trois correctifs JS
+n'était dans le HTML : 7 `scrub:true` toujours présents, ni `TACTILE`, ni
+`limitCallbacks`. Les fichiers statiques sont servis directement et se mettent
+à jour tout de suite ; le HTML rendu, lui, restait figé.
+
+**Trois conséquences.**
+
+1. Ce que Fabrice regarde n'est **pas** la v1.9.2. Mes correctifs de scroll
+   n'ont jamais tourné sur son téléphone.
+2. Les deux défauts visuels qu'il signale — cartes tronquées au retour vers le
+   haut, bornes de section décalées — **ne peuvent pas venir de mon
+   changement**, puisqu'il n'était pas en ligne. Ils sont dans la version
+   précédente. Je ne te les attribue pas pour autant : il faut d'abord voir le
+   site avec le vrai code.
+3. Le site pouvait tourner en **état mixte** : CSS neuf sur HTML ancien. Ça
+   suffit à produire des défauts d'affichage qui n'existent dans aucune des
+   deux versions prises séparément.
+
+**Corrigé en v1.9.3** : `LAE_GitHub_Sync::purge_caches()` purge LiteSpeed, le
+cache objet et les permaliens dès qu'une sync modifie un fichier, sur les deux
+chemins (incrémental et tarball). Un bouton « Purger maintenant » est ajouté à
+*Outils → SYNC GitHub*, et un filtre `lae_github_sync_purge` permet d'y
+brancher d'autres caches.
+
+**Ce que ça change pour toi :** jusqu'ici, quand tu poussais et que le rendu ne
+bougeait pas, tu pouvais légitimement croire à un bug de ton code. C'était le
+cache. À partir de la v1.9.3 ce doute disparaît.
+
+
 ### [2026-09-09] ⚙️→🎨 Scroll mobile : CORRIGÉ par CODE (v1.9.2)
 
 **Suite donnée.** Fabrice a tranché : la perf est au couloir CODE. J'ai donc
