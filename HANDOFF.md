@@ -27,6 +27,25 @@ Mesuré avant/après sur iPhone 13 CPU ×4 : p95 de frame 67 → 50 ms, pointe
 tactile, `ST.config({limitCallbacks, ignoreMobileResize})`, et les `scrub:true`
 passés en `scrub:.3`.
 
+✅ **CHAÎNE DE DÉPLOIEMENT VÉRIFIÉE DE BOUT EN BOUT — 10/09, 06:19 UTC.**
+Tâche cron créée par Fabrice dans hPanel (`*/5 * * * *`,
+`wget -q -O /dev/null https://elagage-vertou.fr/wp-cron.php`). Test réel : la
+v1.9.9 poussée sur `main` est arrivée en ligne **toute seule en 4 minutes**,
+sans aucune intervention. Vérifié ensuite sur l'URL nue, sur 5 nœuds CDN :
+`s-maxage=300` partout, meta description complète, `max-snippet:-1`,
+sitemap en 200. **Le sujet est clos, plus aucune purge manuelle n'est
+nécessaire.**
+
+🔎 **Comment vérifier une mise en ligne, en une commande** (v1.9.9+) :
+```bash
+curl -sSI https://elagage-vertou.fr/ | grep -i x-lae-version
+```
+C'est la version qui a **rendu la page**, à ne pas confondre avec celle des
+fichiers sur le disque (`style.css`). Si elle est en retard : c'est du cache,
+pas du code. Cette distinction est ce qui a coûté toute la soirée du 09/09.
+*(Note : quelques nœuds du CDN ne relaient pas cet en-tête sur une copie
+servie depuis leur cache — le contenu, lui, est bien à jour.)*
+
 🧩 **CAUSE RACINE trouvée le 09/09 au soir — deux couches de cache, pas une.**
 Le site est derrière **LiteSpeed** (serveur) *et* le **CDN Hostinger**
 (`x-hcdn-cache-status`). Les pages HTML partaient avec
