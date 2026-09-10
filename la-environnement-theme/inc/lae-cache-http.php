@@ -29,6 +29,26 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/*
+ * Marqueur de version sur la réponse.
+ *
+ * Toute la soirée du 09/09 a été perdue à confondre deux choses : la version
+ * des FICHIERS sur le disque (lisible dans style.css) et la version qui a
+ * réellement RENDU la page qu'on regarde. Entre les deux il y a deux caches,
+ * et elles peuvent différer de plusieurs versions.
+ *
+ * Cet en-tête répond à la seule question qui compte : « la page que je tiens
+ * dans les mains, quelle version l'a produite ? »
+ *
+ *     curl -sSI https://elagage-vertou.fr/ | grep -i x-lae-version
+ *
+ * Si elle est en retard sur style.css, c'est du cache — pas du code.
+ */
+add_action( 'send_headers', function () {
+	if ( headers_sent() || ! defined( 'LAE_VERSION' ) ) return;
+	header( 'X-LAE-Version: ' . LAE_VERSION );
+}, 99 );
+
 add_action( 'send_headers', function () {
 	if ( is_admin() || headers_sent() ) return;
 	if ( is_user_logged_in() ) return;          // l'admin ne doit jamais être mis en cache
