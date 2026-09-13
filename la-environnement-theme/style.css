@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.17.0
+Version: 1.17.1
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -897,6 +897,20 @@ ul, ol { padding-left: 1.25em; }
 	backdrop-filter: blur(3px);
 }
 
+/* Sur la page urgences, la pilule passe au rouge comme le reste : le bois
+   est la couleur de signature du site, l'alerte est celle de cette page-là.
+   Le rouge plein plutôt que le rouge transparent — sur une photo, un fond
+   translucide laisse le contraste dépendre de l'image en dessous, et cette
+   pilule doit se lire quelle que soit la photo qu'on mettra demain. */
+.page-template-page-urgences .lae-page-tete--photo .lae-pilule {
+	color: #fff;
+	background: var(--lae-alerte);
+	border-color: rgba(255, 255, 255, .35);
+}
+.page-template-page-urgences .lae-page-tete--photo .lae-hachure {
+	background: repeating-linear-gradient(115deg, var(--lae-alerte-clair) 0 3px, transparent 3px 7px);
+}
+
 /* ── La vague de fin d'en-tête ───────────────────────────────────────
    Une coupure droite entre une photo et le corps de page fait « bloc
    collé » ; la courbe fait passer de l'un à l'autre. Le remplissage
@@ -1528,5 +1542,10 @@ ul, ol { padding-left: 1.25em; }
 	.lae-tarif-h2 { margin-top: 36px; }
 	.lae-marche th, .lae-marche td { padding: 11px 14px; }
 	.lae-tarif-position, .lae-niveau { padding: 17px 18px; }
-	.lae-urgence-appel .lae-btn { font-size: 1.2rem; width: 100%; }
+	/* Le numéro reste grand sur téléphone — c'est là qu'on appelle.
+	   Cette règle le rabaissait à 1,2 rem et écrasait le clamp posé plus
+	   haut : sur un écran de 390 px le numéro sortait à 19 px, plus petit
+	   que le titre de la page. On garde la pleine largeur, on rend la
+	   taille au clamp. */
+	.lae-urgence-appel .lae-btn { width: 100%; padding-inline: 12px; }
 }
