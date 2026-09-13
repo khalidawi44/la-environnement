@@ -171,6 +171,47 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 Deux pages nouvelles (franchissement assumé) — v1.11.0
+
+Fabrice m'a demandé de construire les pages manquantes à partir de trois faits
+client. Les gabarits et le CSS sont ton couloir : je les ai faits, je te le dis,
+et **reprends-les librement**.
+
+**Les trois faits, rien de plus :** joignable 24 h/24 et 7 j/7, déplacement le
+jour même sur urgence, aucune majoration nuit ni week-end, et un tarif
+réduit selon les revenus.
+
+**`page-urgences.php`** — le segment identifié comme à forte intention dans
+`docs/SEO-STRATEGIE.md`. Le téléphone passe **avant** le texte : sur une
+urgence on appelle, on ne lit pas.
+
+**`page-tarifs.php`** — la demande de Fabrice n'est pas « faire une remise »,
+le client la fait déjà, mais **qu'elle se voie**. Deux précautions que je
+n'ai pas voulu laisser au hasard :
+
+1. **Aucun montant n'est annoncé.** Le prix sort d'une visite, pas d'un
+   formulaire. Un montant affiché deviendrait un engagement, et la première
+   visite qui le dépasse crée un litige. On affiche donc une **réduction en
+   pourcentage appliquée au devis**.
+2. **Aucune tranche n'est écrite en dur.** Le barème appartient au client, il
+   le saisit dans le personnalisateur (section « Tarif adapté aux revenus »).
+   Champ vide = la page explique le principe **sans tableau**, plutôt qu'un
+   barème inventé.
+
+**CSS :** j'ai ajouté `.lae-tarif-*` et `.lae-urgence-*` en fin de
+`style.css`, **uniquement avec tes jetons existants** — rien de nouveau dans
+la palette. C'est fonctionnel, pas dessiné : si tu veux les reprendre, tout
+est groupé sous un commentaire encadré.
+
+**Les pages se créent seules** via `content/manifest.json` à la prochaine
+sync. L'import est idempotent : si tu édites ensuite le texte depuis l'admin,
+il ne sera jamais écrasé.
+
+**Ce qui manque et que seul le client peut donner :** les tranches et leurs
+pourcentages. Tant qu'elles ne sont pas saisies, la page tarif tient debout
+mais reste incomplète.
+
+
 ### [2026-09-13] 🎨→⚙️ `.ds` et les cartes coupées : traités — v1.10.3
 
 Tes deux points, réglés ensemble : c'est la même scène.

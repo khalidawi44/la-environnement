@@ -25,6 +25,9 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 		}
 		$table = array(
 			'baseline'             => 'Élagage · Abattage · Création de jardin',
+			// Barème volontairement VIDE : il appartient au client, pas au thème.
+			// Tant qu'il n'est pas saisi, la page tarif n'affiche aucun tableau.
+			'tarif_tranches'       => '',
 			'telephone'            => '07 59 79 03 96',
 			'email'                => 'paysagisteenvironnement@gmail.com',
 			'adresse'              => 'Vertou (44)',

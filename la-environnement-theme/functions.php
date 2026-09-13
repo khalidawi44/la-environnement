@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LAE_VERSION', '1.10.5' );
+define( 'LAE_VERSION', '1.11.0' );
 
 /** Supports WordPress de base. */
 add_action( 'after_setup_theme', function () {
@@ -62,6 +62,7 @@ add_filter( 'body_class', function ( $classes ) {
 } );
 
 // ── Sécurité ────────────────────────────────────────────────────────
+require_once get_template_directory() . '/inc/lae-tarif.php';
 require_once get_template_directory() . '/inc/lae-hardening.php';
 require_once get_template_directory() . '/inc/lae-cache-http.php';
 require_once get_template_directory() . '/inc/lae-partage.php';
