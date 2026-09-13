@@ -325,12 +325,38 @@ add_action( 'admin_init', function () {
 	}
 
 	/* Verrou distinct : sur un site déjà amorcé, le titre livré par
-	   l'hébergeur (le nom de domaine) n'avait jamais été corrigé. */
-	if ( ! get_option( 'lae_identite_faite' ) ) {
-		update_option( 'lae_identite_faite', 1, false );
+	   l'hébergeur (le nom de domaine) n'avait jamais été corrigé.
+
+	   ET IL NE L'A TOUJOURS PAS ÉTÉ, parce que ce verrou-ci était un
+	   simple booléen. Il s'est posé pendant que le site vivait encore sur
+	   le domaine temporaire de l'hébergeur : à ce moment-là le titre ne
+	   ressemblait à aucun nom d'hôte, rien n'a été corrigé, et le verrou
+	   a interdit tout nouvel essai. Résultat constaté en ligne le 13/09 :
+	   `<title>`, `og:site_name` ET le `name` du LocalBusiness en JSON-LD
+	   annonçaient tous « elagage-vertou.fr ». Pour un moteur, l'entreprise
+	   n'avait pas de nom — juste une adresse.
+
+	   Le verrou retient donc maintenant le NOM D'HÔTE pour lequel il a
+	   été posé. Un changement de domaine — c'est exactement ce qui vient
+	   de se produire — redonne sa chance à la correction. */
+	lae_identite_rattrapage();
+} );
+
+if ( ! function_exists( 'lae_identite_rattrapage' ) ) {
+	function lae_identite_rattrapage() {
+		$hote_actuel = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+		if ( '' === $hote_actuel || get_option( 'lae_identite_faite' ) === $hote_actuel ) {
+			return;
+		}
+		update_option( 'lae_identite_faite', $hote_actuel );
 		lae_amorce_identite();
 	}
-} );
+}
+
+/* Sur `init` aussi, et pour la même raison que les pages et les chantiers :
+   le thème arrive par WP-Cron, aucune administration n'est chargée. Un titre
+   de site faux n'attend pas la prochaine connexion de quelqu'un. */
+add_action( 'init', 'lae_identite_rattrapage', 19 );
 
 /* ═══════════════════════════════════════════════════════════════════
    Pages ajoutées après l'amorce
