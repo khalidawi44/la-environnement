@@ -331,3 +331,125 @@ add_action( 'admin_init', function () {
 		lae_amorce_identite();
 	}
 } );
+
+/* ═══════════════════════════════════════════════════════════════════
+   Pages ajoutées après l'amorce
+   Les gabarits « Urgences » et « Tarif adapté aux revenus » sont livrés
+   depuis la v1.11.0, mais `lae_amorce_faite` était déjà posée sur le
+   site : aucune page ne les utilisait, donc le travail était invisible.
+   Ce verrou-ci est distinct, comme `lae_identite_faite`, et ne repasse
+   jamais par-dessus une page existante ni par-dessus les menus du
+   client.
+   ═══════════════════════════════════════════════════════════════════ */
+
+if ( ! function_exists( 'lae_pages_tardives' ) ) {
+	/**
+	 * Pages livrées après la première amorce.
+	 *
+	 * @return array<string, array{titre:string, extrait:string, gabarit:string, menu:string, contenu:string}>
+	 */
+	function lae_pages_tardives() {
+		return array(
+			'urgences' => array(
+				'titre'   => 'Urgences',
+				'extrait' => 'Arbre tombé, branche menaçante, sécurisation après tempête : joignable 24 h/24 et 7 j/7, déplacement le jour même, sans majoration.',
+				'gabarit' => 'page-urgences.php',
+				'menu'    => 'Urgences 24 h/24',
+				'contenu' => "<!-- wp:heading --><h2>Ce qui compte comme une urgence</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Un arbre déraciné ou couché, une grosse branche fendue qui tient encore, un houppier qui surplombe une toiture après un coup de vent, un tronc qui menace une ligne électrique ou la voie publique. Dans ces cas-là, on ne prend pas rendez-vous pour la semaine suivante.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Comment ça se passe</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Vous appelez et vous décrivez ce que vous voyez — une photo par message aide beaucoup. On vient dans la journée. Le premier geste est de <strong>mettre hors de danger</strong> : hauban, dépose de la partie instable, périmètre dégagé. Le reste du chantier, la finition et l'évacuation se traitent après, quand plus rien ne menace.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Avant d'appeler, quelques réflexes</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Ne passez pas sous la partie qui menace, et éloignez les voitures et les enfants de son aplomb. Si un câble est touché ou arraché, n'y touchez pas et appelez d'abord Enedis. Si la voie publique est coupée, prévenez la mairie ou les pompiers : leur intervention et la nôtre ne font pas le même travail.</p><!-- /wp:paragraph -->\n\n<!-- wp:heading --><h2>Et l'assurance</h2><!-- /wp:heading -->\n\n<!-- wp:paragraph --><p>Prenez des photos avant toute intervention : votre assureur les demandera. Nous remettons une facture détaillée, et un constat écrit de ce qui a été sécurisé et pourquoi, à joindre à votre déclaration.</p><!-- /wp:paragraph -->",
+			),
+			'tarifs' => array(
+				'titre'   => 'Nos tarifs',
+				'extrait' => 'Moins cher que les entreprises du secteur, à garanties identiques — et une réduction selon vos revenus, sans justificatif à fournir.',
+				'gabarit' => 'page-tarifs.php',
+				'menu'    => 'Tarifs',
+				'contenu' => "<!-- wp:paragraph --><p>Un devis d'élagage n'a rien d'évident à lire : d'un professionnel à l'autre, le même arbre peut passer du simple au double sans qu'on comprenne pourquoi. Alors autant dire d'où l'on part.</p><!-- /wp:paragraph -->\n\n<!-- wp:paragraph --><p>Le prix d'un chantier dépend de quatre choses, et d'aucune autre : <strong>l'accès</strong> (un fond de jardin sans passage ne se travaille pas comme un bord de route), <strong>la hauteur</strong>, <strong>le risque</strong> (ce qu'il y a sous l'arbre — une toiture, une ligne, une clôture) et <strong>l'évacuation</strong> des déchets verts. C'est pour ça qu'aucun prix ne se donne au téléphone : on vient voir, et le devis écrit qui suit ne bouge plus.</p><!-- /wp:paragraph -->",
+			),
+		);
+	}
+}
+
+if ( ! function_exists( 'lae_pages_tardives_creer' ) ) {
+	function lae_pages_tardives_creer() {
+
+		$nouvelles = array();
+
+		foreach ( lae_pages_tardives() as $slug => $page ) {
+
+			$existante = get_page_by_path( $slug );
+			if ( $existante ) {
+				// Jamais par-dessus le contenu du client : on se contente de
+				// rattacher le gabarit s'il manque, sinon on laisse tel quel.
+				if ( '' === (string) get_post_meta( $existante->ID, '_wp_page_template', true ) ) {
+					update_post_meta( $existante->ID, '_wp_page_template', $page['gabarit'] );
+				}
+				continue;
+			}
+
+			$id = wp_insert_post( array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $page['titre'],
+				'post_name'    => $slug,
+				'post_excerpt' => $page['extrait'],
+				'post_content' => $page['contenu'],
+			), true );
+
+			if ( is_wp_error( $id ) ) {
+				continue;
+			}
+
+			update_post_meta( $id, '_wp_page_template', $page['gabarit'] );
+			$nouvelles[ (int) $id ] = $page['menu'];
+		}
+
+		if ( ! $nouvelles ) {
+			return;
+		}
+
+		// Menus : on complète ceux en place, on n'en recrée aucun, et on
+		// n'ajoute rien qui pointe déjà vers la même page.
+		$emplacements = get_theme_mod( 'nav_menu_locations', array() );
+
+		foreach ( array( 'principal', 'pied' ) as $cle ) {
+
+			if ( empty( $emplacements[ $cle ] ) ) {
+				continue;
+			}
+			$menu = wp_get_nav_menu_object( $emplacements[ $cle ] );
+			if ( ! $menu ) {
+				continue;
+			}
+
+			$deja = array();
+			foreach ( (array) wp_get_nav_menu_items( $menu->term_id ) as $item ) {
+				if ( 'post_type' === $item->type ) {
+					$deja[] = (int) $item->object_id;
+				}
+			}
+
+			foreach ( $nouvelles as $id => $libelle ) {
+				if ( in_array( (int) $id, $deja, true ) ) {
+					continue;
+				}
+				wp_update_nav_menu_item( $menu->term_id, 0, array(
+					'menu-item-title'     => $libelle,
+					'menu-item-object'    => 'page',
+					'menu-item-object-id' => (int) $id,
+					'menu-item-type'      => 'post_type',
+					'menu-item-status'    => 'publish',
+				) );
+			}
+		}
+	}
+}
+
+add_action( 'admin_init', function () {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	if ( get_option( 'lae_pages_tardives_faites' ) ) {
+		return;
+	}
+	update_option( 'lae_pages_tardives_faites', 1, false );   // verrou posé AVANT le travail
+	lae_pages_tardives_creer();
+}, 11 );

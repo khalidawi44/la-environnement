@@ -266,9 +266,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute( 'lae_cine_arbre_texte', array( 'label' => 'Révélation — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
 	/* ── Tarif adapté aux revenus ──────────────────────────────────────
-	   Aucune tranche n'est écrite dans le thème : le barème appartient au
-	   client, il le saisit ici. Champ vide = la page explique le principe
-	   sans afficher de tableau, plutôt qu'un barème inventé. */
+	   Un barème est PROPOSÉ (construit le 13/09), pas imposé : il se
+	   remplace ici en une saisie. Champ vidé = la page explique le
+	   principe sans afficher de tableau. */
 	$wp_customize->add_section( 'lae_tarif', array(
 		'title' => 'Tarif adapté aux revenus',
 		'panel' => $panneau,
@@ -283,6 +283,6 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'section'     => 'lae_tarif',
 		'type'        => 'textarea',
 		'sanitize'    => 'lae_sanitize_multiligne',
-		'description' => 'Une ligne par situation : Libellé | pourcentage. Exemple de FORMAT (à remplacer par vos vraies tranches) : « Étudiant, apprenti, sans emploi | 30 ». Le pourcentage s\'applique au devis. Champ vide = aucun tableau affiché.',
+		'description' => 'Une ligne par situation : Libellé | pourcentage. Le pourcentage s\'applique au devis, après la visite. Un barème est proposé par défaut — à confirmer ou à remplacer par le vôtre. Champ vidé = aucun tableau affiché.',
 	) );
 }, 20 );

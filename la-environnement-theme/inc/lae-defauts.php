@@ -25,9 +25,17 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 		}
 		$table = array(
 			'baseline'             => 'Élagage · Abattage · Création de jardin',
-			// Barème volontairement VIDE : il appartient au client, pas au thème.
-			// Tant qu'il n'est pas saisi, la page tarif n'affiche aucun tableau.
-			'tarif_tranches'       => '',
+			// Barème PROPOSÉ (construit le 13/09 à la demande de Fabrice), pas
+			// imposé : deux taux et deux libellés, que le client remplace dans
+			// le personnalisateur en une saisie. Ce sont les deux seules valeurs
+			// de tout le thème qui l'engagent commercialement — à confirmer.
+			//
+			// Mécanisme DÉCLARATIF et non quotient familial : réclamer un avis
+			// d'imposition pour faire couper un arbre est intrusif, et ça fait
+			// renoncer exactement les gens que la réduction vise. C'est le
+			// barème affiché qui fait le travail, pas le justificatif.
+			// Conséquence heureuse : aucun seuil en euros à inventer.
+			'tarif_tranches'       => "Étudiant, apprenti, sans emploi, minima sociaux | 30\nRetraité modeste, temps partiel, famille monoparentale | 15",
 			'telephone'            => '07 59 79 03 96',
 			'email'                => 'paysagisteenvironnement@gmail.com',
 			'adresse'              => 'Vertou (44)',

@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.11.1
+Version: 1.12.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -934,6 +934,127 @@ ul, ol { padding-left: 1.25em; }
 	margin: 0 0 32px;
 }
 
+/* ── Le comparatif de marché ────────────────────────────────────────
+   Trois niveaux, puis les fourchettes. Un seul niveau est mis en avant :
+   le nôtre. Les deux autres sont neutres — on situe, on n'attaque pas.
+   Jetons existants uniquement. À reprendre librement côté DESIGN. */
+
+.lae-tarif-h2 {
+	font-size: var(--lae-t-xl);
+	line-height: 1.2;
+	margin: 44px 0 10px;
+	color: var(--lae-encre);
+}
+.lae-tarif-h2:first-child { margin-top: 0; }
+.lae-tarif-intro {
+	color: var(--lae-doux);
+	max-width: 62ch;
+	margin: 0 0 22px;
+}
+
+.lae-niveaux {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 14px;
+	margin: 0 0 22px;
+}
+.lae-niveau {
+	padding: 20px 22px;
+	border: 1px solid var(--lae-trait);
+	border-top: 3px solid var(--lae-trait-fort);
+	border-radius: var(--lae-rayon);
+	background: var(--lae-fond);
+}
+.lae-niveau--nous {
+	border-top-color: var(--lae-accent);
+	background: var(--lae-fond-vert);
+	box-shadow: var(--lae-ombre);
+}
+.lae-niveau--noir { border-top-color: var(--lae-bois); }
+.lae-niveau__titre {
+	font-size: var(--lae-t-lg);
+	margin: 0 0 8px;
+	color: var(--lae-encre);
+}
+.lae-niveau--nous .lae-niveau__titre { color: var(--lae-accent-fonce); }
+.lae-niveau__texte {
+	margin: 0;
+	font-size: var(--lae-t-sm);
+	color: var(--lae-doux);
+}
+.lae-niveau--nous .lae-niveau__texte { color: var(--lae-encre-2); }
+
+.lae-tarif-cle {
+	font-size: var(--lae-t-lg);
+	line-height: 1.45;
+	color: var(--lae-encre);
+	border-left: 3px solid var(--lae-accent);
+	padding: 2px 0 2px 18px;
+	margin: 0 0 8px;
+	max-width: 60ch;
+}
+
+/* Le tableau déborde plutôt que d'écraser les prix sur petit écran. */
+.lae-marche-cadre {
+	overflow-x: auto;
+	border: 1px solid var(--lae-trait);
+	border-radius: var(--lae-rayon);
+	margin: 0 0 18px;
+}
+.lae-marche {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--lae-t-sm);
+	min-width: 30rem;
+}
+.lae-marche th,
+.lae-marche td {
+	text-align: left;
+	padding: 12px 18px;
+	border-bottom: 1px solid var(--lae-trait);
+}
+.lae-marche tr:last-child td { border-bottom: 0; }
+.lae-marche th {
+	background: var(--lae-fond-doux);
+	color: var(--lae-doux);
+	font-size: var(--lae-t-xs);
+	font-weight: 600;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+}
+.lae-marche__prix {
+	font-weight: 700;
+	color: var(--lae-encre);
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+.lae-marche__zone { color: var(--lae-doux); white-space: nowrap; }
+
+.lae-tarif-position {
+	background: var(--lae-accent-clair);
+	border-radius: var(--lae-rayon);
+	padding: 20px 22px;
+	margin: 0 0 14px;
+	max-width: 68ch;
+	color: var(--lae-encre-2);
+}
+.lae-tarif-position strong { color: var(--lae-accent-fonce); }
+.lae-marche__source {
+	font-size: var(--lae-t-xs);
+	color: var(--lae-doux);
+	max-width: 70ch;
+	margin: 0 0 10px;
+}
+
+.lae-tarif-ligne--plein { background: var(--lae-fond-doux); }
+.lae-tarif-taux--plein {
+	font-size: var(--lae-t-sm);
+	font-weight: 600;
+	color: var(--lae-doux);
+	text-transform: uppercase;
+	letter-spacing: .04em;
+}
+
 /* Sur une urgence, on appelle — le numéro passe avant le texte. */
 .lae-urgence-appel {
 	background: var(--lae-fond-vert);
@@ -952,7 +1073,16 @@ ul, ol { padding-left: 1.25em; }
 }
 .lae-urgence-appel .lae-btn { font-size: 1.35rem; padding: 14px 30px; }
 
+@media (max-width: 900px) {
+	.lae-niveaux { grid-template-columns: 1fr; }
+	.lae-niveau { border-top-width: 3px; padding: 17px 19px; }
+}
+
 @media (max-width: 640px) {
 	.lae-tarif-ligne { flex-direction: column; gap: 4px; padding: 14px 16px; }
+	.lae-tarif-ligne--plein { flex-direction: row; justify-content: space-between; }
+	.lae-tarif-h2 { margin-top: 36px; }
+	.lae-marche th, .lae-marche td { padding: 11px 14px; }
+	.lae-tarif-position, .lae-niveau { padding: 17px 18px; }
 	.lae-urgence-appel .lae-btn { font-size: 1.2rem; width: 100%; }
 }
