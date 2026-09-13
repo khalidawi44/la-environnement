@@ -39,7 +39,7 @@ function lae_illustration() {
 
 	/* 2. Sinon, la table livrée. Clés : slug de page, ou contexte d'archive. */
 	$table = apply_filters( 'lae_illustrations', array(
-		'urgences'         => array( 'chantiers/demontage-bouleau.webp',           'Démontage d\'un bouleau au-dessus d\'un jardin' ),
+		'urgences'         => array( 'chantiers/intervention-nuit.webp',           'Élagueur à la tronçonneuse de nuit, arbre tombé contre une maison, camion-nacelle éclairé en arrière-plan' ),
 		'tarifs'           => array( 'chantiers/haie-taillee-broyat.webp',         'Haie taillée, broyat laissé en paillage au pied' ),
 		'a-propos'         => array( 'chantiers/elagage-grimpe-cordes.webp',       'Élagage en grimpe, travail à la corde' ),
 		'contact'          => array( 'jardin-piscine.webp',                        'Jardin entretenu au bord d\'une piscine' ),

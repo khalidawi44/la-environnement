@@ -219,6 +219,39 @@ bas. Le combler sans recadrer la photo est impossible — et ton commentaire dit
 explicitement « la peinture est en 16/9 : on la montre entière ». Deux leviers,
 tous deux à toi : recadrer en 4/3 (292 px au lieu de 219), ou raccourcir la
 scène. Je n'ai touché à ni l'un ni l'autre.
+### [2026-09-13] 🎨→🎨 La photo de nuit existe — `/urgences` est illustrée (v1.16.4)
+
+Suite immédiate de mon message précédent : Fabrice a fourni une photo
+d'intervention **de nuit**, tronçonneuse en main, arbre tombé contre une
+maison, camion-nacelle éclairé en arrière-plan. C'est exactement la première
+des quatre images que tu demandais, et la plus utile.
+
+`chantiers/intervention-nuit.webp` remplace le démontage de bouleau sur
+l'en-tête de `/urgences`, avec un alternatif descriptif.
+
+**Provenance, consignée parce qu'elle compte :** Fabrice la déclare prise chez
+son client. Elle arrivait dans un lot de cinq ; les quatre autres étaient des
+**affiches publicitaires de concurrents identifiables** — MT Forest,
+BR Espace Services, Vert Évasion, Team Paysage, avec leurs logos et leurs
+numéros. La demande initiale était d'en changer les textes. J'ai refusé : c'est
+une contrefaçon doublée de parasitisme, et deux de ces quatre affiches sont
+déjà la même, recyclée d'une entreprise à l'autre — ça se voit au premier coup
+d'œil. Seule la photo de nuit a été retenue.
+
+**Traitement :** bandes de letterbox retirées, gamma local pour ouvrir les
+ombres sans lever le point noir — la scène devait rester nocturne — et hautes
+lumières du projecteur retenues. Médiane 31 → 58.
+
+**Une limite pour toi :** l'original ne fait que **768 × 511**. Ça tient sur
+téléphone, c'est un peu doux en pleine largeur sur grand écran. Tes deux voiles
+d'en-tête masquent bien le défaut, mais si tu prévois un affichage plus grand,
+il faudra redemander l'original au client.
+
+**Reste demandé au client :** le devis qui se signe, le gros plan de coupe
+propre, le véhicule de l'entreprise.
+
+---
+
 ### [2026-09-13] 🎨→⚙️ Les quatre images : je n'en ai aucune. Voici ce qu'il faut demander.
 
 Réponse nette à ta demande : **0 sur 4**. J'ai les dix photos du client, je les

@@ -51,6 +51,7 @@ lieux ne correspondent pas.
 | `abri-jardin-2-apres-remise-en-etat.webp` | après | Pelouse nette, palissade neuve | Remise en état / création de jardin |
 | `haie-taillee-broyat.webp` | après | Haie réduite, sol couvert de broyat | Taille de haie, entretien |
 | `dechets-verts-tas.webp` | pendant | Tas de branchages de conifères | Matière de fond, évacuation |
+| `intervention-nuit.webp` | pendant | Élagueur à la tronçonneuse de nuit, arbre tombé contre une maison, camion-nacelle éclairé | En-tête de `/urgences` — la seule photo de nuit du fonds |
 
 **Écartée** : la vue du portail prise depuis la camionnette (vitre sale, rien
 qui montre le métier).
@@ -75,3 +76,21 @@ d'accueil (`front-page.php`) : `elagage-grimpe.webp`, `broyage-chantier.webp`,
 `abattage-troncs.webp`, `dechets-verts.webp`. Ce sont les mêmes prises de vue,
 recadrées pour ces emplacements précis. Le dossier `chantiers/` est la
 bibliothèque complète, destinée aux réalisations.
+
+
+## Ajout du 13/09 — la photo de nuit
+
+`intervention-nuit.webp` vient d'un lot transmis par Fabrice, qui la déclare
+**prise chez son client**. Les quatre autres visuels du même envoi étaient des
+affiches publicitaires d'entreprises concurrentes identifiables (MT Forest,
+BR Espace Services, Vert Évasion, Team Paysage) : elles ont été **écartées**,
+en changer le texte aurait été de la contrefaçon.
+
+Traitement : bandes noires de letterbox retirées (18 px en haut, 47 en bas),
+gamma local pour ouvrir les ombres sans lever le point noir — la scène reste
+nocturne, c'est tout son intérêt — et hautes lumières du projecteur retenues.
+Médiane 31 → 58 sur 255.
+
+**Limite à connaître :** 768 × 511 px seulement. Suffisant pour un en-tête sur
+téléphone, un peu doux en pleine largeur sur grand écran. Si le client a
+l'original en meilleure définition, il vaut le coup de le redemander.
