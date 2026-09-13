@@ -37,6 +37,7 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			// Conséquence heureuse : aucun seuil en euros à inventer.
 			'atouts_urgence_titre' => 'On décroche la nuit',
 			'atouts_urgence_texte' => 'Branche sur le toit, arbre qui penche après la tempête : 24 h/24, 7 j/7, week-ends et jours fériés compris.',
+			'atouts_urgence_badge' => '24 h/24 · 7 j/7',
 			'atouts_tarif_titre'   => 'Le tarif suit vos revenus',
 			// « sans justificatif à fournir » et NON « sans avoir à la demander » :
 			// la réduction est déclarative, personne ne peut deviner la

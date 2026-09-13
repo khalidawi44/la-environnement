@@ -33,6 +33,18 @@ while ( have_posts() ) : the_post();
 				<a class="lae-btn lae-btn--primaire lae-btn--tel" href="<?php echo esc_url( $lae_tel_lien ); ?>">
 					<?php echo esc_html( $lae_tel ); ?>
 				</a>
+
+				<?php /* La consigne de sécurité, reprise des affiches du métier que
+				         Fabrice a transmises (14/09) : toutes portent le même
+				         avertissement sur les lignes tombées, et pour cause. Elle
+				         ne vend rien — elle peut éviter un accident pendant les
+				         minutes où la personne attend. C'est aussi ce qui sépare
+				         un professionnel d'un numéro de téléphone. */ ?>
+				<p class="lae-urgence-consigne">
+					<strong>En attendant, ne touchez jamais</strong> une ligne électrique tombée,
+					même basse tension, et ne restez pas sous la partie qui menace. Un câble
+					arraché : appelez Enedis. La voie publique coupée : les pompiers ou la mairie.
+				</p>
 			</div>
 		</div>
 	<?php endif; ?>

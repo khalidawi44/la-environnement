@@ -682,6 +682,27 @@ $lae_contact    = lae_url_contact();
   .atout__txt span{font-size:.85rem;line-height:1.45;color:#c9d6cc}
   .atout__fl{flex:none;color:var(--feuille);opacity:.75}
   .atout__fl svg{width:20px;height:20px}
+
+  /* ---------- LE BLOC URGENCE, EN ROUGE ----------
+     Demande de Fabrice (14/09), d'après les affiches concurrentes : sur ce
+     métier, l'urgence se signale en rouge, comme une consigne de sécurité.
+     C'est le SEUL rouge du site — une couleur d'alerte utilisée partout
+     n'alerte plus personne.
+     Mesuré : blanc sur #c62411 = 5,74:1, au-dessus du seuil AA.
+     Pas de clignotement ni de pulsation : la personne qui lit ça vient
+     d'avoir un arbre sur son toit, elle n'a pas besoin qu'on lui crie
+     dessus, elle a besoin de trouver le numéro. */
+  .atout--urgence{
+    background:linear-gradient(135deg,#c62411,#9c1c0c);
+    border-color:rgba(255,140,120,.5);
+    box-shadow:0 10px 30px -14px rgba(198,36,17,.75)}
+  .atout--urgence:hover{border-color:rgba(255,170,150,.85);background:linear-gradient(135deg,#e02b1d,#b01f0e)}
+  .atout--urgence .atout__ic{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34);color:#fff}
+  .atout--urgence .atout__txt span{color:#ffe3dd}
+  .atout--urgence .atout__fl{color:#fff;opacity:.9}
+  .atout__badge{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:100px;
+    background:rgba(0,0,0,.28);color:#fff;font-size:.68rem;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;line-height:1.5}
   @media(max-width:520px){
     /* Texte sur trois lignes : l'icône centrée décrochait du titre. */
     .atout{padding:14px 15px;gap:12px;align-items:flex-start}
@@ -888,6 +909,7 @@ if ( '' === $lae_col_arbre ) {
    ────────────────────────────────────────────────────────────────── */
 $lae_urg_t = lae_reglage( 'atouts_urgence_titre' );
 $lae_urg_p = lae_reglage( 'atouts_urgence_texte' );
+$lae_urg_b = lae_reglage( 'atouts_urgence_badge' );
 $lae_tar_t = lae_reglage( 'atouts_tarif_titre' );
 $lae_tar_p = lae_reglage( 'atouts_tarif_texte' );
 /* get_page_link( null ) ne renvoie pas une chaîne vide : il retombe sur le
@@ -908,6 +930,7 @@ if ( $lae_urg_on || $lae_tar_on ) : ?>
     <span class="atout__txt">
       <strong><?php echo esc_html( $lae_urg_t ); ?></strong>
       <?php if ( $lae_urg_p ) : ?><span><?php echo esc_html( $lae_urg_p ); ?></span><?php endif; ?>
+      <?php if ( $lae_urg_b ) : ?><span class="atout__badge"><?php echo esc_html( $lae_urg_b ); ?></span><?php endif; ?>
     </span>
     <span class="atout__fl"><?php echo lae_icone( 'fleche' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
   </a>

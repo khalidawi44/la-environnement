@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.16.4
+Version: 1.17.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -30,6 +30,14 @@ Text Domain: la-environnement
 	--lae-accent:      #2f7d4f;
 	--lae-accent-fonce:#235f3c;
 	--lae-accent-clair:#e3f0e7;
+	/* ── Alerte ──────────────────────────────────────────────────────
+	   Le rouge n'entre dans cette palette que pour l'urgence, et pour
+	   rien d'autre. Une couleur d'alerte employée partout n'alerte plus.
+	   Mesuré : texte blanc sur --lae-alerte = 5,74:1, au-dessus du seuil
+	   AA de 4,5:1 ; --lae-alerte-clair sur le vert sombre = 5,65:1. */
+	--lae-alerte:       #c62411;
+	--lae-alerte-vif:   #e02b1d;
+	--lae-alerte-clair: #ff6b52;
 	--lae-bois:        #a9762f;
 	--lae-bois-clair:  #f4ead9;
 	--lae-trait:       #e3e8e5;
@@ -1429,23 +1437,82 @@ ul, ol { padding-left: 1.25em; }
 	font-weight: 600;
 }
 
-/* Sur une urgence, on appelle — le numéro passe avant le texte. */
+/* ── LA BANDE D'URGENCE ──────────────────────────────────────────────
+   Refaite le 14/09 d'après les affiches que Fabrice a transmises. Sur ce
+   métier, tout le monde signale l'urgence de la même manière : fond
+   sombre, rouge d'alerte, numéro énorme, disponibilité en évidence. Ce
+   n'est pas une mode, c'est une convention — et sur une page d'urgence,
+   suivre la convention vaut mieux qu'être original.
+
+   Trois choix tenus :
+   — le NUMÉRO est l'élément le plus gros de la page, avant tout texte ;
+   — aucun clignotement, aucune pulsation. La personne qui lit ça vient
+     d'avoir un arbre sur son toit : elle n'a pas besoin qu'on lui crie
+     dessus, elle a besoin de trouver le numéro du premier coup ;
+   — le rouge ne sert qu'ici et sur le bloc urgence de l'accueil.
+   Mesuré : blanc sur --lae-alerte = 5,74:1. */
 .lae-urgence-appel {
-	background: var(--lae-fond-vert);
-	border-top: 1px solid var(--lae-trait);
-	border-bottom: 1px solid var(--lae-trait);
-	padding: 26px 0;
+	position: relative;
+	background:
+		linear-gradient(180deg, rgba(9, 22, 15, .96), rgba(9, 22, 15, 1)),
+		var(--lae-encre);
+	border-top: 4px solid var(--lae-alerte);
+	border-bottom: 1px solid rgba(255, 255, 255, .08);
+	padding: 30px 0 34px;
 	text-align: center;
 }
 .lae-urgence-dispo {
-	margin: 0 0 14px;
-	font-weight: 600;
-	letter-spacing: .04em;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 16px;
+	padding: 7px 16px;
+	border-radius: 100px;
+	background: var(--lae-alerte);
+	color: #fff;
+	font-weight: 800;
+	letter-spacing: .14em;
 	text-transform: uppercase;
-	font-size: .82rem;
-	color: var(--lae-accent-fonce);
+	font-size: .76rem;
+	line-height: 1;
 }
-.lae-urgence-appel .lae-btn { font-size: 1.35rem; padding: 14px 30px; }
+.lae-urgence-dispo::before {
+	content: "";
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #fff;
+	flex: 0 0 auto;
+}
+.lae-urgence-appel .lae-btn {
+	font-size: clamp(1.5rem, 6vw, 2.3rem);
+	font-weight: 800;
+	letter-spacing: .01em;
+	padding: 16px 34px;
+	background: var(--lae-alerte);
+	border-color: var(--lae-alerte);
+	color: #fff;
+	font-variant-numeric: tabular-nums;
+	box-shadow: 0 14px 36px -16px rgba(198, 36, 17, .9);
+}
+.lae-urgence-appel .lae-btn:hover {
+	background: var(--lae-alerte-vif);
+	border-color: var(--lae-alerte-vif);
+}
+.lae-urgence-appel .lae-btn svg { width: 1em; height: 1em; }
+/* La consigne de sécurité : ce qu'il ne faut pas faire en attendant. */
+.lae-urgence-consigne {
+	max-width: 46rem;
+	margin: 18px auto 0;
+	padding: 12px 18px;
+	border-left: 3px solid var(--lae-alerte-clair);
+	background: rgba(255, 107, 82, .09);
+	color: #f0ded9;
+	font-size: .9rem;
+	line-height: 1.55;
+	text-align: left;
+}
+.lae-urgence-consigne strong { color: var(--lae-alerte-clair); }
 
 @media (max-width: 900px) {
 	.lae-niveaux { grid-template-columns: 1fr; }
