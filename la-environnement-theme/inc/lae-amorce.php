@@ -536,3 +536,117 @@ if ( ! function_exists( 'lae_pages_tardives_rattrapage' ) ) {
    idempotent quel que soit l'ordre. */
 add_action( 'init', 'lae_pages_tardives_rattrapage', 20 );
 add_action( 'admin_init', 'lae_pages_tardives_rattrapage', 11 );
+
+/* ═══════════════════════════════════════════════════════════════════
+   Mentions légales — le gabarit devient la vraie page
+   La page existe depuis l'amorce mais n'a jamais été remplie : elle
+   affiche encore « Page à compléter avant la mise en ligne ». Sur un
+   site commercial, c'est une obligation légale non tenue (LCEN,
+   art. 6-III-1) et la première chose qu'un visiteur méfiant va lire.
+
+   Identité relevée le 13/09 sur le registre officiel des entreprises
+   (API recherche-entreprises, data.gouv.fr), confirmée par Fabrice :
+   entrepreneur individuel, un seul établissement ouvert, activité
+   81.30Z services d'aménagement paysager. Le « L.A » de la marque
+   vient de LAMARQUE Anthony.
+
+   DEUX CHOSES NE SONT PAS ÉCRITES ICI, et c'est délibéré :
+   — la TVA intracommunautaire, parce qu'on ignore s'il y est assujetti
+     ou en franchise en base ; annoncer l'un ou l'autre serait inventer ;
+   — l'assurance responsabilité civile professionnelle, parce que
+     l'assureur et le numéro de police ne viennent que de lui.
+   Elles s'ajouteront quand il les aura données.
+
+   Le remplacement ne se fait QUE si la page porte encore le texte du
+   gabarit. Dès que quelqu'un y a écrit quoi que ce soit, on n'y touche
+   plus jamais.
+   ═══════════════════════════════════════════════════════════════════ */
+
+if ( ! function_exists( 'lae_mentions_texte' ) ) {
+	function lae_mentions_texte() {
+
+		$nom   = lae_defaut( 'editeur_nom' );
+		$forme = lae_defaut( 'editeur_forme' );
+		$rue   = lae_defaut( 'adresse_rue' );
+		$cp    = lae_defaut( 'adresse_cp' );
+		$ville = lae_defaut( 'adresse_ville' );
+		$siret = lae_defaut( 'siret_numero' );
+		$tel   = lae_defaut( 'telephone' );
+		$mail  = lae_defaut( 'email' );
+
+		$blocs = array();
+
+		$blocs[] = '<!-- wp:heading --><h2>Éditeur du site</h2><!-- /wp:heading -->';
+		$blocs[] = '<!-- wp:paragraph --><p>'
+			. '<strong>' . esc_html( $nom ) . '</strong> — ' . esc_html( $forme ) . '<br>'
+			. 'Exerçant sous le nom commercial <strong>L.A Environnement</strong><br>'
+			. esc_html( $rue ) . '<br>' . esc_html( $cp . ' ' . $ville ) . '<br>'
+			. 'SIRET : ' . esc_html( $siret ) . '<br>'
+			. 'Activité : services d\'aménagement paysager (code APE 81.30Z)<br>'
+			. 'Immatriculé au Registre national des entreprises (RNE)<br>'
+			. 'Téléphone : ' . esc_html( $tel ) . '<br>'
+			. 'Courriel : ' . esc_html( $mail )
+			. '</p><!-- /wp:paragraph -->';
+
+		$blocs[] = '<!-- wp:heading --><h2>Responsable de la publication</h2><!-- /wp:heading -->';
+		$blocs[] = '<!-- wp:paragraph --><p>' . esc_html( $nom ) . ', joignable aux coordonnées ci-dessus.</p><!-- /wp:paragraph -->';
+
+		$blocs[] = '<!-- wp:heading --><h2>Hébergement</h2><!-- /wp:heading -->';
+		$blocs[] = '<!-- wp:paragraph --><p>Hostinger International Ltd<br>'
+			. '61 Lordou Vironos Street, 6023 Larnaca, Chypre<br>'
+			. '<a href="https://www.hostinger.fr" rel="nofollow noopener">www.hostinger.fr</a></p><!-- /wp:paragraph -->';
+
+		$blocs[] = '<!-- wp:heading --><h2>Propriété intellectuelle</h2><!-- /wp:heading -->';
+		$blocs[] = '<!-- wp:paragraph --><p>Les textes de ce site et les photographies de chantier sont la propriété d\''
+			. esc_html( $nom ) . '. Les photographies sont prises sur les chantiers réalisés : elles ne proviennent d\'aucune banque d\'images. Toute reproduction sans autorisation écrite est interdite.</p><!-- /wp:paragraph -->';
+
+		$blocs[] = '<!-- wp:heading --><h2>Données personnelles</h2><!-- /wp:heading -->';
+		$blocs[] = '<!-- wp:paragraph --><p>Le formulaire de contact transmet votre demande par courriel et <strong>n\'enregistre rien sur le site</strong> : ni compte, ni base de données de prospects. Les informations que vous envoyez (nom, coordonnées, description du chantier) ne servent qu\'à vous répondre et à établir un devis, et ne sont transmises à personne.</p><!-- /wp:paragraph -->';
+		$blocs[] = '<!-- wp:paragraph --><p>Vous pouvez demander l\'accès, la rectification ou l\'effacement de ces informations en écrivant à ' . esc_html( $mail ) . '. Si la réponse ne vous convient pas, vous pouvez saisir la CNIL (<a href="https://www.cnil.fr" rel="nofollow noopener">www.cnil.fr</a>).</p><!-- /wp:paragraph -->';
+
+		$blocs[] = '<!-- wp:heading --><h2>Cookies et mesure d\'audience</h2><!-- /wp:heading -->';
+		$blocs[] = '<!-- wp:paragraph --><p>Ce site ne dépose <strong>aucun cookie</strong> de mesure d\'audience ni de publicité, et ne charge aucune police de caractères ni ressource hébergée par un tiers. Aucune bannière de consentement n\'est donc nécessaire : il n\'y a rien à consentir.</p><!-- /wp:paragraph -->';
+
+		/* PAS DE SECTION MÉDIATION. Le premier jet écrivait « les coordonnées
+		   du médiateur figurent sur les devis et factures » : je n'en sais
+		   rien, et l'affirmer aurait été inventer un fait sur les documents
+		   du client. Or l'article L. 616-1 du code de la consommation oblige
+		   tout professionnel vendant à des particuliers à communiquer sur son
+		   site le médiateur auquel il adhère — donc la section MANQUE, elle
+		   n'est pas superflue. Elle s'ajoutera quand il aura désigné son
+		   médiateur. Une section absente est un manque connu ; une section
+		   fausse est un mensonge en ligne. */
+
+		return implode( "\n\n", $blocs );
+	}
+}
+
+if ( ! function_exists( 'lae_mentions_rattrapage' ) ) {
+	function lae_mentions_rattrapage() {
+
+		if ( get_option( 'lae_mentions_remplies' ) ) {
+			return;
+		}
+
+		$page = get_page_by_path( 'mentions-legales' );
+		if ( ! $page ) {
+			update_option( 'lae_mentions_remplies', 1 );
+			return;
+		}
+
+		// Le gabarit, et lui seul. Un mot écrit par le client et on s'abstient.
+		if ( false === strpos( (string) $page->post_content, 'Page à compléter avant la mise en ligne' ) ) {
+			update_option( 'lae_mentions_remplies', 1 );
+			return;
+		}
+
+		update_option( 'lae_mentions_remplies', 1 );   // verrou posé AVANT l'écriture
+
+		wp_update_post( array(
+			'ID'           => (int) $page->ID,
+			'post_content' => lae_mentions_texte(),
+		) );
+	}
+}
+add_action( 'init', 'lae_mentions_rattrapage', 22 );
+add_action( 'admin_init', 'lae_mentions_rattrapage', 13 );

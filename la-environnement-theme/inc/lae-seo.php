@@ -29,12 +29,40 @@ add_action( 'wp_head', function () {
 		$donnees['email'] = $email;
 	}
 
-	$adresse = lae_reglage( 'adresse' );
-	if ( $adresse ) {
-		$donnees['address'] = array(
-			'@type'         => 'PostalAddress',
-			'streetAddress' => str_replace( array( "\r\n", "\n" ), ', ', $adresse ),
-		);
+	/*
+	 * Adresse postale structurée. Elle l'était mal : tout le réglage partait
+	 * dans `streetAddress`, si bien que « Vertou (44) » était déclaré à Google
+	 * comme un nom de rue. Une fiche d'établissement local se juge sur la
+	 * cohérence du triplet nom / adresse / téléphone entre le site, la fiche
+	 * Google et les annuaires : une adresse mal découpée l'affaiblit.
+	 * Les champs séparés priment ; le réglage libre reste le repli.
+	 */
+	$rue   = lae_reglage( 'adresse_rue' );
+	$cp    = lae_reglage( 'adresse_cp' );
+	$ville = lae_reglage( 'adresse_ville' );
+
+	if ( $rue || $cp || $ville ) {
+		$postale = array( '@type' => 'PostalAddress', 'addressCountry' => 'FR' );
+		if ( $rue )   { $postale['streetAddress']   = $rue; }
+		if ( $cp )    { $postale['postalCode']      = $cp; }
+		if ( $ville ) { $postale['addressLocality'] = $ville; }
+		$donnees['address'] = $postale;
+	} else {
+		$adresse = lae_reglage( 'adresse' );
+		if ( $adresse ) {
+			$donnees['address'] = array(
+				'@type'         => 'PostalAddress',
+				'streetAddress' => str_replace( array( "\r\n", "\n" ), ', ', $adresse ),
+			);
+		}
+	}
+
+	/* Le nom légal n'est pas la marque : l'entreprise est une entreprise
+	   individuelle, elle porte le nom de la personne. Google rapproche la
+	   fiche des registres publics quand les deux sont déclarés. */
+	$legal = trim( (string) lae_reglage( 'editeur_nom' ) );
+	if ( $legal && 0 !== strcasecmp( $legal, (string) lae_nom_site() ) ) {
+		$donnees['legalName'] = $legal;
 	}
 
 	/*

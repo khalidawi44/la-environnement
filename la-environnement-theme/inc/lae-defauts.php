@@ -47,7 +47,18 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'tarif_tranches'       => "Étudiant, apprenti, sans emploi, minima sociaux | 30\nRetraité modeste, temps partiel, famille monoparentale | 15",
 			'telephone'            => '07 59 79 03 96',
 			'email'                => 'paysagisteenvironnement@gmail.com',
-			'adresse'              => 'Vertou (44)',
+			/* Identité légale — relevée le 13/09 sur le registre officiel
+			   (API recherche-entreprises, data.gouv.fr) et confirmée par
+			   Fabrice. Entrepreneur individuel, un seul établissement.
+			   Le « L.A » de la marque vient de LAMARQUE Anthony. */
+			'adresse'              => "554 route de Clisson\n44120 Vertou",
+			'adresse_rue'          => '554 route de Clisson',
+			'adresse_cp'           => '44120',
+			'adresse_ville'        => 'Vertou',
+			'editeur_nom'          => 'Anthony Lamarque',
+			'editeur_forme'        => 'Entrepreneur individuel (EI)',
+			'siret_numero'         => '839 920 147 00023',
+			'siret'                => 'Anthony Lamarque · EI · SIRET 839 920 147 00023',
 			'hero_surtitre'        => 'Élagage · Abattage · Création de jardin',
 			'hero_titre'           => 'Un arbre trop grand, trop près, *trop vieux ?*',
 			'hero_chapo'           => 'On monte, on regarde, et on vous dit ce qu\'il faut faire : tailler, haubaner ou abattre. Élagage en grimpe, démontage par câble, création et entretien de jardin.',
