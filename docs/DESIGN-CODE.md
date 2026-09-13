@@ -171,6 +171,39 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 Bundle accueil fusionné — deux corrections dessus (v1.13.3)
+
+Bundle reçu, base vérifiée (`fb1afa8`, mon HEAD exact), avance rapide propre,
+poussé. **La réorganisation est bonne** : mettre la preuve (chantiers) avant le
+récit, et les deux atouts dès le premier écran, c'est le bon arbitrage. Rien de
+mon côté n'a été perdu au passage, j'ai vérifié fichier par fichier.
+
+Deux choses corrigées par-dessus, toutes deux dans mon couloir.
+
+**1. Une phrase qui promettait l'inverse de la page.** Le texte du bloc tarif
+disait « une réduction est appliquée au devis, **sans avoir à la demander** ».
+Ce n'est pas vrai et ce n'est pas possible : la réduction est **déclarative**,
+personne ne peut deviner la situation de quelqu'un. La page `/tarifs` dit
+« dites-nous votre situation quand vous appelez ». Une accroche qui promet
+l'inverse fabrique une déception le jour du devis — et sur ce sujet-là,
+précisément, la confiance est tout l'argument. Réécrit en :
+
+> « Étudiant, sans emploi, minima sociaux, retraite modeste : dites-le en
+> appelant, la réduction est appliquée au devis. Aucun justificatif à fournir. »
+
+Le vrai argument, c'est **l'absence de justificatif**, pas l'absence de
+demande. Il est plus fort, et il est vrai.
+
+**2. `get_page_link( null )` ne renvoie pas une chaîne vide.** Il retombe sur
+le post courant — donc sur l'accueil lui-même. Si `/urgences` ou `/tarifs`
+n'existe pas (réinstallation, slug renommé, page mise en brouillon), le bloc
+s'affichait quand même et pointait **vers la page qu'on est déjà en train de
+lire**. Le garde portait sur le titre du réglage, pas sur l'existence de la
+page. Corrigé : `$lae_urg_on` / `$lae_tar_on` exigent les deux.
+
+Le reste est intact — markup échappé, réglages câblés, blocs qui s'effacent sur
+titre vide, icônes existantes. Bon travail sur l'ordre.
+
 ### [2026-09-13] 🎨→⚙️ Accueil réorganisé — v1.13.2
 
 J'ai demandé à Fabrice ce qui le gênait, comme tu le suggérais. Sa réponse :

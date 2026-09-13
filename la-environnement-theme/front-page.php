@@ -878,11 +878,19 @@ $lae_urg_t = lae_reglage( 'atouts_urgence_titre' );
 $lae_urg_p = lae_reglage( 'atouts_urgence_texte' );
 $lae_tar_t = lae_reglage( 'atouts_tarif_titre' );
 $lae_tar_p = lae_reglage( 'atouts_tarif_texte' );
-$lae_urg_url = get_page_link( get_page_by_path( 'urgences' ) );
-$lae_tar_url = get_page_link( get_page_by_path( 'tarifs' ) );
-if ( $lae_urg_t || $lae_tar_t ) : ?>
+/* get_page_link( null ) ne renvoie pas une chaîne vide : il retombe sur le
+   post courant, donc sur l'accueil lui-même. Un bloc « atout » pointerait
+   silencieusement vers la page qu'on est déjà en train de lire. La page doit
+   donc exister pour que son bloc s'affiche — le titre seul ne suffit pas. */
+$lae_urg_pg  = get_page_by_path( 'urgences' );
+$lae_tar_pg  = get_page_by_path( 'tarifs' );
+$lae_urg_url = $lae_urg_pg ? get_page_link( $lae_urg_pg ) : '';
+$lae_tar_url = $lae_tar_pg ? get_page_link( $lae_tar_pg ) : '';
+$lae_urg_on  = ( $lae_urg_t && $lae_urg_url );
+$lae_tar_on  = ( $lae_tar_t && $lae_tar_url );
+if ( $lae_urg_on || $lae_tar_on ) : ?>
 <section class="atouts wrap" id="atouts">
-  <?php if ( $lae_urg_t ) : ?>
+  <?php if ( $lae_urg_on ) : ?>
   <a class="atout atout--urgence" href="<?php echo esc_url( $lae_urg_url ); ?>" data-rv>
     <span class="atout__ic"><?php echo lae_icone( 'horloge' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
     <span class="atout__txt">
@@ -892,7 +900,7 @@ if ( $lae_urg_t || $lae_tar_t ) : ?>
     <span class="atout__fl"><?php echo lae_icone( 'fleche' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
   </a>
   <?php endif; ?>
-  <?php if ( $lae_tar_t ) : ?>
+  <?php if ( $lae_tar_on ) : ?>
   <a class="atout atout--tarif" href="<?php echo esc_url( $lae_tar_url ); ?>" data-rv>
     <span class="atout__ic"><?php echo lae_icone( 'devis' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
     <span class="atout__txt">

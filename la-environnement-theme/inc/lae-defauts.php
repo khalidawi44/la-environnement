@@ -38,7 +38,12 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'atouts_urgence_titre' => 'On décroche la nuit',
 			'atouts_urgence_texte' => 'Branche sur le toit, arbre qui penche après la tempête : 24 h/24, 7 j/7, week-ends et jours fériés compris.',
 			'atouts_tarif_titre'   => 'Le tarif suit vos revenus',
-			'atouts_tarif_texte'   => 'Étudiant, sans emploi, minima sociaux, retraite modeste : une réduction est appliquée au devis, sans avoir à la demander.',
+			// « sans justificatif à fournir » et NON « sans avoir à la demander » :
+			// la réduction est déclarative, personne ne peut deviner la
+			// situation de quelqu'un. La page /tarifs dit « dites-nous votre
+			// situation quand vous appelez » — une accroche qui promet
+			// l'inverse fabrique une déception le jour du devis.
+			'atouts_tarif_texte'   => 'Étudiant, sans emploi, minima sociaux, retraite modeste : dites-le en appelant, la réduction est appliquée au devis. Aucun justificatif à fournir.',
 			'tarif_tranches'       => "Étudiant, apprenti, sans emploi, minima sociaux | 30\nRetraité modeste, temps partiel, famille monoparentale | 15",
 			'telephone'            => '07 59 79 03 96',
 			'email'                => 'paysagisteenvironnement@gmail.com',
