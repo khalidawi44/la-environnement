@@ -164,7 +164,7 @@ $lae_contact    = lae_url_contact();
   .mq__in b{color:var(--feuille)}
 
   /* ---------- TABLEAU ---------- */
-  .tab{position:relative;height:230svh}
+  .tab{position:relative;height:180svh}
   .tab__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   .tab__img{position:absolute;inset:0}
   .tab__img img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
@@ -190,7 +190,15 @@ $lae_contact    = lae_url_contact();
   .ch__meta{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--feuille)}
 
   /* ---------- DISSOLUTION ---------- */
-  .ds{position:relative;height:620svh}
+  /* Budget de défilement de la scène épinglée. Mesuré sur iPhone 13
+     (viewport 664 px) : à 560svh la scène occupait 5,6 écrans sur 15,7, soit
+     55 % de la page passés dans trois scènes fixes. Le geste du pouce est
+     bien plus court que la molette : à nombre d'écrans égal, une scène
+     épinglée paraît interminable au doigt. Ramenée à 3 écrans, la page
+     descend à 12,5 écrans et la part épinglée à 43 %. Les trois moments de
+     la timeline — intro, offres, atelier — ont été vérifiés en capture : ils
+     ont toujours la place de se lire. */
+  .ds{position:relative;height:380svh}
   .ds__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   #cv{width:100%;height:100%;display:block}
   .ds__photo{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
@@ -308,7 +316,7 @@ $lae_contact    = lae_url_contact();
   /* Le lion reste au centre de l'animation : il devient le medaillon de fond
      sur lequel se pose l'outil phare. Un voile radial garantit la lisibilite
      du texte par-dessus la photo. */
-  .arbre{position:relative;height:210svh}
+  .arbre{position:relative;height:170svh}
   .arbre__stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;overflow:hidden;
     background:radial-gradient(60% 60% at 50% 45%,#0f2418,#04140c)}
   .arbre__img{position:absolute;z-index:1;width:min(58vw,520px);opacity:0;border-radius:50%;
@@ -380,7 +388,7 @@ $lae_contact    = lae_url_contact();
     .mq__in{gap:28px}
     .mq__in span{font-size:1.05rem}
 
-    .tab{height:150svh}
+    .tab{height:120svh}
     /* la peinture est en 16/9 : on la montre entière, tableau puis légende */
     .tab__stick{display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,4svh,44px)}
     .tab__img{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:16/9}
@@ -407,7 +415,7 @@ $lae_contact    = lae_url_contact();
        Elles jaillissent désormais toutes les trois et RESTENT jusqu'à la
        sortie de la scène. Pour qu'elles tiennent dans le cadre, l'image du
        pack est masquée sur téléphone et remplacée par son contenu en texte. */
-    .ds{height:560svh}
+    .ds{height:300svh}
     #cv{display:none}
     .ds__photo{display:block}
     .ds__hand{left:0;right:0;margin:0 auto;top:2svh;width:min(96vw,440px)}
@@ -481,7 +489,7 @@ $lae_contact    = lae_url_contact();
     .av__grid{grid-template-columns:1fr;gap:14px}
     .rz__card h3{font-size:1.28rem}
 
-    .arbre{height:150svh}
+    .arbre{height:120svh}
     .arbre__img{width:min(86vw,400px)}
     .arbre__w{bottom:4vh;letter-spacing:.4em}
     .cta{padding:60px 0}
@@ -489,7 +497,38 @@ $lae_contact    = lae_url_contact();
   }
   @media(max-width:600px){
     .mq__in span{font-size:.95rem}
-    .tab{height:140svh}
+    .tab{height:110svh}
+  }
+
+  /* ----------------------------------------------------------
+     ÉCRAN COURT — les cartes étaient coupées en plein milieu.
+     .ds__stick est une boîte de hauteur fixe (100svh) en overflow:hidden :
+     quand le contenu dépasse, il est tranché en silence, et le bouton
+     « Voir » — ce qui convertit — passe hors de la boîte. Sur téléphone la
+     hauteur du viewport bouge en permanence : barres du navigateur, et une
+     simple bannière de notification suffit à déclencher le défaut.
+     Mesuré sur iPhone 13 : à 664 px de viewport les cartes tombaient à 93 px
+     alors qu'il leur en faut ~228.
+     On ne coupe plus : sous 820 px de hauteur, la description sort et il
+     reste le nom, la famille et le bouton. Mieux vaut une carte courte et
+     entière qu'une phrase tranchée sans bouton.
+     ---------------------------------------------------------- */
+  @media(max-height:820px) and (max-width:960px){
+    .ds .pack__res,.ds .pack__feats{display:none}
+    .ds .pack__body{padding:10px 12px 11px}
+    .ds .pack__nom{font-size:.92rem}
+    .ds .pack__delai{margin-top:4px}
+    .ds .pack__cta{margin-top:8px;padding:9px 14px}
+  }
+  @media(max-height:700px) and (max-width:960px){
+    .ds .pack__delai{display:none}
+    .ds .pack__body{padding:8px 11px 9px}
+  }
+  /* Le liseré décalé du bouton (.btn::after, translaté de 5 px) sortait du
+     cadre arrondi de la carte une fois celle-ci resserrée. On lui rend la
+     place au lieu de le rogner. */
+  @media(max-height:820px) and (max-width:960px){
+    .ds .pack__cta{margin-right:6px}
   }
   /* tablette : la scène est épinglée comme en desktop, mais les 3 offres
      tiennent côte à côte — inutile de les montrer une par une. */

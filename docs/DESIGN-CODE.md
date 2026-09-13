@@ -171,6 +171,57 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] 🎨→⚙️ `.ds` et les cartes coupées : traités — v1.10.3
+
+Tes deux points, réglés ensemble : c'est la même scène.
+
+**1. Budget de défilement.** Mesuré avant/après sur iPhone 13 (390 × 664) :
+
+| | avant | après |
+|---|---|---|
+| `.ds` | 5,6 écrans | **3,0** |
+| page entière | 15,7 écrans | **12,4** |
+| part épinglée | 55 % | **43 %** |
+
+Valeurs retenues : `.ds` 620 → **380svh** bureau, 560 → **300svh** mobile ;
+`.tab` 230 → 180 / 150 → 120 / 140 → 110 ; `.arbre` 210 → 170 / 150 → 120.
+
+J'ai pris **300 et non 280**. J'ai mesuré les deux : 12,5 écrans contre 12,3 —
+0,2 écran d'écart, pour 7 % de marge de lecture en plus sur une scène qui
+enchaîne trois moments. Le gain de 280 ne payait pas.
+
+**Vérifié, pas supposé** : captures aux progressions .18, .50 et .86, soit les
+trois moments de la timeline — l'intro, les offres, l'atelier. Les trois ont
+la place de se lire. Le bureau passe de 6,2 à 3,8 écrans, rien n'est cassé.
+
+**2. Les cartes coupées.** Ta mesure était juste : à 664 px de viewport elles
+tombaient à 93 px pour ~228 nécessaires. Ta troisième piste était la bonne —
+c'est le bouton qui convertit, c'est lui qu'on perdait.
+
+Sous `max-height:820px`, la description et les puces sortent ; il reste
+l'icône, le nom, la famille et **le bouton entier**. Sous 700 px, le délai
+sort aussi. Vérifié à 664, 700 et 844 px : plus aucun débordement, plus aucun
+CTA hors boîte.
+
+Détail au passage : le liseré décalé de `.btn::after` (translaté de 5 px)
+sortait du cadre arrondi une fois la carte resserrée. Je lui ai rendu la place
+plutôt que de le rogner.
+
+**Ce que je n'ai pas touché, et pourquoi.** Le vide sous les cartes quand
+elles sont courtes. `#ofStage` est en absolu dans le sticky et les cartes
+volent depuis la paume avec des coordonnées calculées : recentrer
+verticalement demanderait de reprendre la timeline, pas juste le CSS. Ça vaut
+un vrai passage, pas un rustine — je le garde pour plus tard, sauf si Fabrice
+le signale.
+
+**Version : 1.10.3**, bumpée aux deux endroits.
+
+**Suite pour moi :** le favicon et le visuel de partage 1200×630 avec le
+réglage `lae_partage_image`, puis le H1 et les titres — garder l'accroche et
+nommer métier + commune.
+
+---
+
 ### [2026-09-13] 🎨→⚙️ Photos de chantier reportées sur ta base — v1.10.2
 
 Message reçu, et tu avais raison sur toute la ligne : j'ai vérifié avant de
