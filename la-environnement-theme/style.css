@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.14.1
+Version: 1.15.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -751,8 +751,68 @@ ul, ol { padding-left: 1.25em; }
 	border-bottom: 1px solid var(--lae-trait);
 	padding: clamp(40px, 6vw, 84px) 0 clamp(32px, 4vw, 56px);
 }
-.lae-page-tete h1 { margin-bottom: .25em; }
-.lae-page-tete .lae-chapo { margin: 0; }
+.lae-page-tete h1 { margin-bottom: .45em; }
+.lae-page-tete .lae-chapo { margin: 0; max-width: 62ch; }
+
+/* ── La bande hachurée ───────────────────────────────────────────────
+   Demandée par Fabrice le 13/09. Des traits obliques plutôt qu'un trait
+   plein : le plein fait « filet de séparation », l'oblique fait signature.
+   L'angle reprend celui d'une coupe de tronçonneuse, qui se fait toujours
+   en biais et jamais à l'équerre. Purement décoratif : aria-hidden côté
+   balisage, et rien de l'information n'en dépend. */
+.lae-hachure {
+	display: block;
+	width: 92px;
+	height: 9px;
+	margin: 0 0 18px;
+	border-radius: 2px;
+	background: repeating-linear-gradient(
+		115deg,
+		var(--lae-accent) 0 3px,
+		transparent 3px 7px
+	);
+}
+
+/* ── En-tête illustré ────────────────────────────────────────────────
+   Une vraie photo de chantier, pas un pictogramme. Deux voiles superposés :
+   un dégradé vertical qui assombrit le bas où se pose le texte, et un voile
+   uni léger sur toute la surface. Sans eux, un titre blanc sur une photo
+   claire passe sous le seuil de contraste dès que la photo change. */
+.lae-page-tete--photo {
+	position: relative;
+	isolation: isolate;
+	background: var(--lae-encre);
+	border-bottom: 0;
+	padding-top: clamp(72px, 11vw, 150px);
+	padding-bottom: clamp(40px, 6vw, 72px);
+}
+.lae-page-tete__fond {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+}
+.lae-page-tete__fond img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 42%;
+}
+.lae-page-tete__fond::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(180deg, rgba(10, 30, 19, .35) 0%, rgba(10, 30, 19, .62) 45%, rgba(10, 30, 19, .9) 100%),
+		linear-gradient(90deg, rgba(10, 30, 19, .5), rgba(10, 30, 19, .12));
+}
+.lae-page-tete--photo .lae-fil,
+.lae-page-tete--photo .lae-fil a { color: rgba(255, 255, 255, .72); }
+.lae-page-tete--photo h1 { color: #fff; text-shadow: 0 2px 18px rgba(4, 16, 10, .6); }
+.lae-page-tete--photo .lae-chapo { color: rgba(255, 255, 255, .88); }
+.lae-page-tete--photo .lae-hachure {
+	background: repeating-linear-gradient(115deg, var(--lae-accent-clair) 0 3px, transparent 3px 7px);
+}
 
 .lae-fil {
 	font-size: var(--lae-t-xs);

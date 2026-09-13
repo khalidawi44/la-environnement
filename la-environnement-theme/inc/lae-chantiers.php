@@ -279,8 +279,10 @@ if ( ! function_exists( 'lae_chantier_importe_image' ) ) {
 			return (int) $deja[0];
 		}
 
-		$source = get_template_directory() . '/assets/images/chantiers/' . $fichier;
-		if ( ! file_exists( $source ) ) {
+		/* $fichier est un chemin RELATIF à assets/images/ — « chantiers/x.webp »
+		   ou « pelouse-haie.webp ». Les articles puisent dans les deux. */
+		$source = get_template_directory() . '/assets/images/' . ltrim( $fichier, '/' );
+		if ( ! file_exists( $source ) || false !== strpos( $fichier, '..' ) ) {
 			return 0;
 		}
 
@@ -291,7 +293,9 @@ if ( ! function_exists( 'lae_chantier_importe_image' ) ) {
 		if ( ! empty( $dossier['error'] ) ) {
 			return 0;
 		}
-		$cible = trailingslashit( $dossier['path'] ) . wp_unique_filename( $dossier['path'], $fichier );
+		// basename : le nom de fichier ne doit jamais emporter son sous-dossier
+		// dans la médiathèque.
+		$cible = trailingslashit( $dossier['path'] ) . wp_unique_filename( $dossier['path'], basename( $fichier ) );
 		if ( ! copy( $source, $cible ) ) {
 			return 0;
 		}
@@ -322,8 +326,8 @@ if ( ! function_exists( 'lae_chantiers_livres' ) ) {
 				'titre'   => 'Démontage de cinq arbres au-dessus d\'un jardin',
 				'type'    => 'Abattage',
 				'extrait' => 'Cinq sujets démontés section par section au-dessus d\'un terrain occupé, puis le terrain rendu net.',
-				'avant'   => array( 'abri-jardin-1-pendant-demontage.webp', 'Chantier en cours : les cinq fûts démontés' ),
-				'apres'   => array( 'abri-jardin-2-apres-remise-en-etat.webp', 'Après remise en état du terrain' ),
+				'avant'   => array( 'chantiers/abri-jardin-1-pendant-demontage.webp', 'Chantier en cours : les cinq fûts démontés' ),
+				'apres'   => array( 'chantiers/abri-jardin-2-apres-remise-en-etat.webp', 'Après remise en état du terrain' ),
 				'lib'     => array( 'Pendant le chantier', 'Après remise en état' ),
 				'texte'   => "<!-- wp:paragraph --><p>Cinq arbres à descendre au-dessus d'un jardin entretenu : abri, allée, massifs et plantations en place. Pas de zone de chute disponible, donc pas d'abattage direct.</p><!-- /wp:paragraph -->\n\n<!-- wp:paragraph --><p>Le travail s'est fait en grimpe, tronçon par tronçon, avec descente des pièces en rétention plutôt qu'en chute libre. Sur la photo de gauche, le chantier est en cours : les fûts sont dégarnis, le bois débité attend au sol, la brouette est en place.</p><!-- /wp:paragraph -->\n\n<!-- wp:paragraph --><p>À droite, le terrain après notre passage. Le bois est évacué, les rémanents broyés, la pelouse ratissée. C'est notre définition d'un chantier fini : il ne doit rien rester à ramasser derrière nous.</p><!-- /wp:paragraph -->",
 			),
@@ -331,8 +335,8 @@ if ( ! function_exists( 'lae_chantiers_livres' ) ) {
 				'titre'   => 'Rideau de conifères le long d\'un mur mitoyen',
 				'type'    => 'Élagage',
 				'extrait' => 'Une rangée de conifères réduite le long d\'un mur, avec broyage des branches sur place.',
-				'avant'   => array( 'mur-vert-1-pendant-broyage.webp', 'Broyage des branches en cours' ),
-				'apres'   => array( 'mur-vert-2-apres-nettoyage.webp', 'Après nettoyage du pied' ),
+				'avant'   => array( 'chantiers/mur-vert-1-pendant-broyage.webp', 'Broyage des branches en cours' ),
+				'apres'   => array( 'chantiers/mur-vert-2-apres-nettoyage.webp', 'Après nettoyage du pied' ),
 				'lib'     => array( 'Pendant le broyage', 'Après nettoyage' ),
 				'texte'   => "<!-- wp:paragraph --><p>Une rangée de conifères plantée au ras d'un mur mitoyen, devenue trop haute et trop dense. La contrainte tient en un mot : le mur. Rien ne doit tomber dessus, et il n'y a pas de recul pour travailler.</p><!-- /wp:paragraph -->\n\n<!-- wp:paragraph --><p>Les branches ont été broyées au fur et à mesure, directement sur le chantier — c'est la photo de gauche, le broyeur en place. Broyer sur place évite une noria de remorques et produit un paillage utilisable par le propriétaire.</p><!-- /wp:paragraph -->\n\n<!-- wp:paragraph --><p>À droite, le pied dégagé après nettoyage. Les fûts sont conservés : ils repartiront, et le propriétaire décidera ensuite s'il les garde ou les fait abattre.</p><!-- /wp:paragraph -->",
 			),

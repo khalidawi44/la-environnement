@@ -9,8 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 get_header();
 
+$lae_page_articles = (int) get_option( 'page_for_posts' );
+
 get_template_part( 'template-parts/entete', 'page', array(
-	'titre' => is_home() ? ( get_option( 'page_for_posts' ) ? get_the_title( get_option( 'page_for_posts' ) ) : 'Actualités' ) : get_the_archive_title(),
+	'titre' => is_home()
+		? ( $lae_page_articles ? get_the_title( $lae_page_articles ) : 'Conseils' )
+		: get_the_archive_title(),
+	// Le chapô de la page « Conseils » est ce que lit un moteur sous le titre :
+	// il vient de l'extrait de la page, pas d'une phrase codée en dur.
+	'chapo' => ( is_home() && $lae_page_articles ) ? get_the_excerpt( $lae_page_articles ) : '',
 ) );
 ?>
 
