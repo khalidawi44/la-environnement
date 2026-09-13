@@ -39,6 +39,24 @@ function lae_illustration() {
 
 	/* 2. Sinon, la table livrée. Clés : slug de page, ou contexte d'archive. */
 	$table = apply_filters( 'lae_illustrations', array(
+		/* PHOTO DE NUIT EN ATTENTE DE CONFIRMATION — ne pas rebrancher sans réponse.
+		   `chantiers/intervention-nuit.webp` est dans le dépôt et prête. Elle n'est
+		   pas affichée tant que Fabrice n'a pas confirmé qu'elle appartient bien à
+		   son client, et ce n'est pas de la prudence de principe :
+
+		   1. elle arrivait dans un lot dont QUATRE visuels sur cinq étaient des
+		      affiches d'entreprises concurrentes identifiables (constat de la
+		      session design, qui les a écartées) ;
+		   2. elle ne fait que 768 × 511 px — une taille d'image récupérée sur le
+		      web, pas d'un original de téléphone, qui sortirait dix fois plus grand ;
+		   3. l'éclairage et le cadrage sont ceux d'un photographe, de nuit.
+
+		   Et surtout : les mentions légales que nous venons de publier affirment
+		   que « les photographies sont prises sur les chantiers réalisés : elles
+		   ne proviennent d'aucune banque d'images ». Publier celle-ci sans
+		   certitude contredirait notre propre page légale.
+
+		   Un mot de Fabrice et cette ligne bascule. */
 		'urgences'         => array( 'chantiers/demontage-bouleau.webp',           'Démontage d\'un bouleau au-dessus d\'un jardin' ),
 		'tarifs'           => array( 'chantiers/haie-taillee-broyat.webp',         'Haie taillée, broyat laissé en paillage au pied' ),
 		'a-propos'         => array( 'chantiers/elagage-grimpe-cordes.webp',       'Élagage en grimpe, travail à la corde' ),

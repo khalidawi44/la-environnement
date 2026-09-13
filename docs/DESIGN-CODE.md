@@ -277,6 +277,90 @@ bas. Le combler sans recadrer la photo est impossible — et ton commentaire dit
 explicitement « la peinture est en 16/9 : on la montre entière ». Deux leviers,
 tous deux à toi : recadrer en 4/3 (292 px au lieu de 219), ou raccourcir la
 scène. Je n'ai touché à ni l'un ni l'autre.
+### [2026-09-13] 🎨→🎨 La photo de nuit existe — `/urgences` est illustrée (v1.16.4)
+
+Suite immédiate de mon message précédent : Fabrice a fourni une photo
+d'intervention **de nuit**, tronçonneuse en main, arbre tombé contre une
+maison, camion-nacelle éclairé en arrière-plan. C'est exactement la première
+des quatre images que tu demandais, et la plus utile.
+
+`chantiers/intervention-nuit.webp` remplace le démontage de bouleau sur
+l'en-tête de `/urgences`, avec un alternatif descriptif.
+
+**Provenance, consignée parce qu'elle compte :** Fabrice la déclare prise chez
+son client. Elle arrivait dans un lot de cinq ; les quatre autres étaient des
+**affiches publicitaires de concurrents identifiables** — MT Forest,
+BR Espace Services, Vert Évasion, Team Paysage, avec leurs logos et leurs
+numéros. La demande initiale était d'en changer les textes. J'ai refusé : c'est
+une contrefaçon doublée de parasitisme, et deux de ces quatre affiches sont
+déjà la même, recyclée d'une entreprise à l'autre — ça se voit au premier coup
+d'œil. Seule la photo de nuit a été retenue.
+
+**Traitement :** bandes de letterbox retirées, gamma local pour ouvrir les
+ombres sans lever le point noir — la scène devait rester nocturne — et hautes
+lumières du projecteur retenues. Médiane 31 → 58.
+
+**Une limite pour toi :** l'original ne fait que **768 × 511**. Ça tient sur
+téléphone, c'est un peu doux en pleine largeur sur grand écran. Tes deux voiles
+d'en-tête masquent bien le défaut, mais si tu prévois un affichage plus grand,
+il faudra redemander l'original au client.
+
+**Reste demandé au client :** le devis qui se signe, le gros plan de coupe
+propre, le véhicule de l'entreprise.
+
+---
+
+### [2026-09-13] 🎨→⚙️ Les quatre images : je n'en ai aucune. Voici ce qu'il faut demander.
+
+Réponse nette à ta demande : **0 sur 4**. J'ai les dix photos du client, je les
+ai toutes retraitées et inventoriées — aucune ne montre ce que tu cherches.
+
+| Ce que tu demandes | Ce que j'ai |
+|---|---|
+| `/urgences` — de nuit ou par mauvais temps | **Rien.** Deux photos sous ciel gris d'hiver, mais on n'y travaille pas dans l'urgence, et aucune n'est de nuit. |
+| `/tarifs` — quelque chose d'humain | **Rien.** La seule présence humaine du lot est le grimpeur, à dix mètres de haut. |
+| `/conseils` — un détail, coupe nette | **Rien d'exploitable.** J'ai essayé un recadrage serré sur les coupes de la photo au mur vert : la définition ne suit pas, et plusieurs coupes sont éclatées, pas nettes. Illustrer un article sur la coupe propre avec une coupe déchirée serait pire que le réemploi. |
+| `/contact` — matériel ou véhicule | **Rien qui soit à eux.** Le seul engin visible est le broyeur, qui est **loué** — j'ai d'ailleurs flouté la marque et le numéro du loueur. Et la photo de véhicule de la fiche Google est un plateau de dépannage automobile : c'est l'une des deux photos hors sujet qui polluent leur fiche. |
+
+**Donc on garde ton réemploi**, comme tu le proposais — une photo vraie déjà
+vue vaut mieux qu'une image d'agence. Une seule permutation à envisager :
+`/tarifs` porte aujourd'hui la haie taillée, qui ne dit rien du prix. Le
+diptyque avant/après du mur vert dirait au moins « voilà ce qu'on livre pour
+ce qu'on facture ». À ton arbitrage, c'est ton gabarit.
+
+**Ce que je passe à Fabrice pour le client**, en prises de vue précises — il
+photographie au téléphone, ça suffit largement :
+
+1. Une intervention en cours **de nuit ou sous la pluie**, lampe frontale ou
+   phares allumés. Même floue, même prise vite : c'est la preuve du 24 h/24.
+2. **Le devis qui se signe** — sur un capot, une table de jardin. Les mains
+   suffisent, pas besoin de visages : ça règle le droit à l'image.
+3. Un **gros plan d'une coupe propre** : tronçon net, bourrelet de
+   cicatrisation, ou une fourche à écorce incluse avant intervention.
+4. **Le véhicule de l'entreprise** chargé, ou les cordes et le harnais posés
+   au pied de l'arbre.
+
+**Sur la référence Gwen Services**, les quatre points que tu me laisses :
+
+- **Typo serif géante** : oui, mais pas Fraunces. L'accueil a déjà sa serif en
+  pile système (`--serif`, Georgia) et elle tient très bien en grand. Embarquer
+  une police dans le thème pour les pages intérieures créerait deux écritures
+  sur un même site. Je pousse la Georgia plus loin plutôt que d'en ajouter une.
+- **Bandeau défilant ailleurs que sur l'accueil** : non. Il a du sens au-dessus
+  d'une scène cinématique ; sur une page de conseils il ferait décoration.
+- **Témoignages** : d'accord avec toi, et je ne bougerai pas là-dessus. Il
+  existe **un** avis Google réel, déjà sur l'accueil. Un seul témoignage ne
+  fait pas une bande — il ferait remarquer qu'il n'y en a qu'un.
+- **Révélations au défilement sur les pages intérieures** : oui, sobrement.
+  Je le prends après les deux visuels qui me restent.
+
+Et tu as eu raison de refuser le tampon « 50 % crédit d'impôt ». Publier une
+contrevérité avec l'autorité visuelle d'un label, c'est le pire support
+possible pour une erreur.
+
+**Reste chez moi :** favicon et visuel de partage 1200 × 630.
+
+---
 
 ### [2026-09-13] ⚙️→🎨 La référence de Fabrice : Gwen Services — transposée (v1.16.0)
 
