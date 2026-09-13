@@ -171,6 +171,64 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 L'urgence passe au rouge (v1.17.0) + DEMANDE : le héros « sous-bois »
+
+Fabrice a transmis trois affiches de concurrents (BR Espace Services, Vert
+Évasion, MT Forest) et demandé deux choses : **les boutons du haut en rouge et
+bien visibles**, et **des héros de page dans l'esprit « sous-bois, tronçonneuse
+posée sur une souche »**.
+
+**Ce que j'ai fait, côté mécanique** (la forme est à toi) :
+
+- `--lae-alerte: #c62411` entre dans la palette. **C'est le seul rouge du
+  site**, et il ne doit le rester : une couleur d'alerte employée partout
+  n'alerte plus. Mesuré avant de le retenir — blanc dessus = **5,74:1**, au
+  delà du seuil AA, sans tomber dans le rouge fluo qui fait amateur.
+- `.atout--urgence` sur l'accueil : dégradé rouge, badge « 24 h/24 · 7 j/7 »
+  (réglable dans le personnalisateur), flèche blanche.
+- La bande de la page urgences : fond sombre, liseré rouge de 4 px, badge de
+  disponibilité, et le **numéro en `clamp(1.5rem, 6vw, 2.3rem)`** — l'élément
+  le plus gros de la page, avant tout texte.
+- Une **consigne de sécurité** sous le numéro : ne jamais toucher une ligne
+  tombée, Enedis pour un câble arraché, pompiers pour une voie coupée. Les
+  trois affiches la portent, et pour cause.
+
+**Deux refus, à tenir si tu retouches.** Pas de clignotement ni de pulsation :
+la personne qui lit cette page vient d'avoir un arbre sur son toit, elle a
+besoin de trouver le numéro, pas qu'on lui crie dessus. Et pas de reprise de
+leurs contenus : une des affiches annonce des routes coupées et des orages en
+Haute-Savoie — c'est leur actualité, la recopier serait inventer un événement.
+
+---
+
+#### LA DEMANDE : un héros « sous-bois »
+
+C'est l'affiche MT Forest qui a plu à Fabrice : lumière chaude de sous-bois,
+chemin forestier, tronçonneuse posée sur une souche, casque, cordes, grumes
+empilées. Chaud, matiéré, plein cadre — l'inverse d'une photo de jardin.
+
+**Attention, c'est leur visuel** : on ne le reprend pas. Il nous faut le nôtre.
+Deux voies, dans cet ordre de préférence :
+
+1. **Le client le photographie.** C'est une mise en scène de trente secondes
+   sur n'importe quel chantier en forêt : tronçonneuse posée sur une souche
+   fraîchement coupée, casque à visière et cordes à côté, en fin de journée
+   pour la lumière chaude, cadrage horizontal large. C'est **son** matériel,
+   donc c'est vrai, et ça vaudra toujours mieux qu'une image fabriquée.
+2. **À défaut**, une image générée — mais alors elle ne doit montrer **aucun
+   visage et aucune marque lisible**, et elle ne doit jamais être présentée
+   comme un chantier réalisé. Les photos de chantier réelles restent réservées
+   à `/realisations`.
+
+**Où ça servirait :** en-tête de `/prestations`, de `/conseils` et de
+`/a-propos`, là où j'ai dû réemployer des photos déjà vues ailleurs. Le
+mécanisme est prêt — `inc/lae-illustration.php`, une ligne par page.
+
+**Et les quatre demandes précédentes tiennent toujours**, celle des urgences en
+tête : une intervention **de nuit ou par mauvais temps**. Avec le rouge qui
+vient d'arriver sur cette page, cette photo-là est devenue la plus rentable
+des cinq.
+
 ### [2026-09-13] ⚙️→🎨 Le bundle accueil avait déboîté le bandeau défilant — réparé (v1.16.4)
 
 Pas un reproche, une leçon de procédure pour nous deux : **j'ai fusionné ce
