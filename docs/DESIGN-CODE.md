@@ -171,6 +171,59 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 L'accueil était cassé — deux règles CSS, et pourquoi (v1.14.1)
+
+Fabrice a signalé l'accueil cassé sur téléphone : **le titre n'apparaissait
+pas**. J'ai touché à ton CSS, je te dis exactement quoi et pourquoi — reprends
+la forme si elle ne te va pas, mais garde le mécanisme.
+
+**Ce n'est pas ta réorganisation.** J'ai comparé le balisage de `.hero__points`
+avant et après ton bundle : identique. La règle manquante n'a jamais existé.
+Le défaut attendait juste un écran assez court.
+
+**La chaîne, mesurée en rendu réel (Chromium, iPhone 13) :**
+
+`lae_icone()` sort un `<svg viewBox="0 0 24 24">` **sans attribut width ni
+height**. Sa taille vient donc à 100 % du CSS. Tu as des règles partout —
+`.lae-btn svg`, `.atout__ic svg`, `.lae-hero__points svg` (la version sobre) —
+sauf sur `.hero__points`, la version cinématique. Un SVG sans taille
+intrinsèque dans un flex **s'étire** : coches mesurées à **122 et 158 px**.
+
+D'où : liste à 450 px → contenu du bandeau à **946 px** dans une boîte de
+**611 px**. Et comme `.hero` est en `height` fixe + `align-items:flex-end` +
+`overflow:hidden`, les 335 px en trop sortent **par le haut** et sont rognés
+en silence. `.hero__t` mesuré à **−271 px**. Zéro erreur console.
+
+**Ce que j'ai ajouté :**
+
+1. `.lae-icone{width:1.15em;height:1.15em;flex:0 0 auto}` **en tête de
+   style.css**, avant les classes que tu passes en 2ᵉ argument de
+   `lae_icone()` (`.lae-marque__glyphe`…). À spécificité égale c'est l'ordre
+   qui tranche, et ce sont les tiennes qui doivent gagner — **ne déplace pas
+   ce bloc plus bas**, ça écraserait la taille de ton logo.
+2. `.hero__points svg{width:17px;height:17px}` dans ton bloc cinématique,
+   aligné sur ta règle de la version sobre.
+3. `.hero` mobile passe de `height:92svh` à
+   `height:auto;min-height:92svh;padding-top:96px`.
+
+**Le point 3 est le seul que je te demande de ne pas défaire.** Une hauteur
+fixe + contenu aligné en bas + `overflow:hidden`, c'est une combinaison qui
+**fait disparaître le dépassement sans rien dire**. Sur téléphone la hauteur
+utile bouge en permanence (barres du navigateur, bannière de notification) :
+la boîte doit céder avant le texte. Si la hauteur exacte compte pour la
+chorégraphie, dis-le-moi et on trouve autre chose — mais pas le retour au
+plafond fixe.
+
+Le retrait de 96 px en tête réserve la place de l'en-tête collant : sans lui
+le surtitre se superposait au nom de l'entreprise. Si tu as mieux (une
+variable de hauteur d'en-tête, par exemple), prends-la.
+
+**Méthode, si ça resert :** le diagnostic n'a rien donné en lisant le code —
+HTML complet, aucune erreur JS, aucune requête en échec. Il a fallu rendre la
+page dans un vrai navigateur et **mesurer les boîtes**. Le proxy de ma session
+bloque le navigateur sur le site en direct : je rapatrie la page et ses assets
+avec curl, je sers le tout en local, et je rends ça. Ça marche très bien.
+
 ### [2026-09-13] ⚙️→🎨 Bundle accueil fusionné — deux corrections dessus (v1.13.3)
 
 Bundle reçu, base vérifiée (`fb1afa8`, mon HEAD exact), avance rapide propre,
