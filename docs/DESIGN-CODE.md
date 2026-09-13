@@ -171,6 +171,56 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 Pages illustrées + section Conseils — et une DEMANDE D'IMAGES
+
+Fabrice : « illustre les autres pages, une bande verte hachurée sous le titre,
+comme le site de Gwen, pas d'icônes, de vraies images — et si tu as besoin
+d'images, tu demandes à l'autre session design ». Donc je te demande.
+
+**Ce que j'ai posé** (v1.15.0, reprends la forme, garde le mécanisme) :
+
+- `.lae-hachure` — la bande hachurée sous les titres de page. Traits obliques
+  à 115°, `repeating-linear-gradient`, 92 × 9 px. J'ai pris l'oblique plutôt
+  qu'un trait plein : le plein fait filet de séparation, l'oblique fait
+  signature. **C'est ta décision, pas la mienne** — angle, épaisseur, longueur,
+  couleur, prends la main.
+- `.lae-page-tete--photo` — en-tête illustré : photo en fond, deux voiles
+  superposés (dégradé vertical + latéral), titre blanc. Les voiles ne sont pas
+  décoratifs : sans eux un titre blanc passe sous le seuil de contraste dès
+  qu'on change de photo. Si tu les allèges, vérifie le contraste réel.
+- `inc/lae-illustration.php` — la table page → photo. **L'image mise en avant
+  posée par le client prime toujours**, et une image absente du disque ramène
+  l'en-tête à sa version sobre au lieu de casser.
+
+**LA DEMANDE.** J'ai illustré avec ce qui existe dans `assets/images/`, en
+réutilisant des photos déjà employées ailleurs. Ça tient, mais **quatre pages
+méritent leur propre image** plutôt qu'un réemploi :
+
+| Page | Ce qui manque |
+|---|---|
+| `/urgences` | Une intervention **de nuit ou par mauvais temps** — c'est tout l'argument de la page, et aucune photo actuelle ne le montre. La plus utile des quatre. |
+| `/tarifs` | Quelque chose d'**humain** : une poignée de main, un devis sur un capot, l'échange avec le client. Aujourd'hui c'est une haie, ça ne parle pas de tarif. |
+| `/conseils` (nouvelle) | Un **détail** : une coupe nette sur une branche, un bourrelet de cicatrisation, une fourche à écorce incluse. Le gros plan dit « on sait de quoi on parle » mieux qu'un plan large. |
+| `/contact` | Le **matériel ou le véhicule**, quelque chose qui existe et qu'on reconnaît. |
+
+Si le client peut photographier ça, tant mieux. Sinon dis-le-moi et on garde
+le réemploi : mieux vaut une photo vraie déjà vue qu'une image d'agence.
+
+**Nouvelle section « Conseils »** : trois articles, une page qui les liste,
+entrée ajoutée aux menus en place. Les articles ont une image mise en avant
+importée en médiathèque, donc `lae_illustration()` la reprend automatiquement
+en en-tête — rien à faire de ton côté pour les suivants.
+
+**Le point sur lequel je n'ai pas lâché** : les faits juridiques sont vérifiés
+aux sources, nuances comprises (prescription trentenaire, interdiction PAC
+contre recommandation OFB). Si tu retouches ces textes, ne les raccourcis pas
+en supprimant les nuances — c'est exactement ce qu'elles apportent contre les
+concurrents.
+
+**Une question pour Fabrice quand tu lui parles :** il cite « le site de
+Gwen » comme référence visuelle. Je ne l'ai pas. Si tu l'as, ou si tu peux lui
+demander le lien, la hachure et les en-têtes doivent s'en inspirer.
+
 ### [2026-09-13] ⚙️→🎨 L'accueil était cassé — deux règles CSS, et pourquoi (v1.14.1)
 
 Fabrice a signalé l'accueil cassé sur téléphone : **le titre n'apparaissait
