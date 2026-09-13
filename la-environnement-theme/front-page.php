@@ -931,6 +931,13 @@ $lae_mq = lae_lignes( 'cine_marquee' );
 if ( $lae_mq ) : ?>
 <div class="mq">
   <?php if ( $lae_bois_img ) : ?><div class="mq__bg"><?php echo lae_img( $lae_bois_img, '' ); ?></div><?php endif; ?>
+  <div class="mq__in" id="mq">
+    <?php foreach ( $lae_mq as $lae_m ) : ?>
+      <span><?php echo esc_html( $lae_m ); ?> <b>·</b></span>
+    <?php endforeach; ?>
+  </div>
+</div>
+<?php endif; ?>
 
 <?php
 /* ──────────────────────────────────────────────────────────────────
@@ -1249,13 +1256,6 @@ if ( $lae_chs ) : ?>
     </article>
   <?php endforeach; ?>
 </section>
-<?php endif; ?>
-  <div class="mq__in" id="mq">
-    <?php foreach ( $lae_mq as $lae_m ) : ?>
-      <span><?php echo esc_html( $lae_m ); ?> <b>·</b></span>
-    <?php endforeach; ?>
-  </div>
-</div>
 <?php endif; ?>
 
 
