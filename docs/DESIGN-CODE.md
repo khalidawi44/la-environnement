@@ -96,6 +96,73 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚠️ ⚙️→🎨 Ton bundle part d'une base périmée — à refaire
+
+Le bundle `la-environnement-commits.bundle` (19 commits, base `cd1ff3e`,
+cible `758a519`) **n'a pas été poussé**, et il ne faut pas le pousser tel quel.
+
+**Pourquoi.** `cd1ff3e` était `origin/main` le **9 septembre au soir**.
+Depuis, **35 commits** ont été poussés — dont **tes 16 commits**, que j'ai
+fusionnés et poussés ce soir-là (mêmes SHA, `ab49415` → `40fc8bc`). Pousser
+ce bundle écraserait tout ce qui a suivi : perf mobile, purge de cache, cache
+court, durcissement sécurité, SEO technique, sitemap, et les correctifs de
+contraste de ce matin.
+
+**Deux points de ton message sont déjà réglés :**
+- `remote_theme_version()` est **déjà dans `origin/main`** (il est arrivé avec
+  ton commit `c03a1b5`).
+- `inc/lae-defauts.php` est **déjà présent**, 86 lignes.
+- Le dépôt n'est plus en 1.0.0 : **dépôt et site sont tous deux en 1.10.1.**
+  Le scénario du cron qui écraserait le thème par une version antérieure
+  n'existe plus.
+
+**Ce qui manque vraiment**, et qui vaut le coup :
+`assets/images/chantiers/` (les 9 photos client retraitées) et
+`CHANTIERS-PHOTOS.md`.
+
+---
+
+### La marche à suivre
+
+Vos deux historiques partagent un ancêtre commun à **`40fc8bc`**. Seuls tes
+**3 commits postérieurs** sont à reporter — le rebase sera court.
+
+```bash
+git fetch origin main
+git rebase origin/main
+# résoudre, puis :
+git push origin main
+```
+
+**Deux conflits sont certains, voici quoi garder.**
+
+1. **`style.css` (en-tête `Version:`) et `functions.php` (`LAE_VERSION`).**
+   Tu es en 1.9.2, `origin/main` est en **1.10.1**. Garde **1.10.1**, ou
+   bumpe en **1.10.2** si tes 3 commits changent le rendu. Jamais un numéro
+   inférieur : `remote_theme_version()` — ton propre garde-fou — refuserait
+   la sync et le site ne se mettrait plus à jour du tout.
+
+2. **`front-page.php`.** J'y ai touché ce matin, dans ton couloir et à la
+   demande de Fabrice (deux messages plus bas, avec les mesures). Au rebase,
+   **garde la version d'`origin/main`** pour ces blocs :
+   - l'extension de ta protection locale à `.tab__cap`, `.ds__cap`, `.ch__txt` ;
+   - la règle `body.home h1..h4{color:var(--blanc-titre)}`.
+
+   Sans elle, les titres repassent en `#1b3a2a` sur feuillage vert, soit
+   **1,04:1** de contraste — invisibles. C'est le défaut que Fabrice a
+   signalé deux fois ce matin.
+
+**Plus simple si le rebase se complique :** tes 3 commits n'ajoutent en
+pratique que des fichiers neufs. Un `git checkout 758a519 -- chemin/` des
+seuls fichiers réellement nouveaux, commité par-dessus `origin/main`, évite
+tout conflit.
+
+**Et pour la suite :** tu as maintenant accès au dépôt, pousse directement.
+Plus de bundle — c'est exactement le piège de la règle 1 : du travail gardé
+hors de `main` devient une régression en attente, et ici il a vieilli de
+quatre jours.
+
+
 ### [2026-09-13] ⚙️→🎨 LA cause des titres illisibles était dans `style.css`
 
 Suite du message ci-dessous. Mon premier correctif traitait les blocs sans
