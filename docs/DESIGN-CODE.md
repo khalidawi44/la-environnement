@@ -171,6 +171,52 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 La référence de Fabrice : Gwen Services — transposée (v1.16.0)
+
+Fabrice a donné la référence que je te demandais au message précédent :
+**gwen-services.alliancegroupe-inc.com**, un autre site de la maison. « Cette
+suite-là, c'est une bonne inspiration. »
+
+J'ai lu sa couche `assets/signature.css` — c'est là qu'est toute son identité :
+typo serif éditoriale, pilule dorée, tampon rotatif, vagues entre sections,
+grain global, bandeau défilant, révélations au défilement. **Va la lire aussi**,
+c'est mieux écrit que ce que je peux en résumer.
+
+**Ce que j'ai transposé, et le réglage que j'ai choisi** — tout est à toi,
+reprends-le :
+
+| Mécanisme | Chez Gwen | Ici |
+|---|---|---|
+| Pilule de surtitre | Dorée (`--sig-gold`) | **Ton bois** (`--lae-bois`) — la palette d'élagage a déjà son accent chaud, en importer un second aurait fait deux sites jumeaux |
+| Vague de fin d'en-tête | `C240,72 480,5 720,28…`, 50–90 px | Tracé **plus calme**, 34–62 px — ce site parle d'arbres, pas de soin à domicile |
+| Grain | 4,5 % global, `mix-blend-mode:overlay` | 5 %, **sur la photo d'en-tête seulement** |
+| Tampon rotatif | 172 px, 24 s | 148 px, 26 s, `prefers-reduced-motion` respecté |
+
+**Le point où j'ai refusé de recopier, et il compte.** Le tampon de Gwen affiche
+« 50 % CRÉDIT D'IMPÔT ». C'est vrai chez elle — aide à domicile, services à la
+personne. **C'est faux ici** : élagage, abattage, démontage et dessouchage sont
+exclus du dispositif (art. D. 7231-1 du code du travail), je l'avais vérifié
+pour la page tarifs. Recopier le sceau aurait publié une contrevérité **avec
+l'autorité visuelle d'un label officiel**, ce qui est le pire support pour une
+erreur. Le nôtre ne porte que du vérifié : 24/7, jour et nuit, week-ends et
+fériés — confirmé par le client.
+
+**Règle pour la suite, si tu enrichis le tampon :** aucun prix, aucun délai
+chiffré, aucun nombre de chantiers. Rien qu'on ne puisse tenir chaque jour.
+
+**Ce que je n'ai PAS pris de la référence, et qui t'appartient :**
+
+- La **typo serif géante** des titres de section. C'est la moitié de l'effet
+  « magazine » chez Gwen, et c'est une décision de charte, pas de mécanique —
+  je n'y touche pas sans toi. Gwen utilise Fraunces ; attention, ce site n'a
+  **aucune police externe** (RGPD, zéro requête tierce) — il faudrait
+  l'embarquer dans le thème.
+- Le **bandeau défilant** — il existe déjà sur l'accueil (`.mq`), pas ailleurs.
+- Les **témoignages** en bande sombre avec guillemet géant. Mécanisme facile,
+  **mais on n'a aucun avis client vérifié**. Je n'en inventerai pas un seul.
+  Si Fabrice en obtient de vrais, dis-le-moi et je pose la structure.
+- Les **révélations au défilement** sur les pages intérieures.
+
 ### [2026-09-13] ⚙️→🎨 Pages illustrées + section Conseils — et une DEMANDE D'IMAGES
 
 Fabrice : « illustre les autres pages, une bande verte hachurée sous le titre,
