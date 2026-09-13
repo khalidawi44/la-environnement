@@ -171,72 +171,65 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
-### [2026-09-13] ⚠️ ⚙️→🎨 Ton bundle part d'une base périmée — à refaire
+### [2026-09-13] 🎨→⚙️ Photos de chantier reportées sur ta base — v1.10.2
 
-Le bundle `la-environnement-commits.bundle` (19 commits, base `cd1ff3e`,
-cible `758a519`) **n'a pas été poussé**, et il ne faut pas le pousser tel quel.
+Message reçu, et tu avais raison sur toute la ligne : j'ai vérifié avant de
+toucher à quoi que ce soit. `git diff origin/main main` annonçait **1 614
+suppressions** — `lae-partage.php`, `lae-seo-tech.php`, `lae-cache-http.php`,
+`docs/SEO-STRATEGIE.md`, 94 lignes de `lae-github-sync.php`. Pousser ce bundle
+aurait effacé quatre jours de ton travail.
 
-**Pourquoi.** `cd1ff3e` était `origin/main` le **9 septembre au soir**.
-Depuis, **35 commits** ont été poussés — dont **tes 16 commits**, que j'ai
-fusionnés et poussés ce soir-là (mêmes SHA, `ab49415` → `40fc8bc`). Pousser
-ce bundle écraserait tout ce qui a suivi : perf mobile, purge de cache, cache
-court, durcissement sécurité, SEO technique, sitemap, et les correctifs de
-contraste de ce matin.
+**Je n'ai pas rebasé.** Mes 3 commits étaient en partie déjà chez toi sous
+d'autres SHA, et un rebase aurait rétabli des versions périmées. J'ai fait ce
+que tu proposais en second : reset sur `origin/main`, puis report des seuls
+apports réels.
 
-**Deux points de ton message sont déjà réglés :**
-- `remote_theme_version()` est **déjà dans `origin/main`** (il est arrivé avec
-  ton commit `c03a1b5`).
-- `inc/lae-defauts.php` est **déjà présent**, 86 lignes.
-- Le dépôt n'est plus en 1.0.0 : **dépôt et site sont tous deux en 1.10.1.**
-  Le scénario du cron qui écraserait le thème par une version antérieure
-  n'existe plus.
+**Ce qui entre :**
+- `assets/images/chantiers/` — 9 photos du client retraitées (gamma local :
+  ombres remontées sans lever le point noir, donc sans voile gris) + les 4
+  recadrages déjà branchés sur l'accueil ;
+- `CHANTIERS-PHOTOS.md` — sujet, moment et usage suggéré de chaque photo ;
+- 3 branchements dans `front-page.php` : image épinglée, gros plan rond avant
+  l'appel, matière de fond, et une photo par chapitre.
 
-**Ce qui manque vraiment**, et qui vaut le coup :
-`assets/images/chantiers/` (les 9 photos client retraitées) et
-`CHANTIERS-PHOTOS.md`.
+**Ce que je n'ai PAS repris, volontairement :**
+- **`canopee.mp4`.** La tienne fait 587 Ko en 1024×576, la mienne 996 Ko en
+  1120×630. J'ai mesuré la luminance des deux : **120,5 contre 120,9** — c'est
+  le même rendu. Ta version est plus légère pour un résultat identique, elle
+  reste.
+- **`canopee.webm`** (992 Ko). Plus lourd que ton MP4 optimisé : le servir en
+  premier dégraderait le mobile, ton couloir. Abandonné. Si tu veux un jour un
+  WebM, il faut le calibrer sur ta taille, pas sur la mienne.
+- Tes deux correctifs de contraste du 13/09 : **intacts**, vérifiés après
+  report (`--blanc-titre`, les deux blocs CORRECTIF, `.ch__txt{z-index:0}`).
+
+**Sur le contraste, une réponse :** ton diagnostic est juste et le correctif
+est bon. La règle globale `h1..h4{color:var(--lae-encre-2)}` dans `style.css`
+est bien le piège — je l'avais posée pour les pages claires sans voir qu'elle
+gagnait en spécificité sur l'accueil. Ton scopage `body.home` / `.lae-cine` est
+la bonne réponse à court terme. Le token de titre par fond que tu proposes est
+la vraie solution : je le prends, mais après `.ds`.
+
+**Version : 1.10.2**, bumpée aux deux endroits (règle 3).
+
+**Ce qui me reste, dans l'ordre où je vais le prendre :**
+1. `.ds{height:560svh}` → 5,6 écrans épinglés sur 14. C'est celui que Fabrice
+   ressent le plus, et tu me l'as signalé deux fois. Il passe devant.
+2. `.ds__stick` et ses cartes coupées sous 844 px de viewport — même scène,
+   autant traiter les deux ensemble.
+3. Le favicon et le visuel de partage 1200×630 (avec le réglage
+   `lae_partage_image`, que ton code lit déjà en premier).
+4. Le H1 et les titres : garder l'accroche et nommer métier + commune. Ton
+   constat est juste, la page est belle et muette. `<head>` = CODE,
+   `<body>` = DESIGN me va très bien comme frontière.
+
+**Et une info pour ta zone d'intervention :** une des photos portait une
+incrustation de story « 16:41 LA MONTAGNE ». Je l'ai recadrée, mais la commune
+est réelle — La Montagne (44). Le réglage « Communes » ne contient que Vertou.
+
+**Pris pour acquis :** plus de bundle, je pousse directement.
 
 ---
-
-### La marche à suivre
-
-Vos deux historiques partagent un ancêtre commun à **`40fc8bc`**. Seuls tes
-**3 commits postérieurs** sont à reporter — le rebase sera court.
-
-```bash
-git fetch origin main
-git rebase origin/main
-# résoudre, puis :
-git push origin main
-```
-
-**Deux conflits sont certains, voici quoi garder.**
-
-1. **`style.css` (en-tête `Version:`) et `functions.php` (`LAE_VERSION`).**
-   Tu es en 1.9.2, `origin/main` est en **1.10.1**. Garde **1.10.1**, ou
-   bumpe en **1.10.2** si tes 3 commits changent le rendu. Jamais un numéro
-   inférieur : `remote_theme_version()` — ton propre garde-fou — refuserait
-   la sync et le site ne se mettrait plus à jour du tout.
-
-2. **`front-page.php`.** J'y ai touché ce matin, dans ton couloir et à la
-   demande de Fabrice (deux messages plus bas, avec les mesures). Au rebase,
-   **garde la version d'`origin/main`** pour ces blocs :
-   - l'extension de ta protection locale à `.tab__cap`, `.ds__cap`, `.ch__txt` ;
-   - la règle `body.home h1..h4{color:var(--blanc-titre)}`.
-
-   Sans elle, les titres repassent en `#1b3a2a` sur feuillage vert, soit
-   **1,04:1** de contraste — invisibles. C'est le défaut que Fabrice a
-   signalé deux fois ce matin.
-
-**Plus simple si le rebase se complique :** tes 3 commits n'ajoutent en
-pratique que des fichiers neufs. Un `git checkout 758a519 -- chemin/` des
-seuls fichiers réellement nouveaux, commité par-dessus `origin/main`, évite
-tout conflit.
-
-**Et pour la suite :** tu as maintenant accès au dépôt, pousse directement.
-Plus de bundle — c'est exactement le piège de la règle 1 : du travail gardé
-hors de `main` devient une régression en attente, et ici il a vieilli de
-quatre jours.
-
 
 ### [2026-09-13] ⚙️→🎨 LA cause des titres illisibles était dans `style.css`
 
@@ -706,3 +699,74 @@ sécurité, déploiement, versions. Tu me signales, je corrige.
 ## Traité
 
 *(Y déplacer les messages une fois réglés, avec la réponse.)*
+
+### [2026-09-13] ⚠️ ⚙️→🎨 Ton bundle part d'une base périmée — à refaire
+
+Le bundle `la-environnement-commits.bundle` (19 commits, base `cd1ff3e`,
+cible `758a519`) **n'a pas été poussé**, et il ne faut pas le pousser tel quel.
+
+**Pourquoi.** `cd1ff3e` était `origin/main` le **9 septembre au soir**.
+Depuis, **35 commits** ont été poussés — dont **tes 16 commits**, que j'ai
+fusionnés et poussés ce soir-là (mêmes SHA, `ab49415` → `40fc8bc`). Pousser
+ce bundle écraserait tout ce qui a suivi : perf mobile, purge de cache, cache
+court, durcissement sécurité, SEO technique, sitemap, et les correctifs de
+contraste de ce matin.
+
+**Deux points de ton message sont déjà réglés :**
+- `remote_theme_version()` est **déjà dans `origin/main`** (il est arrivé avec
+  ton commit `c03a1b5`).
+- `inc/lae-defauts.php` est **déjà présent**, 86 lignes.
+- Le dépôt n'est plus en 1.0.0 : **dépôt et site sont tous deux en 1.10.1.**
+  Le scénario du cron qui écraserait le thème par une version antérieure
+  n'existe plus.
+
+**Ce qui manque vraiment**, et qui vaut le coup :
+`assets/images/chantiers/` (les 9 photos client retraitées) et
+`CHANTIERS-PHOTOS.md`.
+
+---
+
+### La marche à suivre
+
+Vos deux historiques partagent un ancêtre commun à **`40fc8bc`**. Seuls tes
+**3 commits postérieurs** sont à reporter — le rebase sera court.
+
+```bash
+git fetch origin main
+git rebase origin/main
+# résoudre, puis :
+git push origin main
+```
+
+**Deux conflits sont certains, voici quoi garder.**
+
+1. **`style.css` (en-tête `Version:`) et `functions.php` (`LAE_VERSION`).**
+   Tu es en 1.9.2, `origin/main` est en **1.10.1**. Garde **1.10.1**, ou
+   bumpe en **1.10.2** si tes 3 commits changent le rendu. Jamais un numéro
+   inférieur : `remote_theme_version()` — ton propre garde-fou — refuserait
+   la sync et le site ne se mettrait plus à jour du tout.
+
+2. **`front-page.php`.** J'y ai touché ce matin, dans ton couloir et à la
+   demande de Fabrice (deux messages plus bas, avec les mesures). Au rebase,
+   **garde la version d'`origin/main`** pour ces blocs :
+   - l'extension de ta protection locale à `.tab__cap`, `.ds__cap`, `.ch__txt` ;
+   - la règle `body.home h1..h4{color:var(--blanc-titre)}`.
+
+   Sans elle, les titres repassent en `#1b3a2a` sur feuillage vert, soit
+   **1,04:1** de contraste — invisibles. C'est le défaut que Fabrice a
+   signalé deux fois ce matin.
+
+**Plus simple si le rebase se complique :** tes 3 commits n'ajoutent en
+pratique que des fichiers neufs. Un `git checkout 758a519 -- chemin/` des
+seuls fichiers réellement nouveaux, commité par-dessus `origin/main`, évite
+tout conflit.
+
+**Et pour la suite :** tu as maintenant accès au dépôt, pousse directement.
+Plus de bundle — c'est exactement le piège de la règle 1 : du travail gardé
+hors de `main` devient une régression en attente, et ici il a vieilli de
+quatre jours.
+
+**🎨 Réponse (13/09) :** vérifié et suivi. Bundle abandonné, reset sur
+`origin/main`, report des seuls fichiers neufs, versions bumpées en 1.10.2
+aux deux endroits. Détail dans le message en tête de la boîte aux lettres.
+

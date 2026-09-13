@@ -32,7 +32,7 @@ $lae_hero_video = lae_reglage( 'cine_video' );
 $lae_hero_post  = lae_reglage( 'cine_poster' );
 $lae_tab_img    = lae_reglage( 'cine_tab_image' );
 if ( '' === $lae_tab_img ) {
-	$lae_tab_img = $dir . '/assets/images/jardin-piscine.webp';
+	$lae_tab_img = $dir . '/assets/images/broyage-chantier.webp';
 }
 $lae_scene_img  = lae_reglage( 'cine_scene_image' );
 if ( '' === $lae_scene_img ) {
@@ -41,7 +41,16 @@ if ( '' === $lae_scene_img ) {
 }
 $lae_main_img   = lae_reglage( 'cine_main_image' );
 $lae_arbre_img  = lae_reglage( 'cine_arbre_image' );
+if ( '' === $lae_arbre_img ) {
+	// Le gros plan rond qui précède l'appel : un jardin fini de l'entreprise.
+	$lae_arbre_img = $dir . '/assets/images/jardin-piscine.webp';
+}
 $lae_bois_img   = lae_reglage( 'cine_matiere_image' );
+if ( '' === $lae_bois_img ) {
+	// Matière de fond du bandeau et des prestations phares : les déchets verts
+	// d'un chantier réel, plutôt qu'une texture achetée.
+	$lae_bois_img = $dir . '/assets/images/dechets-verts.webp';
+}
 
 $lae_tel        = lae_reglage( 'telephone' );
 $lae_tel_lien   = lae_tel_lien();
@@ -829,10 +838,17 @@ if ( $lae_chs ) : ?>
   <?php foreach ( $lae_chs as $lae_i => $lae_ligne ) :
     list( $lae_t, $lae_p, $lae_meta ) = lae_morceaux( $lae_ligne, 3 );
     $lae_ch_img = lae_reglage( 'cine_ch' . ( $lae_i + 1 ) . '_image' );
-    if ( '' === $lae_ch_img && 2 === $lae_i ) {
-      // Chapitre « Les racines — le jardin qui tient » : la seule photo de
-      // jardin dont on soit sûr qu'elle vient de l'entreprise.
-      $lae_ch_img = $dir . '/assets/images/pelouse-haie.webp';
+    if ( '' === $lae_ch_img ) {
+      // Photos de chantier fournies par l'entreprise, une par chapitre :
+      // la cime (grimpe), le tronc (abattage), les racines (jardin).
+      $lae_ch_defauts = array(
+        0 => 'elagage-grimpe.webp',
+        1 => 'abattage-troncs.webp',
+        2 => 'pelouse-haie.webp',
+      );
+      if ( isset( $lae_ch_defauts[ $lae_i ] ) ) {
+        $lae_ch_img = $dir . '/assets/images/' . $lae_ch_defauts[ $lae_i ];
+      }
     }
     ?>
     <article class="ch<?php echo $lae_ch_img ? '' : ' ch--nu'; ?>">
