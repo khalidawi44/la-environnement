@@ -37,11 +37,23 @@ add_action( 'wp_head', function () {
 		);
 	}
 
-	$communes = lae_communes();
-	if ( $communes ) {
-		$donnees['areaServed'] = array_map( static function ( $ville ) {
-			return array( '@type' => 'City', 'name' => $ville );
-		}, $communes );
+	/*
+	 * Zone desservie. Le client couvre tout le département (info du 13/09) :
+	 * on le déclare en AdministrativeArea, ce qui vaut pour ses 207 communes,
+	 * plutôt que d'énumérer une liste forcément incomplète. Les villes
+	 * nommées restent déclarées en plus, elles portent le référencement local
+	 * là où il y a réellement des chantiers.
+	 */
+	$zones = array();
+	$dep   = lae_reglage( 'zone_departement' );
+	if ( $dep ) {
+		$zones[] = array( '@type' => 'AdministrativeArea', 'name' => $dep );
+	}
+	foreach ( lae_communes() as $ville ) {
+		$zones[] = array( '@type' => 'City', 'name' => $ville );
+	}
+	if ( $zones ) {
+		$donnees['areaServed'] = $zones;
 	}
 
 	/*

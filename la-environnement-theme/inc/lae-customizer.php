@@ -273,6 +273,11 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'title' => 'Tarif adapté aux revenus',
 		'panel' => $panneau,
 	) );
+	$ajoute( 'lae_zone_departement', array(
+		'label'       => 'Département couvert',
+		'section'     => 'lae_zone',
+		'description' => 'Déclaré aux moteurs comme zone desservie entière. Exemple : Loire-Atlantique.',
+	) );
 	$ajoute( 'lae_tarif_tranches', array(
 		'label'       => 'Barème des réductions',
 		'section'     => 'lae_tarif',

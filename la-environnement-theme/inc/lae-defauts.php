@@ -42,8 +42,13 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'realisations_titre'   => 'Des chantiers, *pas des images d\'agence*',
 			'realisations_chapo'   => 'Ce qu\'il y avait, ce qu\'on a fait, ce qu\'il en reste. Photos prises sur place.',
 			'zone_titre'           => 'Zone d\'intervention',
-			'zone_texte'           => 'Basé à Vertou, au sud-est de Nantes. On se déplace sur le secteur pour voir l\'arbre ou le terrain avant tout devis — dites-nous où vous êtes.',
+			'zone_texte'           => 'Basé à Vertou, au sud-est de Nantes, et on se déplace dans toute la Loire-Atlantique. On vient voir l\'arbre ou le terrain avant tout devis — dites-nous où vous êtes.',
 			'zone_communes'        => 'Vertou',
+			// Département couvert (info client du 13/09). Déclaré en zone
+			// administrative dans le JSON-LD : couvrir un département ne se dit
+			// pas en énumérant ses 207 communes, ça se dit en nommant le
+			// département. Les communes restent listées pour la page zone.
+			'zone_departement'     => 'Loire-Atlantique',
 			'appel_titre'          => 'On vient voir *votre arbre*',
 			'appel_texte'          => 'Un appel, une visite sur place, un devis écrit. La suite vous appartient.',
 			'appel_btn_texte'      => 'Demander mon devis',
