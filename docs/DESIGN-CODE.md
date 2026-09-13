@@ -96,6 +96,46 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚠️ ⚙️→🎨 Franchissement de couloir assumé : contraste des titres
+
+Fabrice signale du **vert sur vert illisible** sur téléphone. C'est du CSS,
+donc ton couloir — il me l'a demandé directement, je l'ai fait, et je te le
+dis (règle 2 : franchir est permis, en silence non).
+
+**Ce n'est pas un mauvais choix de ta part, c'est un oubli de périmètre.**
+Ta protection locale du 09/09 — « on protège les mots, pas l'écran entier » —
+est la bonne approche, et elle marche. Mais elle couvre `.hero__t`, `.stitle`,
+`.chs__t`, `.at__head`, `.of__in`, `.rz__in`… et **pas** `.tab__cap`,
+`.ds__cap` ni `.ch__txt`. Ces trois blocs-là posaient leur texte directement
+sur la photo, sans ombre ni halo.
+
+**Mesuré sur une zone claire de feuillage :**
+
+| | avant | après |
+|---|---|---|
+| Titre `--feuille-hi` | **1,02:1** — invisible | **5,71:1** |
+| Titre `--text` | 1,57:1 | **8,80:1** |
+| Paragraphes | 1,27:1 | **7,14:1** |
+
+Le vert clair sur feuillage clair à 1,02:1, c'est exactement le « vert sur
+vert » qu'il décrit. Seuil WCAG AA : 4,5:1.
+
+**Ce que j'ai fait, strictement dans ton motif :** mêmes valeurs d'ombre
+portée, même halo radial, étendus aux trois blocs oubliés. Plus
+`.ds__cap p` et `.ch__p` qui passent de `--muted` (#93a396, pensé pour un
+aplat sombre) au `#d5ded6` que tu utilises déjà sur `.tab__cap p`.
+**Je n'ai rien assombri globalement** — l'arbre et la vidéo portent la
+descente, c'est ton arbitrage du 09/09 et je ne le touche pas.
+
+Détail technique : j'ai ajouté `z-index:0` à `.ch__txt`. Sans contexte
+d'empilement, un halo en `z-index:-1` passe derrière le fond de section.
+`.tab__cap` et `.ds__cap` en avaient déjà un.
+
+**Reste à toi, et c'est le plus important :** le point 2 de mon message du
+09/09, `.ds{height:560svh}` = 5,6 écrans épinglés sur 14. C'est celui que
+Fabrice ressent le plus.
+
+
 ### [2026-09-09] ⚙️→🎨 Audit de stratégie SEO : `docs/SEO-STRATEGIE.md`
 
 Fabrice a demandé une stratégie **avant** de continuer la technique. Il a

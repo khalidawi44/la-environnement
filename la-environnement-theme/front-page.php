@@ -617,6 +617,38 @@ $lae_contact    = lae_url_contact();
     background:radial-gradient(60% 58% at 50% 50%,rgba(3,16,9,.66),rgba(3,16,9,.28) 62%,transparent 78%)}
   .hero__in,.at__head,.of__in,.rz__in{position:relative}
 
+  /* ----------------------------------------------------------
+     CORRECTIF 13/09 — trois blocs avaient été oubliés.
+     La protection locale ci-dessus couvrait le hero, l'atelier, les
+     offres et les réalisations, mais PAS les deux scènes épinglées
+     (.tab__cap, .ds__cap) ni les chapitres (.ch__txt). Leur texte se
+     posait donc directement sur la photo, sans ombre ni halo.
+     Mesure : sur une zone claire de feuillage, le vert des titres
+     (--feuille-hi) tombait à 1,02:1 de contraste — invisible. Le blanc
+     cassé à 1,57:1, les paragraphes à 1,51:1. D'où le « vert sur vert ».
+     On applique exactement le même traitement qu'ailleurs : on protège
+     les mots, jamais l'écran entier — assombrir toute la page tuerait
+     l'arbre et la vidéo, qui portent la descente.
+     ---------------------------------------------------------- */
+  .tab__cap h2,.tab__cap p,.ds__cap h2,.ds__cap p,.ch__n,.ch__t,.ch__p{
+    text-shadow:0 1px 2px rgba(2,12,7,.78),0 2px 24px rgba(2,12,7,.66)}
+  .tab__cap h2,.ds__cap h2,.ch__t{
+    text-shadow:0 2px 3px rgba(2,12,7,.82),0 4px 34px rgba(2,12,7,.72)}
+
+  .tab__cap::before,.ds__cap::before,.ch__txt::before{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(1100px,124%);height:136%;z-index:-1;pointer-events:none;
+    background:radial-gradient(62% 60% at 50% 50%,rgba(3,16,9,.72),rgba(3,16,9,.34) 62%,transparent 80%)}
+  /* z-index explicite : sans contexte d'empilement, le halo en z-index:-1
+     passerait derrière le fond de section au lieu de se poser entre la photo
+     et le texte. .tab__cap et .ds__cap en ont déjà un (z-index 2 et 5). */
+  .ch__txt{position:relative;z-index:0}
+
+  /* Les paragraphes de ces scènes étaient en --muted (#93a396), pensé pour
+     un aplat sombre. Sur une photo il ne tient pas : on prend le même gris
+     clair que .tab__cap p, qui lui était déjà correct. */
+  .ds__cap p,.ch__p{color:#d5ded6}
+
 
   /* Les fonds pleins des scènes deviennent des voiles : sans cela la colonne
      serait masquée précisément là où la descente doit se sentir. */
