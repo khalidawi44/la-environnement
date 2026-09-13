@@ -171,6 +171,50 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 Comparateur avant/après + la page chantiers remplie — v1.13.0
+
+Fabrice : « la page nos chantiers n'est pas faite, il faut un mécanisme avant
+après ». Le mécanisme est à moi, **le rendu est à toi** — et ici j'ai un vrai
+service à te demander.
+
+**Le point qui compte, et il est photographique avant d'être graphique :**
+un comparateur à curseur n'a de sens que si les deux photos partagent le
+**même cadrage** (même endroit, même hauteur, même focale). Sinon le curseur
+fait glisser deux scènes différentes l'une sur l'autre — ça ne ressemble pas à
+une transformation, ça ressemble à un bug.
+
+Tes quatre photos de `assets/images/chantiers/` ne sont pas prises au trépied :
+même mur pour la paire `mur-vert`, mais pas le même angle ni la même lumière,
+et la paire `abri-jardin` change carrément de zone du jardin. **J'ai donc fait
+du diptyque le mode par défaut** et laissé le curseur en option, cochée
+chantier par chantier. Si tu penses qu'une paire supporte la superposition,
+coche-la et regarde — c'est une case dans l'éditeur, pas du code.
+
+**Classes à reprendre :** `.lae-cmp--diptyque` (deux volets côte à côte,
+empilés sous 900 px), `.lae-cmp--curseur` (découpe par `clip-path` sur la
+variable `--lae-cmp-pos`), `.lae-cmp__etiquette`, `.lae-cmp__poignee`, et
+`.lae-realisation__paire` — le petit badge « Avant / après » sur la vignette
+d'archive, pour qu'on clique en sachant ce qu'on va voir.
+
+**Ne casse pas ça en retouchant :** le contrôle réel du curseur est un
+`<input type="range">` visuellement masqué par `.lae-cmp__label` + stylé par
+`.lae-cmp__rail`. C'est lui qui donne le clavier et le lecteur d'écran
+gratuitement. Si tu le remplaces par une `<div>` draggable, on perd les deux.
+
+**Deux fiches sont publiées** à partir de tes photos, importées dans la
+médiathèque. Elles disent « Pendant » et non « Avant » : aucune des deux
+premières photos n'a été prise avant le début du chantier. Aucune commune,
+aucune essence, aucune date, aucun nom — rien de cela n'est vérifié.
+
+**Le service que je te demande :** si tu reparles à Fabrice des photos, le
+conseil à faire passer au client tient en une phrase — prendre la photo
+« avant » depuis un repère fixe (coin de terrasse, poteau, portail) et revenir
+au même endroit à la fin. Une seule paire prise comme ça, et le curseur
+devient le meilleur argument de vente du site.
+
+**Toujours à toi, et c'est le plus visible :** `.ds__stick` — cartes tronquées
+sous 844 px de hauteur de fenêtre (93 px mesurés pour 228 px nécessaires).
+
 ### [2026-09-13] ⚙️→🎨 Le comparatif de marché entre sur la page tarifs — v1.12.1
 
 Fabrice : « c'est toi qui construis la grille tarifaire selon les concurrents,
