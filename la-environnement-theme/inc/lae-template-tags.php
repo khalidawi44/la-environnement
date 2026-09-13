@@ -141,6 +141,37 @@ if ( ! function_exists( 'lae_communes' ) ) {
 }
 
 /** Marque du site : logo si défini, sinon nom + baseline. */
+/**
+ * Nom affiché de l'entreprise.
+ *
+ * L'hébergeur installe WordPress avec le nom de domaine comme titre. Tant que
+ * personne n'a ouvert l'administration, `lae_amorce_identite()` n'a pas pu le
+ * corriger, et le site affiche « elagage-vertou.fr » dans son en-tête, sur
+ * toutes les pages. On ne dépend pas de ce passage pour l'affichage : un titre
+ * qui n'est qu'un nom de domaine est remplacé au rendu.
+ *
+ * Le réglage du personnalisateur, lui, reste maître : dès que le client saisit
+ * un vrai titre, c'est le sien qui s'affiche.
+ *
+ * @return string
+ */
+if ( ! function_exists( 'lae_nom_site' ) ) {
+	function lae_nom_site() {
+		$titre = trim( (string) get_bloginfo( 'name' ) );
+		$hote  = preg_replace( '#^www\\.#', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+
+		$generique = (
+			'' === $titre
+			|| 0 === strcasecmp( $titre, $hote )
+			|| 0 === strcasecmp( $titre, 'www.' . $hote )
+			|| 0 === strcasecmp( $titre, 'Mon site WordPress' )
+			|| 0 === strcasecmp( $titre, 'My WordPress Site' )
+		);
+
+		return $generique ? 'L.A Environnement' : $titre;
+	}
+}
+
 if ( ! function_exists( 'lae_marque' ) ) {
 	function lae_marque( $contexte = 'header' ) {
 		if ( has_custom_logo() ) {
@@ -152,7 +183,7 @@ if ( ! function_exists( 'lae_marque' ) ) {
 		<a class="lae-marque" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
 			<?php echo lae_icone( 'arbre', 'lae-marque__glyphe' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<span class="lae-marque__mot">
-				<span><?php bloginfo( 'name' ); ?></span>
+				<span><?php echo esc_html( lae_nom_site() ); ?></span>
 				<?php if ( $baseline ) : ?>
 					<span class="lae-marque__baseline"><?php echo esc_html( $baseline ); ?></span>
 				<?php endif; ?>

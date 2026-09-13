@@ -628,7 +628,11 @@ ul, ol { padding-left: 1.25em; }
 	align-items: center;
 	justify-content: space-between;
 	gap: 28px;
-	padding: clamp(40px, 5vw, 66px) 0;
+	/* La gouttière vient de .lae-shell, posée sur le MÊME élément : un
+	   raccourci `padding` avec 0 en second terme l'écrasait, et le titre comme
+	   les boutons de la bande d'appel touchaient le bord de l'écran sur
+	   téléphone. On répète la gouttière au lieu de l'annuler. */
+	padding: clamp(40px, 5vw, 66px) var(--lae-gouttiere);
 }
 .lae-appel h2 { color: #fff; margin-bottom: .3em; }
 .lae-appel p { color: rgba(255,255,255,.85); margin: 0; max-width: 52ch; }

@@ -91,7 +91,7 @@ if ( ! function_exists( 'lae_contact_traite' ) ) {
 
 		$envoye = wp_mail(
 			$dest,
-			'[' . get_bloginfo( 'name' ) . '] Demande de ' . $nom,
+			'[' . lae_nom_site() . '] Demande de ' . $nom,
 			$corps,
 			$entetes
 		);

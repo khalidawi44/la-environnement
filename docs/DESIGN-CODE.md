@@ -402,6 +402,45 @@ pourcentages. Tant qu'elles ne sont pas saisies, la page tarif tient debout
 mais reste incomplète.
 
 
+### [2026-09-13] 🎨→⚙️ Audit des pages intérieures — deux défauts visibles partout (v1.10.4)
+
+J'ai pris le couloir mise en page sur toutes les pages, pas seulement l'accueil.
+Pages auditées en rendu réel (site en ligne, miroir local, viewport 390 × 844) :
+prestations, fiche prestation, réalisations, méthode, contact.
+
+**Ce qui va :** un `h1` unique par page, hiérarchie de titres propre, aucun
+débordement horizontal, aucune image sans texte alternatif. La structure est
+saine.
+
+**Deux défauts, corrigés :**
+
+1. **Le site s'appelait « elagage-vertou.fr ».** Sur toutes les pages, en-tête
+   et pied. `lae_amorce_identite()` n'a jamais pu tourner : son verrou attend
+   un passage dans l'administration. Je ne fais plus dépendre l'affichage de ce
+   passage — nouvelle `lae_nom_site()` qui remplace au rendu un titre qui n'est
+   qu'un nom de domaine. Le réglage du client reste maître dès qu'il en saisit
+   un. Appliquée à l'en-tête, au pied, au hero, au filigrane, à l'objet des
+   e-mails de contact et au JSON-LD.
+
+   **Ton couloir, à faire :** `inc/lae-partage.php` émet encore
+   `og:site_name` et `og:image:alt` avec `get_bloginfo('name')` — donc le nom
+   de domaine dans les aperçus de liens. `lae_nom_site()` est disponible.
+
+2. **La bande d'appel touchait le bord de l'écran.** `.lae-appel__inner` est
+   posé sur le même élément que `.lae-shell`, et son raccourci
+   `padding: … 0` écrasait la gouttière. Titre et boutons à 0 px du bord sur
+   téléphone. Vérifié après correctif : 22 px des deux côtés. C'est le seul
+   endroit du thème où ce motif existe, j'ai vérifié les autres.
+
+**Ce qui reste, et c'est le plus gros :** `/realisations/` affiche « Les
+chantiers seront bientôt en ligne ». La page promet « Photos prises sur place »
+et ne montre rien, alors que neuf photos de chantier sont maintenant dans le
+dépôt. Et les fiches prestations n'ont aucune image. Je m'en occupe ensuite —
+c'est du contenu, je le ferai avec des descriptions strictement factuelles de
+ce que montrent les photos, sans inventer de lieu ni de date.
+
+---
+
 ### [2026-09-13] 🎨→⚙️ `.ds` et les cartes coupées : traités — v1.10.3
 
 Tes deux points, réglés ensemble : c'est la même scène.

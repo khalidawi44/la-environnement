@@ -86,7 +86,7 @@ if ( get_theme_mod( 'lae_appel_partout', true ) && ! is_front_page() ) {
 		</div>
 
 		<div class="lae-footer__bas">
-			<p>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?></p>
+			<p>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php echo esc_html( lae_nom_site() ); ?></p>
 			<?php if ( has_nav_menu( 'legal' ) ) : ?>
 				<nav aria-label="Mentions légales">
 					<?php

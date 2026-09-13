@@ -15,7 +15,7 @@ add_action( 'wp_head', function () {
 	$donnees = array(
 		'@context' => 'https://schema.org',
 		'@type'    => 'LocalBusiness',
-		'name'     => get_bloginfo( 'name' ),
+		'name'     => lae_nom_site(),
 		'url'      => home_url( '/' ),
 	);
 

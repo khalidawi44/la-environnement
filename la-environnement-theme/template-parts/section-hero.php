@@ -17,7 +17,7 @@ $btn2_url = lae_reglage( 'hero_btn2_url' );
 $contact  = lae_url_contact();
 
 if ( '' === $titre ) {
-	$titre = get_bloginfo( 'name' );
+	$titre = lae_nom_site();
 }
 ?>
 <section class="lae-hero<?php echo $image ? '' : ' lae-hero--sans-image'; ?>">

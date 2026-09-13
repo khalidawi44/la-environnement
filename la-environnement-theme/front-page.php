@@ -806,7 +806,7 @@ if ( '' === $lae_col_arbre ) {
     $lae_h_pts   = lae_lignes( 'hero_points' );
     ?>
     <?php if ( $lae_h_sur ) : ?><span class="eyebrow"><?php echo esc_html( $lae_h_sur ); ?></span><?php endif; ?>
-    <h1 class="hero__t"><?php echo lae_titre_em( $lae_h_titre ? $lae_h_titre : get_bloginfo( 'name' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h1>
+    <h1 class="hero__t"><?php echo lae_titre_em( $lae_h_titre ? $lae_h_titre : lae_nom_site() ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h1>
     <?php if ( $lae_h_chapo ) : ?><p class="hero__sub"><?php echo esc_html( $lae_h_chapo ); ?></p><?php endif; ?>
 
     <div class="hero__cta">
@@ -1188,7 +1188,7 @@ if ( $lae_ar_titre || $lae_arbre_img ) : ?>
       </div>
     </div>
 
-    <div class="arbre__w"><?php bloginfo( 'name' ); ?></div>
+    <div class="arbre__w"><?php echo esc_html( lae_nom_site() ); ?></div>
   </div>
 </section>
 <?php endif; ?>
