@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.14.0
+Version: 1.14.1
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -208,6 +208,29 @@ ul, ol { padding-left: 1.25em; }
 	            border-color var(--lae-transition), transform var(--lae-transition),
 	            box-shadow var(--lae-transition);
 }
+/* ── Taille de repli des icônes ──────────────────────────────────────
+   `lae_icone()` sort un <svg viewBox="0 0 24 24"> SANS attribut width ni
+   height : sa taille vient donc entièrement du CSS. Partout où une règle
+   la donne — .lae-btn svg, .lae-hero__points svg, .atout__ic svg… — tout
+   va bien. Là où personne ne la donne, le SVG n'a aucune taille
+   intrinsèque et, dans un conteneur flex, il S'ÉTIRE.
+
+   Constaté le 13/09 sur l'accueil en rendu réel (iPhone 13) : les trois
+   puces du bandeau d'accueil (.hero__points, la version cinématique, qui
+   n'a jamais eu de règle — contrairement à .lae-hero__points de la version
+   sobre) affichaient des coches de 122 et 158 px. La liste montait à
+   450 px, le contenu du bandeau à 946 px dans une boîte de 611 px, et
+   comme ce bandeau aligne son contenu en bas avec overflow:hidden, les
+   335 px en trop débordaient PAR LE HAUT et étaient rognés : titre,
+   surtitre et sous-titre invisibles. Une page d'accueil sans titre, sans
+   la moindre erreur JS ni requête en échec.
+
+   Ce repli fait qu'une icône sans règle n'est plus jamais démesurée. Il
+   est posé ICI, avant les classes qu'on passe en second argument de
+   `lae_icone()` (.lae-marque__glyphe et consorts) : à spécificité égale
+   c'est l'ordre qui tranche, et ce sont elles qui doivent gagner. */
+.lae-icone { width: 1.15em; height: 1.15em; flex: 0 0 auto; }
+
 .lae-btn:hover { transform: translateY(-1px); }
 .lae-btn:active { transform: translateY(0); }
 .lae-btn svg { width: 18px; height: 18px; flex: none; }

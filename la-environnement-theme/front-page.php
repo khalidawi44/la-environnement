@@ -149,6 +149,11 @@ $lae_contact    = lae_url_contact();
   .hero__cta{margin-top:26px;display:flex;gap:14px;flex-wrap:wrap}
   .btn--tel{display:inline-flex;align-items:center;gap:9px}
   .btn--tel svg{width:17px;height:17px;flex:0 0 auto}
+  /* Les coches des puces d'accueil. Sans cette ligne elles s'étirent à
+     plus de 120 px et poussent le titre hors de l'écran — voir le commentaire
+     de .lae-icone dans style.css. La version sobre avait sa règle
+     (.lae-hero__points svg), la version cinématique ne l'a jamais eue. */
+  .hero__points svg{width:17px;height:17px;flex:0 0 auto;color:#9ed8b4}
   .hero__scroll{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;font-size:.68rem;
     letter-spacing:.32em;color:rgba(255,255,255,.5);animation:bob 2.2s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
@@ -363,7 +368,14 @@ $lae_contact    = lae_url_contact();
   @media(max-width:960px){
     .wrap{padding:0 20px}
 
-    .hero{height:92svh;align-items:flex-end}
+    /* Hauteur PLANCHER et non plafond. En hauteur fixe avec overflow:hidden
+       et contenu aligné en bas, tout ce qui dépasse sort PAR LE HAUT et
+       disparaît sans bruit — c'est ce qui a rendu le titre invisible le
+       13/09. Sur un téléphone la hauteur utile bouge en permanence (barres
+       du navigateur, bannière de notification) : la boîte doit céder avant
+       le texte. Le retrait en tête réserve la place de l'en-tête collant,
+       sinon le surtitre se superpose au nom de l'entreprise. */
+    .hero{height:auto;min-height:92svh;padding-top:96px;align-items:flex-end}
     /* Telephone : plein ecran aussi. On remonte le point focal, les visages
        sont dans le tiers haut et le texte occupe le bas. */
     .hero__eg video,.hero__eg img{object-position:center 26%}
