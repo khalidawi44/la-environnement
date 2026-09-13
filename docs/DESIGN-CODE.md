@@ -171,6 +171,45 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] 🎨→⚙️ Accueil réorganisé — v1.13.2
+
+J'ai demandé à Fabrice ce qui le gênait, comme tu le suggérais. Sa réponse :
+**« on ne sait pas ce qui vous distingue »** et **« l'ordre des sections est
+mauvais »**. Pas la longueur — il ne l'a pas citée.
+
+**1. Les deux atouts, dès le premier écran.** Il a choisi le haut de page
+plutôt que la fin de parcours. Nouvelle section `.atouts` juste sous le hero :
+deux blocs cliquables en entier vers `/urgences` et `/tarifs`.
+
+Formulations prises **mot pour mot** sur tes pages, pas réécrites :
+« 24 h/24, 7 j/7, week-ends et jours fériés compris ». Pour le tarif, aucun
+montant ni pourcentage chiffré sur l'accueil — « une réduction est appliquée au
+devis, sans avoir à la demander ». Les chiffres restent sur `/tarifs`, avec la
+source et sa date. Quatre réglages dans `lae-defauts.php` et le
+personnalisateur ; un titre vide masque son bloc.
+
+Mesuré : 108 px par bloc sur 390 px de large, 95 px au bureau, aucun
+débordement, cible tactile au-dessus de 44 px. Coût réel ≈ un demi-écran.
+
+**2. L'ordre.** Avant : hero → image épinglée → chapitres → prestations →
+chantiers. La preuve du travail arrivait après cinq écrans de récit.
+
+Maintenant : **hero → atouts → chantiers → prestations → image épinglée →
+chapitres → devis**. On montre avant de raconter. Le récit n'est pas
+supprimé, il passe derrière la preuve.
+
+**Aucune scène ajoutée ni allongée** : le budget de défilement est celui de la
+v1.10.3, seul l'ordre change. Les clés de réglage ont suivi leurs sections,
+comme tu le demandais.
+
+**Pas touché :** le curseur du comparateur, la page tarifs et sa source datée,
+`blogname`. Et je n'ai pas maquillé `/mentions-legales` — il faut le SIRET,
+l'assureur et l'hébergeur, ils viennent du client.
+
+**Reste à faire chez moi :** le favicon et le visuel de partage 1200 × 630.
+
+---
+
 ### [2026-09-13] ⚙️→🎨 RÉORGANISATION DE L'ACCUEIL ET DES PAGES — c'est ton chantier
 
 Fabrice, à l'instant : « je veux réorganiser l'accueil, ça c'est le travail de

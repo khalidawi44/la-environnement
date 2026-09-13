@@ -649,6 +649,36 @@ $lae_contact    = lae_url_contact();
   @media(max-width:960px){.lae-colonne__arbre{width:118vw;opacity:.85}}
 
   /* ----------------------------------------------------------
+     LES DEUX ATOUTS — bandeau sous le hero.
+     Deux blocs larges, cliquables en entier : sur téléphone, une carte
+     dont seul le titre est cliquable rate sa cible. Ils restent sobres
+     pour ne pas concurrencer le hero — c'est un panneau indicateur,
+     pas une section.
+     ---------------------------------------------------------- */
+  .atouts{display:grid;gap:12px;padding:26px 0 8px;position:relative;z-index:2}
+  @media(min-width:820px){.atouts{grid-template-columns:1fr 1fr;gap:16px;padding:34px 0 10px}}
+  .atout{display:flex;align-items:center;gap:14px;padding:16px 18px;
+    background:rgba(11,29,19,.82);backdrop-filter:blur(3px);
+    border:1px solid rgba(127,176,74,.28);border-radius:16px;
+    text-decoration:none;color:inherit;transition:border-color .25s,transform .25s}
+  .atout:hover{border-color:rgba(127,176,74,.6);transform:translateY(-2px)}
+  .atout__ic{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;
+    background:rgba(127,176,74,.14);color:var(--feuille-hi)}
+  .atout__ic svg{width:21px;height:21px}
+  .atout__txt{display:grid;gap:3px;min-width:0}
+  .atout__txt strong{font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.005em}
+  .atout__txt span{font-size:.85rem;line-height:1.45;color:#c9d6cc}
+  .atout__fl{flex:none;color:var(--feuille);opacity:.75}
+  .atout__fl svg{width:20px;height:20px}
+  @media(max-width:520px){
+    /* Texte sur trois lignes : l'icône centrée décrochait du titre. */
+    .atout{padding:14px 15px;gap:12px;align-items:flex-start}
+    .atout__ic{margin-top:2px}
+    .atout__txt span{font-size:.81rem}
+    .atout__fl{display:none}
+  }
+
+  /* ----------------------------------------------------------
      LISIBILITÉ : on protège les mots, pas tout l'écran.
      Assombrir la page entière tuait la vidéo et l'arbre ; l'ombre
      portée ne noircit que le pourtour immédiat du texte.
@@ -834,82 +864,154 @@ if ( '' === $lae_col_arbre ) {
 </section>
 
 <?php
+/* ──────────────────────────────────────────────────────────────────
+   LES DEUX ATOUTS — dès le premier écran.
+   Relevé le 13/09 sur le HTML servi : « urgences » et « 24 h/24 »
+   n'apparaissaient que comme entrées de menu, et « revenus » nulle part.
+   Ce sont pourtant les deux seules choses qu'aucun concurrent du secteur
+   ne propose. Quelqu'un qui n'ouvrait pas le menu ne pouvait ni savoir
+   qu'on décroche la nuit, ni que le tarif s'adapte.
+   Coût mesuré : un demi-écran. Les deux blocs mènent aux pages qui
+   détaillent, ils ne les remplacent pas.
+   ────────────────────────────────────────────────────────────────── */
+$lae_urg_t = lae_reglage( 'atouts_urgence_titre' );
+$lae_urg_p = lae_reglage( 'atouts_urgence_texte' );
+$lae_tar_t = lae_reglage( 'atouts_tarif_titre' );
+$lae_tar_p = lae_reglage( 'atouts_tarif_texte' );
+$lae_urg_url = get_page_link( get_page_by_path( 'urgences' ) );
+$lae_tar_url = get_page_link( get_page_by_path( 'tarifs' ) );
+if ( $lae_urg_t || $lae_tar_t ) : ?>
+<section class="atouts wrap" id="atouts">
+  <?php if ( $lae_urg_t ) : ?>
+  <a class="atout atout--urgence" href="<?php echo esc_url( $lae_urg_url ); ?>" data-rv>
+    <span class="atout__ic"><?php echo lae_icone( 'horloge' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+    <span class="atout__txt">
+      <strong><?php echo esc_html( $lae_urg_t ); ?></strong>
+      <?php if ( $lae_urg_p ) : ?><span><?php echo esc_html( $lae_urg_p ); ?></span><?php endif; ?>
+    </span>
+    <span class="atout__fl"><?php echo lae_icone( 'fleche' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+  </a>
+  <?php endif; ?>
+  <?php if ( $lae_tar_t ) : ?>
+  <a class="atout atout--tarif" href="<?php echo esc_url( $lae_tar_url ); ?>" data-rv>
+    <span class="atout__ic"><?php echo lae_icone( 'devis' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+    <span class="atout__txt">
+      <strong><?php echo esc_html( $lae_tar_t ); ?></strong>
+      <?php if ( $lae_tar_p ) : ?><span><?php echo esc_html( $lae_tar_p ); ?></span><?php endif; ?>
+    </span>
+    <span class="atout__fl"><?php echo lae_icone( 'fleche' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+  </a>
+  <?php endif; ?>
+</section>
+<?php endif; ?>
+
+<?php
 /* Bandeau : il tourne en continu et accélère avec la vitesse de défilement. */
 $lae_mq = lae_lignes( 'cine_marquee' );
 if ( $lae_mq ) : ?>
 <div class="mq">
   <?php if ( $lae_bois_img ) : ?><div class="mq__bg"><?php echo lae_img( $lae_bois_img, '' ); ?></div><?php endif; ?>
-  <div class="mq__in" id="mq">
-    <?php foreach ( $lae_mq as $lae_m ) : ?>
-      <span><?php echo esc_html( $lae_m ); ?> <b>·</b></span>
-    <?php endforeach; ?>
-  </div>
-</div>
-<?php endif; ?>
 
 <?php
-/* Tableau épinglé : une grande image qui respire pendant qu'on la traverse. */
-$lae_tab_sur   = lae_reglage( 'cine_tab_surtitre' );
-$lae_tab_titre = lae_reglage( 'cine_tab_titre' );
-$lae_tab_texte = lae_reglage( 'cine_tab_texte' );
-if ( $lae_tab_titre || $lae_tab_texte ) : ?>
-<section class="tab">
-  <div class="tab__stick">
-    <div class="tab__img<?php echo $lae_tab_img ? '' : ' tab__img--nu'; ?>" data-tabimg>
-      <?php echo lae_img( $lae_tab_img, '' ); ?>
-    </div>
-    <div class="tab__veil"></div>
-    <div class="tab__cap">
-      <?php if ( $lae_tab_sur ) : ?><span class="eyebrow" data-rv><?php echo esc_html( $lae_tab_sur ); ?></span><?php endif; ?>
-      <?php if ( $lae_tab_titre ) : ?><h2 data-mots><?php echo lae_titre_em( $lae_tab_titre ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h2><?php endif; ?>
-      <?php if ( $lae_tab_texte ) : ?><p data-txt><?php echo esc_html( $lae_tab_texte ); ?></p><?php endif; ?>
-    </div>
-  </div>
-</section>
-<?php endif; ?>
-
+/* ──────────────────────────────────────────────────────────────────
+   ORDRE DES SCÈNES — réorganisé le 13/09.
+   Avant : hero → image épinglée → chapitres → prestations → chantiers.
+   La preuve du travail arrivait après cinq écrans de récit, et les deux
+   arguments qui distinguent l'entreprise n'étaient nulle part.
+   Maintenant : promesse (hero) → ce qui nous distingue (atouts) →
+   la preuve (chantiers) → ce qu'on fait (prestations) → comment on le
+   fait (image épinglée, chapitres) → devis.
+   Le récit n'est pas supprimé, il passe après la preuve : on montre
+   avant de raconter. Le budget de défilement est inchangé — aucune
+   scène n'a été ajoutée ni allongée.
+   ────────────────────────────────────────────────────────────────── */
+?>
 <?php
-/* Chapitres : une ligne par chapitre, « Titre | Texte | mot, mot, mot ».
-   L'image de chaque chapitre est un réglage à part (cine_ch1_image…). */
-$lae_chs = lae_lignes( 'cine_chapitres' );
-if ( $lae_chs ) : ?>
-<section class="chs wrap" id="chapitres">
-  <?php foreach ( $lae_chs as $lae_i => $lae_ligne ) :
-    list( $lae_t, $lae_p, $lae_meta ) = lae_morceaux( $lae_ligne, 3 );
-    $lae_ch_img = lae_reglage( 'cine_ch' . ( $lae_i + 1 ) . '_image' );
-    if ( '' === $lae_ch_img ) {
-      // Photos de chantier fournies par l'entreprise, une par chapitre :
-      // la cime (grimpe), le tronc (abattage), les racines (jardin).
-      $lae_ch_defauts = array(
-        0 => 'elagage-grimpe.webp',
-        1 => 'abattage-troncs.webp',
-        2 => 'pelouse-haie.webp',
-      );
-      if ( isset( $lae_ch_defauts[ $lae_i ] ) ) {
-        $lae_ch_img = $dir . '/assets/images/' . $lae_ch_defauts[ $lae_i ];
-      }
-    }
-    ?>
-    <article class="ch<?php echo $lae_ch_img ? '' : ' ch--nu'; ?>">
-      <div class="ch__txt">
-        <div class="ch__n" data-rv><?php echo esc_html( sprintf( '%02d', $lae_i + 1 ) ); ?></div>
-        <h3 class="ch__t" data-mots><?php echo lae_titre_em( $lae_t ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
-        <?php if ( $lae_p ) : ?><p class="ch__p" data-txt><?php echo esc_html( $lae_p ); ?></p><?php endif; ?>
-        <?php if ( $lae_meta ) : ?>
-          <div class="ch__meta" data-rv>
-            <?php foreach ( array_filter( array_map( 'trim', explode( ',', $lae_meta ) ) ) as $lae_mot ) : ?>
-              <span><?php echo esc_html( $lae_mot ); ?></span>
-            <?php endforeach; ?>
-          </div>
-        <?php endif; ?>
+/* Réalisations : les chantiers saisis dans l'administration. */
+$lae_rz = new WP_Query( array(
+    'post_type'           => 'lae_realisation',
+    'posts_per_page'      => 3,
+    'ignore_sticky_posts' => true,
+    'no_found_rows'       => true,
+) );
+
+/* Avis : uniquement de VRAIS avis, recopiés depuis Google par le client.
+   Aucun repli, aucun témoignage écrit par nous : une section absente vaut
+   mieux qu'une section fausse. */
+$lae_avis     = lae_lignes( 'cine_avis' );
+$lae_avis_url = lae_reglage( 'cine_avis_url' );
+$lae_avis_note = lae_reglage( 'cine_avis_note' );
+$lae_avis_tot  = lae_reglage( 'cine_avis_total' );
+
+if ( $lae_rz->have_posts() || $lae_avis ) : ?>
+<section class="rz" id="realisations">
+  <div class="rz__glow"></div>
+  <div class="wrap rz__in">
+    <span class="eyebrow" data-rv>Réalisations</span>
+    <h2 class="stitle" data-mots style="margin:12px 0 16px"><?php echo lae_titre_em( lae_reglage( 'realisations_titre', 'Ce qu\'on livre, *pour de vrai*' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h2>
+    <?php $lae_rz_chapo = lae_reglage( 'realisations_chapo' ); ?>
+    <?php if ( $lae_rz_chapo ) : ?><p class="lead" data-txt style="margin:0 auto"><?php echo esc_html( $lae_rz_chapo ); ?></p><?php endif; ?>
+
+    <?php if ( $lae_rz->have_posts() ) : ?>
+      <div class="rz__grid">
+        <?php
+        while ( $lae_rz->have_posts() ) :
+            $lae_rz->the_post();
+            $lae_type = get_the_terms( get_the_ID(), 'lae_type_chantier' );
+            ?>
+            <article class="rz__card" data-rv>
+              <a class="rz__vue<?php echo has_post_thumbnail() ? '' : ' rz__vue--nu'; ?>" href="<?php the_permalink(); ?>">
+                <?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'lae-carte', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); } ?>
+              </a>
+              <div class="rz__body">
+                <?php if ( $lae_type && ! is_wp_error( $lae_type ) ) : ?>
+                  <span class="rz__meta"><?php echo esc_html( $lae_type[0]->name ); ?></span>
+                <?php endif; ?>
+                <h3><?php the_title(); ?></h3>
+                <?php if ( has_excerpt() ) : ?><p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 28 ) ); ?></p><?php endif; ?>
+                <div class="rz__liens"><a href="<?php the_permalink(); ?>">Voir le chantier →</a></div>
+              </div>
+            </article>
+        <?php endwhile; wp_reset_postdata(); ?>
       </div>
-      <?php if ( $lae_ch_img ) : ?>
-        <div class="ch__media" data-media><?php echo lae_img( $lae_ch_img, '' ); ?></div>
-      <?php endif; ?>
-    </article>
-  <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php if ( $lae_avis ) : ?>
+      <div class="av" data-rv>
+        <div class="av__head">
+          <span class="av__g" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></span>
+          <span class="av__rate">
+            <?php if ( $lae_avis_note ) : ?><strong><?php echo esc_html( $lae_avis_note ); ?></strong><?php endif; ?>
+            <?php echo $lae_avis_tot ? esc_html( $lae_avis_tot . ' avis Google' ) : 'Avis Google'; ?>
+          </span>
+        </div>
+        <div class="av__grid">
+          <?php foreach ( array_slice( $lae_avis, 0, 3 ) as $lae_a ) :
+            list( $lae_nom, $lae_txt, $lae_quand ) = lae_morceaux( $lae_a, 3 );
+            if ( '' === $lae_txt ) { continue; }
+            ?>
+            <article class="av__card">
+              <div class="av__top">
+                <span class="av__ava"><?php echo esc_html( mb_strtoupper( mb_substr( $lae_nom ? $lae_nom : 'C', 0, 1 ) ) ); ?></span>
+                <span class="av__who">
+                  <span class="av__nom"><?php echo esc_html( $lae_nom ? $lae_nom : 'Client Google' ); ?></span>
+                  <?php if ( $lae_quand ) : ?><span class="av__role"><?php echo esc_html( $lae_quand ); ?></span><?php endif; ?>
+                </span>
+              </div>
+              <p class="av__q">«&nbsp;<?php echo esc_html( $lae_txt ); ?>&nbsp;»</p>
+              <?php if ( $lae_avis_url ) : ?><a class="av__lien" href="<?php echo esc_url( $lae_avis_url ); ?>" target="_blank" rel="noopener">Voir sur Google →</a><?php endif; ?>
+            </article>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <?php $lae_rz_lien = get_post_type_archive_link( 'lae_realisation' ); ?>
+    <?php if ( $lae_rz_lien ) : ?>
+      <a class="btn" data-rv href="<?php echo esc_url( $lae_rz_lien ); ?>">Tous les chantiers</a>
+    <?php endif; ?>
+  </div>
 </section>
-<?php endif; ?>
 
 <?php
 /* ── LA SCÈNE ────────────────────────────────────────────────
@@ -1066,93 +1168,83 @@ if ( is_wp_error( $lae_familles ) ) {
 
   </div>
 </section>
-
 <?php
-/* Réalisations : les chantiers saisis dans l'administration. */
-$lae_rz = new WP_Query( array(
-    'post_type'           => 'lae_realisation',
-    'posts_per_page'      => 3,
-    'ignore_sticky_posts' => true,
-    'no_found_rows'       => true,
-) );
-
-/* Avis : uniquement de VRAIS avis, recopiés depuis Google par le client.
-   Aucun repli, aucun témoignage écrit par nous : une section absente vaut
-   mieux qu'une section fausse. */
-$lae_avis     = lae_lignes( 'cine_avis' );
-$lae_avis_url = lae_reglage( 'cine_avis_url' );
-$lae_avis_note = lae_reglage( 'cine_avis_note' );
-$lae_avis_tot  = lae_reglage( 'cine_avis_total' );
-
-if ( $lae_rz->have_posts() || $lae_avis ) : ?>
-<section class="rz" id="realisations">
-  <div class="rz__glow"></div>
-  <div class="wrap rz__in">
-    <span class="eyebrow" data-rv>Réalisations</span>
-    <h2 class="stitle" data-mots style="margin:12px 0 16px"><?php echo lae_titre_em( lae_reglage( 'realisations_titre', 'Ce qu\'on livre, *pour de vrai*' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h2>
-    <?php $lae_rz_chapo = lae_reglage( 'realisations_chapo' ); ?>
-    <?php if ( $lae_rz_chapo ) : ?><p class="lead" data-txt style="margin:0 auto"><?php echo esc_html( $lae_rz_chapo ); ?></p><?php endif; ?>
-
-    <?php if ( $lae_rz->have_posts() ) : ?>
-      <div class="rz__grid">
-        <?php
-        while ( $lae_rz->have_posts() ) :
-            $lae_rz->the_post();
-            $lae_type = get_the_terms( get_the_ID(), 'lae_type_chantier' );
-            ?>
-            <article class="rz__card" data-rv>
-              <a class="rz__vue<?php echo has_post_thumbnail() ? '' : ' rz__vue--nu'; ?>" href="<?php the_permalink(); ?>">
-                <?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'lae-carte', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); } ?>
-              </a>
-              <div class="rz__body">
-                <?php if ( $lae_type && ! is_wp_error( $lae_type ) ) : ?>
-                  <span class="rz__meta"><?php echo esc_html( $lae_type[0]->name ); ?></span>
-                <?php endif; ?>
-                <h3><?php the_title(); ?></h3>
-                <?php if ( has_excerpt() ) : ?><p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 28 ) ); ?></p><?php endif; ?>
-                <div class="rz__liens"><a href="<?php the_permalink(); ?>">Voir le chantier →</a></div>
-              </div>
-            </article>
-        <?php endwhile; wp_reset_postdata(); ?>
-      </div>
-    <?php endif; ?>
-
-    <?php if ( $lae_avis ) : ?>
-      <div class="av" data-rv>
-        <div class="av__head">
-          <span class="av__g" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></span>
-          <span class="av__rate">
-            <?php if ( $lae_avis_note ) : ?><strong><?php echo esc_html( $lae_avis_note ); ?></strong><?php endif; ?>
-            <?php echo $lae_avis_tot ? esc_html( $lae_avis_tot . ' avis Google' ) : 'Avis Google'; ?>
-          </span>
-        </div>
-        <div class="av__grid">
-          <?php foreach ( array_slice( $lae_avis, 0, 3 ) as $lae_a ) :
-            list( $lae_nom, $lae_txt, $lae_quand ) = lae_morceaux( $lae_a, 3 );
-            if ( '' === $lae_txt ) { continue; }
-            ?>
-            <article class="av__card">
-              <div class="av__top">
-                <span class="av__ava"><?php echo esc_html( mb_strtoupper( mb_substr( $lae_nom ? $lae_nom : 'C', 0, 1 ) ) ); ?></span>
-                <span class="av__who">
-                  <span class="av__nom"><?php echo esc_html( $lae_nom ? $lae_nom : 'Client Google' ); ?></span>
-                  <?php if ( $lae_quand ) : ?><span class="av__role"><?php echo esc_html( $lae_quand ); ?></span><?php endif; ?>
-                </span>
-              </div>
-              <p class="av__q">«&nbsp;<?php echo esc_html( $lae_txt ); ?>&nbsp;»</p>
-              <?php if ( $lae_avis_url ) : ?><a class="av__lien" href="<?php echo esc_url( $lae_avis_url ); ?>" target="_blank" rel="noopener">Voir sur Google →</a><?php endif; ?>
-            </article>
-          <?php endforeach; ?>
-        </div>
-      </div>
-    <?php endif; ?>
-
-    <?php $lae_rz_lien = get_post_type_archive_link( 'lae_realisation' ); ?>
-    <?php if ( $lae_rz_lien ) : ?>
-      <a class="btn" data-rv href="<?php echo esc_url( $lae_rz_lien ); ?>">Tous les chantiers</a>
-    <?php endif; ?>
+/* Tableau épinglé : une grande image qui respire pendant qu'on la traverse. */
+$lae_tab_sur   = lae_reglage( 'cine_tab_surtitre' );
+$lae_tab_titre = lae_reglage( 'cine_tab_titre' );
+$lae_tab_texte = lae_reglage( 'cine_tab_texte' );
+if ( $lae_tab_titre || $lae_tab_texte ) : ?>
+<section class="tab">
+  <div class="tab__stick">
+    <div class="tab__img<?php echo $lae_tab_img ? '' : ' tab__img--nu'; ?>" data-tabimg>
+      <?php echo lae_img( $lae_tab_img, '' ); ?>
+    </div>
+    <div class="tab__veil"></div>
+    <div class="tab__cap">
+      <?php if ( $lae_tab_sur ) : ?><span class="eyebrow" data-rv><?php echo esc_html( $lae_tab_sur ); ?></span><?php endif; ?>
+      <?php if ( $lae_tab_titre ) : ?><h2 data-mots><?php echo lae_titre_em( $lae_tab_titre ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h2><?php endif; ?>
+      <?php if ( $lae_tab_texte ) : ?><p data-txt><?php echo esc_html( $lae_tab_texte ); ?></p><?php endif; ?>
+    </div>
   </div>
 </section>
+<?php endif; ?>
+<?php
+/* Chapitres : une ligne par chapitre, « Titre | Texte | mot, mot, mot ».
+   L'image de chaque chapitre est un réglage à part (cine_ch1_image…). */
+$lae_chs = lae_lignes( 'cine_chapitres' );
+if ( $lae_chs ) : ?>
+<section class="chs wrap" id="chapitres">
+  <?php foreach ( $lae_chs as $lae_i => $lae_ligne ) :
+    list( $lae_t, $lae_p, $lae_meta ) = lae_morceaux( $lae_ligne, 3 );
+    $lae_ch_img = lae_reglage( 'cine_ch' . ( $lae_i + 1 ) . '_image' );
+    if ( '' === $lae_ch_img ) {
+      // Photos de chantier fournies par l'entreprise, une par chapitre :
+      // la cime (grimpe), le tronc (abattage), les racines (jardin).
+      $lae_ch_defauts = array(
+        0 => 'elagage-grimpe.webp',
+        1 => 'abattage-troncs.webp',
+        2 => 'pelouse-haie.webp',
+      );
+      if ( isset( $lae_ch_defauts[ $lae_i ] ) ) {
+        $lae_ch_img = $dir . '/assets/images/' . $lae_ch_defauts[ $lae_i ];
+      }
+    }
+    ?>
+    <article class="ch<?php echo $lae_ch_img ? '' : ' ch--nu'; ?>">
+      <div class="ch__txt">
+        <div class="ch__n" data-rv><?php echo esc_html( sprintf( '%02d', $lae_i + 1 ) ); ?></div>
+        <h3 class="ch__t" data-mots><?php echo lae_titre_em( $lae_t ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
+        <?php if ( $lae_p ) : ?><p class="ch__p" data-txt><?php echo esc_html( $lae_p ); ?></p><?php endif; ?>
+        <?php if ( $lae_meta ) : ?>
+          <div class="ch__meta" data-rv>
+            <?php foreach ( array_filter( array_map( 'trim', explode( ',', $lae_meta ) ) ) as $lae_mot ) : ?>
+              <span><?php echo esc_html( $lae_mot ); ?></span>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      </div>
+      <?php if ( $lae_ch_img ) : ?>
+        <div class="ch__media" data-media><?php echo lae_img( $lae_ch_img, '' ); ?></div>
+      <?php endif; ?>
+    </article>
+  <?php endforeach; ?>
+</section>
+<?php endif; ?>
+  <div class="mq__in" id="mq">
+    <?php foreach ( $lae_mq as $lae_m ) : ?>
+      <span><?php echo esc_html( $lae_m ); ?> <b>·</b></span>
+    <?php endforeach; ?>
+  </div>
+</div>
+<?php endif; ?>
+
+
+
+
+
+
+
+
 <?php endif; ?>
 
 <?php

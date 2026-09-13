@@ -191,6 +191,17 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'type'    => 'checkbox',
 	) );
 
+	// ── Accueil : les deux atouts ───────────────────────────────────────
+	$wp_customize->add_section( 'lae_atouts', array(
+		'title'       => 'Accueil — ce qui vous distingue',
+		'panel'       => $panneau,
+		'description' => 'Le bandeau sous le bandeau d\'accueil. Deux blocs qui mènent aux pages Urgences et Tarifs. Un titre vide masque le bloc.',
+	) );
+	$ajoute( 'lae_atouts_urgence_titre', array( 'label' => 'Urgences — titre', 'section' => 'lae_atouts' ) );
+	$ajoute( 'lae_atouts_urgence_texte', array( 'label' => 'Urgences — texte', 'section' => 'lae_atouts', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+	$ajoute( 'lae_atouts_tarif_titre', array( 'label' => 'Tarif — titre', 'section' => 'lae_atouts' ) );
+	$ajoute( 'lae_atouts_tarif_texte', array( 'label' => 'Tarif — texte', 'section' => 'lae_atouts', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
+
 	// ── Accueil cinématique ─────────────────────────────────────────────
 	$wp_customize->add_section( 'lae_cine', array(
 		'title'       => 'Accueil cinématique',

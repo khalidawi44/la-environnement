@@ -35,6 +35,10 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			// renoncer exactement les gens que la réduction vise. C'est le
 			// barème affiché qui fait le travail, pas le justificatif.
 			// Conséquence heureuse : aucun seuil en euros à inventer.
+			'atouts_urgence_titre' => 'On décroche la nuit',
+			'atouts_urgence_texte' => 'Branche sur le toit, arbre qui penche après la tempête : 24 h/24, 7 j/7, week-ends et jours fériés compris.',
+			'atouts_tarif_titre'   => 'Le tarif suit vos revenus',
+			'atouts_tarif_texte'   => 'Étudiant, sans emploi, minima sociaux, retraite modeste : une réduction est appliquée au devis, sans avoir à la demander.',
 			'tarif_tranches'       => "Étudiant, apprenti, sans emploi, minima sociaux | 30\nRetraité modeste, temps partiel, famille monoparentale | 15",
 			'telephone'            => '07 59 79 03 96',
 			'email'                => 'paysagisteenvironnement@gmail.com',
