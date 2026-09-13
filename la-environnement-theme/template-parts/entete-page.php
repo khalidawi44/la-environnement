@@ -16,6 +16,7 @@ $titre = isset( $args['titre'] ) ? $args['titre'] : '';
 $chapo = isset( $args['chapo'] ) ? $args['chapo'] : '';
 $fil   = isset( $args['fil'] ) ? $args['fil'] : '';
 $illu  = function_exists( 'lae_illustration' ) ? lae_illustration() : null;
+$surt  = function_exists( 'lae_entete_surtitre' ) ? lae_entete_surtitre() : '';
 ?>
 <div class="lae-page-tete<?php echo $illu ? ' lae-page-tete--photo' : ''; ?>">
 
@@ -33,10 +34,21 @@ $illu  = function_exists( 'lae_illustration' ) ? lae_illustration() : null;
 		<?php if ( $fil ) : ?>
 			<p class="lae-fil"><?php echo wp_kses_post( $fil ); ?></p>
 		<?php endif; ?>
+		<?php if ( $surt && 0 !== strcasecmp( $surt, $titre ) ) : ?>
+			<p class="lae-pilule"><?php echo esc_html( $surt ); ?></p>
+		<?php endif; ?>
 		<h1><?php echo esc_html( $titre ); ?></h1>
 		<span class="lae-hachure" aria-hidden="true"></span>
 		<?php if ( $chapo ) : ?>
 			<p class="lae-chapo"><?php echo esc_html( $chapo ); ?></p>
 		<?php endif; ?>
 	</div>
+
+	<?php if ( $illu && function_exists( 'lae_tampon' ) ) {
+		echo lae_tampon(); // phpcs:ignore WordPress.Security.EscapeOutput
+	} ?>
+
+	<?php if ( $illu && function_exists( 'lae_vague' ) ) : ?>
+		<?php echo lae_vague(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+	<?php endif; ?>
 </div>

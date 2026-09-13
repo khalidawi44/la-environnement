@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.15.0
+Version: 1.16.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -812,6 +812,140 @@ ul, ol { padding-left: 1.25em; }
 .lae-page-tete--photo .lae-chapo { color: rgba(255, 255, 255, .88); }
 .lae-page-tete--photo .lae-hachure {
 	background: repeating-linear-gradient(115deg, var(--lae-accent-clair) 0 3px, transparent 3px 7px);
+}
+
+/* ── La pilule de surtitre ───────────────────────────────────────────
+   Inspiration validée par Fabrice (13/09) : la pilule dorée de Gwen
+   Services. En ton BOIS ici, pas en or — les deux sites appartiennent à
+   la même famille d'écriture, ils ne doivent pas se ressembler. La
+   pastille qui la précède donne le point de départ de la lecture. */
+.lae-pilule {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	margin: 0 0 18px;
+	padding: 8px 16px;
+	border-radius: 100px;
+	border: 1px solid rgba(169, 118, 47, .45);
+	background: rgba(169, 118, 47, .10);
+	color: var(--lae-bois);
+	font-size: .72rem;
+	font-weight: 700;
+	letter-spacing: .18em;
+	text-transform: uppercase;
+	line-height: 1;
+}
+.lae-pilule::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: currentColor;
+	flex: 0 0 auto;
+}
+.lae-page-tete--photo .lae-pilule {
+	color: #e4c08a;
+	border-color: rgba(228, 192, 138, .5);
+	background: rgba(228, 192, 138, .14);
+	backdrop-filter: blur(3px);
+}
+
+/* ── La vague de fin d'en-tête ───────────────────────────────────────
+   Une coupure droite entre une photo et le corps de page fait « bloc
+   collé » ; la courbe fait passer de l'un à l'autre. Le remplissage
+   reprend le fond du corps de page, donc une seule variable à changer
+   si le fond change un jour. */
+.lae-vague {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1px;
+	z-index: 2;
+	line-height: 0;
+	pointer-events: none;
+}
+.lae-vague svg {
+	display: block;
+	width: 100%;
+	height: clamp(34px, 5vw, 62px);
+}
+.lae-vague path { fill: var(--lae-fond); }
+
+/* ── Le grain ────────────────────────────────────────────────────────
+   Un bruit très faible sur la photo d'en-tête. Il ne se voit pas : il
+   se sent. Une photo compressée en dégradé large montre des bandes
+   (banding) ; le grain les casse, et il enlève à l'image ce côté trop
+   lisse qui fait « image de banque ». 4 % d'opacité, jamais plus. */
+.lae-page-tete__fond::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	opacity: .05;
+	mix-blend-mode: overlay;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Le tampon ───────────────────────────────────────────────────────
+   Le sceau circulaire à texte tournant de la référence. Il ne porte que
+   des faits vérifiés du client — jamais un argument inventé, et jamais
+   un chiffre qui l'engagerait. Il disparaît sous 900 px : à cette
+   taille il mangerait le titre au lieu de l'accompagner. */
+.lae-tampon {
+	position: absolute;
+	right: 5vw;
+	bottom: 78px;
+	width: 148px;
+	height: 148px;
+	z-index: 3;
+	pointer-events: none;
+}
+.lae-tampon__tour {
+	position: absolute;
+	inset: 0;
+	animation: lae-tampon-tourne 26s linear infinite;
+}
+.lae-tampon__tour text {
+	font-size: 9.4px;
+	font-weight: 700;
+	letter-spacing: .16em;
+	text-transform: uppercase;
+	fill: #e4c08a;
+}
+.lae-tampon__cercle { fill: none; stroke: rgba(228, 192, 138, .55); stroke-width: 1; }
+.lae-tampon__coeur {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	gap: 3px;
+}
+.lae-tampon__coeur b {
+	font-size: 1.6rem;
+	line-height: .9;
+	color: #e4c08a;
+	font-weight: 700;
+}
+.lae-tampon__coeur span {
+	font-size: .58rem;
+	font-weight: 700;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, .82);
+}
+@keyframes lae-tampon-tourne { to { transform: rotate(360deg); } }
+
+/* Quelqu'un qui a demandé moins d'animations ne doit pas voir tourner
+   un disque en permanence dans un coin de sa page. */
+@media (prefers-reduced-motion: reduce) {
+	.lae-tampon__tour { animation: none; }
+}
+@media (max-width: 900px) {
+	.lae-tampon { display: none; }
 }
 
 .lae-fil {

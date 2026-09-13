@@ -75,3 +75,107 @@ function lae_illustration() {
 		'alt' => $table[ $cle ][1],
 	);
 }
+
+/**
+ * Surtitre en pilule au-dessus du titre de page.
+ *
+ * Inspiration validée par Fabrice (13/09) : la pilule dorée de Gwen Services.
+ * Ici en ton bois (--lae-bois), pas en or : les deux sites appartiennent à la
+ * même famille d'écriture visuelle, ils ne doivent pas se ressembler.
+ *
+ * Elle dit en deux mots ce qu'est la page, avant que le titre ne le dise en
+ * une phrase. Si elle n'apporte rien de plus que le titre, on ne l'affiche
+ * pas : un surtitre qui répète le titre est du bruit.
+ *
+ * @return string Vide si aucun surtitre n'est prévu pour ce contexte.
+ */
+function lae_entete_surtitre() {
+
+	$table = apply_filters( 'lae_entete_surtitres', array(
+		'urgences'            => 'Intervention d\'urgence',
+		'tarifs'              => 'Ce que ça coûte',
+		'conseils'            => 'Conseils d\'élagueur',
+		'a-propos'            => 'Notre façon de travailler',
+		'contact'             => 'Parlons de votre arbre',
+		'archive_prestation'  => 'Ce que nous faisons',
+		'archive_realisation' => 'Chantiers réalisés',
+		'blog'                => 'Conseils d\'élagueur',
+	) );
+
+	$cle = '';
+	if ( is_page() ) {
+		$post = get_post();
+		$cle  = $post ? $post->post_name : '';
+	} elseif ( is_post_type_archive( 'lae_prestation' ) || is_singular( 'lae_prestation' ) ) {
+		$cle = 'archive_prestation';
+	} elseif ( is_post_type_archive( 'lae_realisation' ) || is_tax( 'lae_type_chantier' ) || is_singular( 'lae_realisation' ) ) {
+		$cle = 'archive_realisation';
+	} elseif ( is_home() || is_singular( 'post' ) || is_category() ) {
+		$cle = 'blog';
+	}
+
+	return ( $cle && isset( $table[ $cle ] ) ) ? $table[ $cle ] : '';
+}
+
+/**
+ * La vague qui ferme un en-tête illustré.
+ *
+ * Une coupure droite entre une photo et le corps de page fait « bloc collé ».
+ * La courbe fait passer de l'un à l'autre. Le tracé vient de la même famille
+ * que celui de Gwen Services, redessiné plus calme : ce site parle d'arbres,
+ * pas de soin à domicile, et une ondulation trop marquée ferait décoratif.
+ *
+ * aria-hidden et focusable="false" : c'est une bordure, pas une image.
+ */
+function lae_vague() {
+	return '<div class="lae-vague" aria-hidden="true">'
+		. '<svg viewBox="0 0 1440 70" preserveAspectRatio="none" focusable="false">'
+		. '<path d="M0,38 C260,68 520,10 760,30 C990,49 1220,20 1440,44 L1440,70 L0,70 Z"/>'
+		. '</svg></div>';
+}
+
+/**
+ * Le tampon circulaire à texte tournant.
+ *
+ * Inspiration validée par Fabrice (13/09). Deux règles absolues, parce qu'un
+ * sceau a l'air d'un label officiel et qu'on le croit sur parole :
+ *
+ * 1. RIEN QUE DES FAITS DU CLIENT. Le modèle de Gwen Services affiche
+ *    « 50 % crédit d'impôt » — c'est vrai chez elle, et c'est faux ici :
+ *    élagage, abattage, démontage et dessouchage sont exclus du dispositif.
+ *    Recopier le sceau aurait recopié une contrevérité.
+ * 2. AUCUN CHIFFRE QUI ENGAGE. Pas de prix, pas de délai chiffré, pas de
+ *    nombre de chantiers : rien qu'on ne puisse tenir chaque jour.
+ *
+ * Reste ce qui est vérifié et confirmé par le client le 13/09 : joignable
+ * 24 h/24 et 7 j/7, week-ends et jours fériés compris.
+ *
+ * @return string Vide si la page n'a pas de tampon.
+ */
+function lae_tampon() {
+
+	if ( ! is_page( 'urgences' ) ) {
+		return '';
+	}
+
+	$tour   = 'Jour et nuit · Week-ends et jours fériés · ';
+	$centre = '24/7';
+	$pied   = 'Urgences';
+
+	// Le texte fait deux fois le tour : une seule occurrence laisserait une
+	// moitié de cercle vide selon la longueur de la phrase.
+	$piste = 'M74,74 m-56,0 a56,56 0 1,1 112,0 a56,56 0 1,1 -112,0';
+
+	return '<div class="lae-tampon" aria-hidden="true">'
+		. '<svg class="lae-tampon__tour" viewBox="0 0 148 148" focusable="false">'
+		. '<defs><path id="lae-tampon-piste" d="' . $piste . '"/></defs>'
+		. '<circle class="lae-tampon__cercle" cx="74" cy="74" r="70"/>'
+		. '<circle class="lae-tampon__cercle" cx="74" cy="74" r="46"/>'
+		. '<text><textPath href="#lae-tampon-piste" startOffset="0">'
+		. esc_html( $tour . $tour )
+		. '</textPath></text>'
+		. '</svg>'
+		. '<span class="lae-tampon__coeur"><b>' . esc_html( $centre ) . '</b>'
+		. '<span>' . esc_html( $pied ) . '</span></span>'
+		. '</div>';
+}
