@@ -20,7 +20,11 @@ commité n'existe pas pour l'autre. Tout passe donc par ce fichier et par `main`
 
 ## Les trois règles
 
-**1. Tout va sur `main`, tout de suite.**
+**1. Tout va sur `main`, tout de suite — via un bundle pour DESIGN.**
+La session DESIGN **ne peut pas pousser** (arbitrage de Fabrice, 13/09) : elle
+peut lire le dépôt, pas y écrire. Le bundle n'est donc pas un contournement
+temporaire, c'est **la procédure normale**, décrite au §« Livrer un bundle »
+plus bas. Le principe ne change pas :
 `main` est déployé en production en 5 minutes. Du travail gardé hors de `main`
 n'est pas « en attente » : c'est une **régression en attente**. Le 09/09, 16
 commits de design sont restés dans un bundle pendant que le dépôt affichait
@@ -80,6 +84,77 @@ la-environnement-theme/functions.php   (les deux y ajoutent des require)
 content/manifest.json
 HANDOFF.md  BACKLOG.md  .WORKING_ON.md
 ```
+
+---
+
+## Livrer un bundle (procédure DESIGN → CODE)
+
+DESIGN ne peut pas pousser ; CODE le peut. Le transport entre les deux passe
+par Fabrice, qui joint le fichier à la conversation. Trois étapes, et une
+seule compte vraiment : **la première**.
+
+### 1. Se recaler sur `origin/main` — TOUJOURS, juste avant
+
+Tu peux lire le dépôt, donc tu peux toujours connaître son état réel :
+
+```bash
+git fetch origin main
+git rebase origin/main
+```
+
+**C'est l'étape qui a échoué le 13/09** : un bundle calculé sur une base de
+quatre jours, pendant que 35 commits avaient été poussés. Il aurait écrasé la
+performance mobile, la purge de cache, la sécurité et le SEO. Je ne l'ai pas
+poussé, et c'est le seul incident sérieux qu'on ait eu.
+
+Un bundle ne vieillit pas bien. Fabrique-le **juste avant** de le donner, pas
+la veille.
+
+### 2. Ne mettre dedans que tes commits
+
+```bash
+git bundle create la-environnement-<sujet>.bundle origin/main..HEAD
+```
+
+`origin/main..HEAD` n'embarque que ce que tu ajoutes. Sans ça le fichier
+contient tout l'historique : 11 Mo au lieu de 4, pour rien.
+
+### 3. Annoncer trois informations, pas une
+
+```bash
+git rev-parse origin/main      # la BASE
+git rev-parse HEAD             # la CIBLE
+git log --oneline origin/main..HEAD
+```
+
+Donne-moi le **nom du fichier**, la **base**, la **cible**, le **nombre de
+commits**. Je vérifie la base contre `origin/main` avant toute chose : si elle
+correspond, le fast-forward passe et je pousse. Si elle a bougé, je te le dis
+au lieu de forcer.
+
+C'est exactement ce que tu as fait pour `la-environnement-photos.bundle`
+(base `688ebaa`, cible `f4b971f`, 1 commit, 4 Mo) — **format parfait, rien à
+changer**.
+
+### Ce que je fais de mon côté, à chaque fois
+
+`git bundle verify`, puis `fetch`, `merge --ff-only`, `push`. Ensuite je
+contrôle que la version en ligne bouge réellement (`X-LAE-Version`), et je te
+confirme le nouveau SHA d'`origin/main` ici. Tu n'as pas besoin de l'attendre :
+un `git fetch origin main` te le donne.
+
+### Le seul piège qui reste
+
+La version du thème. Si ton bundle ramène un `Version:` **inférieur** à celui
+en ligne, `remote_theme_version()` — ton propre garde-fou — refuse la sync et
+le site cesse de se mettre à jour. Après chaque rebase, vérifie :
+
+```bash
+grep -m1 '^Version:' la-environnement-theme/style.css
+grep -m1 'LAE_VERSION' la-environnement-theme/functions.php
+```
+
+Les deux doivent porter le même numéro, et être **≥** à celui d'`origin/main`.
 
 ---
 
