@@ -171,6 +171,62 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 Le comparatif de marché entre sur la page tarifs — v1.12.1
+
+Fabrice : « c'est toi qui construis la grille tarifaire selon les concurrents,
+analyse le marché en Loire-Atlantique, positionne-toi moins cher et montre des
+exemples de tarifs pratiqués par les autres ». J'ai fait la recherche et la
+structure ; **le rendu est à toi, reprends-le librement.**
+
+**Ce que j'ai ajouté dans `page-tarifs.php`** (avant le barème) :
+
+1. `.lae-niveaux` — trois cartes, le marché à trois niveaux : travail non
+   déclaré / nous / entreprises du secteur. **Une seule est mise en avant**
+   (`.lae-niveau--nous`, fond vert, bordure accent). Les deux autres restent
+   neutres : on situe, on n'attaque personne.
+2. `.lae-marche` — un tableau de fourchettes réellement constatées, avec sa
+   date de relevé. Il a `min-width: 30rem` dans un `.lae-marche-cadre` en
+   `overflow-x: auto` : sur téléphone il défile plutôt que d'écraser les prix
+   sur trois lignes. **Si tu le refais en liste sur petit écran, c'est mieux** —
+   c'est le compromis que j'ai pris, pas le bon design.
+3. `.lae-tarif-position` — notre écart annoncé, en encart accent-clair.
+4. `.lae-tarif-ligne--plein` — la ligne de clôture « tarif de référence » du
+   barème, en gris, pour que les deux réductions se lisent par contraste.
+
+**Trois contraintes à ne pas défaire en retouchant** (elles sont juridiques,
+pas esthétiques) :
+
+- **Aucun concurrent nommé, jamais.** La publicité comparative est licite mais
+  encadrée : objective, vérifiable, tenue à jour. Un prix relevé qui bouge et
+  c'est nous qui sommes en tort. D'où les fourchettes sourcées + la date
+  visible — **ne supprime pas `.lae-marche__source`**, c'est elle qui rend la
+  comparaison défendable.
+- **Aucun montant pour nous.** Un montant affiché deviendrait un engagement.
+  On annonce un **écart en pourcentage**, et c'est tout.
+- **Le travail non déclaré ne s'attaque pas.** On décrit ce que le client
+  achète en plus — assurance, facture, recours. Le texte de
+  `.lae-niveau--noir` est écrit pour ça : ne le durcis pas.
+
+**Le barème n'est plus vide.** Contrairement à ce que disait mon message du
+13/09 plus bas : Fabrice m'a demandé de le construire, donc deux taux partent
+en défaut (−30 % / −15 %, puis tarif de référence), remplaçables dans le
+personnalisateur. Mécanisme **déclaratif** et non quotient familial → aucun
+seuil en euros, les libellés décrivent des situations.
+
+**Sur les pages `/urgences` et `/tarifs` :** j'avais écrit un filet dans
+`inc/lae-amorce.php` pour les créer, parce que `lae_amorce_faite` était déjà
+posée sur le site et qu'aucune page n'utilisait les gabarits livrés en v1.11.0.
+**Vérification en ligne : les deux pages existaient déjà** (leur contenu n'est
+pas celui que j'avais rédigé — si c'est toi ou Fabrice, tant mieux). Le filet
+n'a donc rien fait ici, et c'est voulu : il ne touche jamais une page
+existante, il rattache seulement un gabarit manquant. Il reste utile pour une
+réinstallation. Les deux pages répondent en 200 et affichent bien les
+gabarits.
+
+**Reste à toi, et c'est toujours le plus visible :** `.ds__stick` — les cartes
+sont tronquées sous 844 px de hauteur de fenêtre (93 px mesurés pour 228 px
+nécessaires).
+
 ### [2026-09-13] ⚙️→🎨 Deux pages nouvelles (franchissement assumé) — v1.11.0
 
 Fabrice m'a demandé de construire les pages manquantes à partir de trois faits
