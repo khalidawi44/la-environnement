@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.12.1
+Version: 1.13.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -1055,6 +1055,120 @@ ul, ol { padding-left: 1.25em; }
 	letter-spacing: .04em;
 }
 
+/* ── Comparateur avant / après ──────────────────────────────────────
+   Deux modes. Le DIPTYQUE (par défaut) marche avec n'importe quelle
+   paire de photos. Le CURSEUR ne vaut que si les deux images ont le
+   même cadrage — voir inc/lae-chantiers.php.
+   Jetons existants uniquement. À reprendre librement côté DESIGN. */
+
+.lae-cmp { margin: 0 0 30px; }
+
+.lae-cmp--diptyque {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+.lae-cmp__volet {
+	position: relative;
+	border-radius: var(--lae-rayon);
+	overflow: hidden;
+	background: var(--lae-fond-doux);
+}
+.lae-cmp__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	aspect-ratio: 4 / 3;
+}
+.lae-cmp__etiquette {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	z-index: 2;
+	padding: 6px 12px;
+	border-radius: 999px;
+	background: rgba(20, 38, 28, .78);
+	color: var(--lae-blanc);
+	font-size: var(--lae-t-xs);
+	font-weight: 600;
+	letter-spacing: .03em;
+	/* Le texte reste lisible même sur une photo claire et chargée. */
+	backdrop-filter: blur(3px);
+}
+.lae-cmp__etiquette--apres { background: var(--lae-accent-fonce); }
+
+/* Curseur : l'image « avant » est découpée par une variable CSS que le JS
+   met à jour. Sans JS, --lae-cmp-pos vaut 50 % et on voit les deux moitiés. */
+.lae-cmp--curseur { --lae-cmp-pos: 50%; }
+.lae-cmp__scene {
+	position: relative;
+	border-radius: var(--lae-rayon);
+	overflow: hidden;
+	touch-action: pan-y;          /* le glissement horizontal nous revient */
+	cursor: ew-resize;
+	user-select: none;
+}
+.lae-cmp__fond,
+.lae-cmp__dessus { display: block; }
+.lae-cmp__dessus {
+	position: absolute;
+	inset: 0;
+	clip-path: inset(0 calc(100% - var(--lae-cmp-pos)) 0 0);
+}
+.lae-cmp__poignee {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--lae-cmp-pos);
+	width: 2px;
+	margin-left: -1px;
+	background: var(--lae-blanc);
+	box-shadow: 0 0 0 1px rgba(20, 38, 28, .25);
+	pointer-events: none;
+}
+.lae-cmp__poignee::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 38px;
+	height: 38px;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background: var(--lae-blanc);
+	box-shadow: var(--lae-ombre);
+}
+.lae-cmp__label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+.lae-cmp__rail {
+	display: block;
+	width: 100%;
+	margin: 14px 0 0;
+	accent-color: var(--lae-accent);
+}
+.lae-cmp__rail:focus-visible { outline: 2px solid var(--lae-accent); outline-offset: 3px; }
+
+/* La vignette annonce la paire : on clique en sachant ce qu'on va voir. */
+.lae-realisation__paire {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+	padding: 5px 11px;
+	border-radius: 999px;
+	background: rgba(20, 38, 28, .78);
+	color: var(--lae-blanc);
+	font-size: var(--lae-t-xs);
+	font-weight: 600;
+}
+
 /* Sur une urgence, on appelle — le numéro passe avant le texte. */
 .lae-urgence-appel {
 	background: var(--lae-fond-vert);
@@ -1075,6 +1189,9 @@ ul, ol { padding-left: 1.25em; }
 
 @media (max-width: 900px) {
 	.lae-niveaux { grid-template-columns: 1fr; }
+	/* Deux photos côte à côte sur un téléphone, ce sont deux timbres-poste :
+	   on les empile, et l'étiquette dit laquelle est laquelle. */
+	.lae-cmp--diptyque { grid-template-columns: 1fr; gap: 8px; }
 	.lae-niveau { border-top-width: 3px; padding: 17px 19px; }
 }
 

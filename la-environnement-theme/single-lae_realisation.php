@@ -23,7 +23,11 @@ while ( have_posts() ) : the_post();
 	<article <?php post_class( 'lae-contenu' ); ?>>
 		<div class="lae-shell">
 			<?php
-			if ( has_post_thumbnail() ) {
+			/* Une paire complète donne le comparateur ; sinon l'image seule. */
+			$lae_cmp = function_exists( 'lae_comparateur' ) ? lae_comparateur( get_the_ID() ) : '';
+			if ( $lae_cmp ) {
+				echo $lae_cmp; // phpcs:ignore WordPress.Security.EscapeOutput
+			} elseif ( has_post_thumbnail() ) {
 				the_post_thumbnail( 'lae-large', array( 'class' => 'alignwide', 'loading' => 'lazy' ) );
 			}
 			the_content();

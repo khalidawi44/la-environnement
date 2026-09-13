@@ -8,6 +8,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $types = get_the_terms( get_the_ID(), 'lae_type_chantier' );
+$paire = defined( 'LAE_META_AVANT' ) && get_post_meta( get_the_ID(), LAE_META_AVANT, true );
 ?>
 <a class="lae-realisation" href="<?php the_permalink(); ?>">
 	<?php
@@ -15,6 +16,9 @@ $types = get_the_terms( get_the_ID(), 'lae_type_chantier' );
 		the_post_thumbnail( 'lae-carte', array( 'loading' => 'lazy', 'decoding' => 'async', 'alt' => esc_attr( get_the_title() ) ) );
 	}
 	?>
+	<?php if ( $paire ) : ?>
+		<span class="lae-realisation__paire">Avant / après</span>
+	<?php endif; ?>
 	<span class="lae-realisation__voile">
 		<?php if ( $types && ! is_wp_error( $types ) ) : ?>
 			<span class="lae-realisation__meta"><?php echo esc_html( $types[0]->name ); ?></span>
