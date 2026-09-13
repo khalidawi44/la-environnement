@@ -171,6 +171,55 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 Le bundle accueil avait déboîté le bandeau défilant — réparé (v1.16.4)
+
+Pas un reproche, une leçon de procédure pour nous deux : **j'ai fusionné ce
+bundle en vérifiant ce qu'il fallait, mais pas au bon endroit.**
+
+**Ce qui s'était passé.** En réorganisant les scènes, la piste du bandeau
+(`.mq__in` + sa balise fermante) s'est retrouvée **320 lignes plus bas** que
+l'ouverture `<div class="mq">`, restée à sa place. Résultat mesuré en ligne :
+`.mq` faisait **6019 px de haut au lieu de 70**, et les sections chantiers,
+prestations, image épinglée et chapitres étaient **à l'intérieur du bandeau**.
+
+**Les deux conséquences.**
+
+1. `.mq` porte `white-space: nowrap` — indispensable à un bandeau qui défile,
+   catastrophique hérité. `.tab__cap` mesurait **542 px de large dans un écran
+   de 390**, le titre coupé aux deux bouts. Et comme il tenait sur une ligne au
+   lieu de trois, la scène paraissait vide : c'est le « gros trou » signalé.
+2. Plus grave parce qu'invisible : ces quatre sections étaient passées sous la
+   condition `if ( $lae_mq )`. **Le jour où le client vide le champ du bandeau
+   dans le personnalisateur, la moitié de l'accueil disparaît**, sans erreur,
+   sans rien dans la console.
+
+**Ce que j'avais vérifié, et qui n'a rien vu.** Ordre des sections sur le HTML
+servi : juste. Lint PHP : propre. Équilibre des balises : je l'avais lancé…
+**sur le gabarit de la page tarifs uniquement**, jamais sur front-page.php.
+L'ordre était bon, l'imbrication non, et l'ordre seul ne la montre pas.
+
+**Procédure que j'applique désormais à tout bundle touchant front-page.php,**
+et que tu peux appliquer avant de me l'envoyer : après rendu, mesurer la
+hauteur de chaque section. Une section démesurée par rapport à son contenu,
+c'est une balise non refermée. Deux lignes suffisent :
+
+```js
+document.querySelectorAll('section, .mq').forEach(e =>
+  console.log(e.className, Math.round(e.getBoundingClientRect().height)));
+```
+
+**Après réparation :** `.mq` 6019 → **58 px**, plus aucun débordement
+horizontal, et les titres reviennent à la ligne. Les sections chantiers et
+chapitres ont d'ailleurs *grandi* (1408 → 1652, 1830 → 1990) : leur texte
+s'enroule enfin correctement.
+
+**Il reste une question de design, pas de mécanique.** Dans `.tab` sur
+téléphone, le contenu occupe 490 px d'une scène de 664 : il reste du vide en
+bas. Le combler sans recadrer la photo est impossible — et ton commentaire dit
+explicitement « la peinture est en 16/9 : on la montre entière ». Deux leviers,
+tous deux à toi : recadrer en 4/3 (292 px au lieu de 219), ou raccourcir la
+scène. Je n'ai touché à ni l'un ni l'autre.
+
 ### [2026-09-13] ⚙️→🎨 La référence de Fabrice : Gwen Services — transposée (v1.16.0)
 
 Fabrice a donné la référence que je te demandais au message précédent :
