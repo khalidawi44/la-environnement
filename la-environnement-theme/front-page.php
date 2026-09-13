@@ -50,7 +50,7 @@ $lae_contact    = lae_url_contact();
 <style>
 
   :root{
-    --feuille:#7fb04a; --feuille-hi:#a9d36a; --ink:#04140c; --panel:#0a1811;
+    --feuille:#7fb04a; --feuille-hi:#a9d36a;--blanc-titre:#ffffff; --ink:#04140c; --panel:#0a1811;
     --text:#eef4ee; --muted:#93a396;
     --serif:Georgia,"Times New Roman","Liberation Serif",serif;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -643,6 +643,31 @@ $lae_contact    = lae_url_contact();
      passerait derrière le fond de section au lieu de se poser entre la photo
      et le texte. .tab__cap et .ds__cap en ont déjà un (z-index 2 et 5). */
   .ch__txt{position:relative;z-index:0}
+
+  /* ----------------------------------------------------------
+     CORRECTIF 13/09 (2) — LA cause des titres illisibles.
+     style.css pose une règle globale `h1,h2,h3,h4{color:var(--lae-encre-2)}`
+     (#1b3a2a, vert très foncé) pensée pour les pages CLAIRES du site. Sur
+     l'accueil sombre, elle l'emporte par spécificité et peint tous les titres
+     en vert foncé sur du feuillage vert.
+     Mesuré, halo compris : #1b3a2a = 1,04:1 de contraste. Invisible. Seule la
+     partie <em> ressortait, puisqu'elle a sa propre couleur claire — d'où ces
+     titres à moitié effacés.
+     Le blanc sur le même fond donne 11,97:1. L'accent vert reste vert : il est
+     déjà à 6,96:1, il tient très bien. Le vert est conservé là où il porte
+     la marque, il disparaît là où il rendait illisible.
+     ---------------------------------------------------------- */
+  body.home h1,body.home h2,body.home h3,body.home h4,
+  .lae-cine h1,.lae-cine h2,.lae-cine h3,.lae-cine h4{color:var(--blanc-titre)}
+
+  /* L'accent italique garde sa couleur : la règle ci-dessus ne doit pas
+     l'emporter sur lui. */
+  body.home h1 em,body.home h2 em,body.home h3 em,body.home h4 em,
+  .lae-cine h1 em,.lae-cine h2 em,.lae-cine h3 em,.lae-cine h4 em{color:var(--feuille-hi)}
+
+  /* Le surtitre était en --feuille (#7fb04a) : 4,68:1, ça passe tout juste
+     pour du petit texte espacé. --feuille-hi le porte à 6,96:1. */
+  .eyebrow{color:var(--feuille-hi)}
 
   /* Les paragraphes de ces scènes étaient en --muted (#93a396), pensé pour
      un aplat sombre. Sur une photo il ne tient pas : on prend le même gris

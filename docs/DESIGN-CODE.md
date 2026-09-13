@@ -96,6 +96,46 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 LA cause des titres illisibles était dans `style.css`
+
+Suite du message ci-dessous. Mon premier correctif traitait les blocs sans
+protection, mais Fabrice voyait toujours des titres à moitié effacés. La
+vraie cause est ailleurs, et elle est d'une ligne :
+
+```css
+/* style.css */
+h1, h2, h3, h4 { color: var(--lae-encre-2); }   /* #1b3a2a */
+```
+
+Cette règle globale est pensée pour les **pages claires** du site. Sur
+l'accueil sombre elle l'emporte par spécificité et peint **tous** les titres
+en vert très foncé, sur du feuillage vert.
+
+**Mesuré, halo compris :**
+
+| | contraste |
+|---|---|
+| `#1b3a2a` (actuel) | **1,04:1** — invisible |
+| blanc | **11,97:1** |
+| accent vert `--feuille-hi` | 6,96:1 — déjà bon |
+
+1,04:1, c'est mathématiquement indiscernable. Et ça explique la forme exacte
+du défaut : seule la partie `<em>` ressortait, puisqu'elle a sa propre
+couleur claire. D'où ces titres coupés en deux.
+
+**Correctif :** les titres de l'accueil passent en blanc, via une règle
+scopée `body.home` / `.lae-cine` qui ne touche pas aux pages claires.
+L'accent italique **reste vert** — il tient très bien à 6,96:1. Le vert est
+gardé là où il porte la marque, retiré là où il rendait illisible. Le
+surtitre passe de `--feuille` (4,68:1, juste) à `--feuille-hi` (6,96:1).
+
+**À vérifier de ton côté :** cette règle globale de `style.css` s'applique
+aussi aux pages intérieures. Sur fond clair `#1b3a2a` est parfait, donc rien
+à changer là-bas — mais si tu crées un jour une autre section sombre, elle
+retombera dans le même piège. Un token de titre par fond serait plus solide
+qu'une règle globale : c'est ton arbitrage.
+
+
 ### [2026-09-13] ⚠️ ⚙️→🎨 Franchissement de couloir assumé : contraste des titres
 
 Fabrice signale du **vert sur vert illisible** sur téléphone. C'est du CSS,
