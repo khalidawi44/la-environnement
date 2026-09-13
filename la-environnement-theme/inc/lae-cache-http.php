@@ -64,4 +64,28 @@ add_action( 'send_headers', function () {
 	$duree = (int) apply_filters( 'lae_cache_html_secondes', 300 );
 	header( 'Cache-Control: public, max-age=0, s-maxage=' . $duree . ', stale-while-revalidate=60', true );
 	header_remove( 'Expires' );  // en-tête hérité, il contredirait le précédent
+
+	/*
+	 * Et le TTL de LiteSpeed lui-même.
+	 *
+	 * CONSTAT DU 13/09. Le `Cache-Control` ci-dessus pilote les caches en AVAL
+	 * — navigateur, CDN Hostinger. Il ne fixe pas le TTL propre du cache
+	 * LiteSpeed, qui tournait à **une heure** : relevé `age: 3611` puis `3623`
+	 * sur des réponses où le CDN annonçait pourtant `MISS`. La copie périmée
+	 * ne venait donc pas du CDN mais de LiteSpeed, en amont.
+	 *
+	 * Conséquence : trois versions cohabitaient le même jour — 1.10.1, 1.10.2
+	 * et 1.10.3 selon le nœud interrogé — alors que le déploiement était bon.
+	 *
+	 * La purge ne suffisait pas à rattraper ça, et pour une raison de fond :
+	 * quand la sync tourne dans wp-cron.php, la purge est différée à la
+	 * prochaine réponse de page — mais cette réponse-là est justement servie
+	 * depuis le cache, donc PHP ne s'exécute pas et l'en-tête ne part jamais.
+	 * Le cache empêchait la purge qui l'aurait vidé.
+	 *
+	 * `X-LiteSpeed-Cache-Control` fixe le TTL page par page et prime sur le
+	 * `Cache-Control` standard (doc LiteSpeed). On ne dépend donc plus d'une
+	 * purge qui réussit : au pire, la page est périmée 5 minutes.
+	 */
+	header( 'X-LiteSpeed-Cache-Control: public,max-age=' . $duree, true );
 }, 100 );
