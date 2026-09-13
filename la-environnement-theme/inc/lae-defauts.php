@@ -25,10 +25,11 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 		}
 		$table = array(
 			'baseline'             => 'Élagage · Abattage · Création de jardin',
-			// Barème PROPOSÉ (construit le 13/09 à la demande de Fabrice), pas
-			// imposé : deux taux et deux libellés, que le client remplace dans
-			// le personnalisateur en une saisie. Ce sont les deux seules valeurs
-			// de tout le thème qui l'engagent commercialement — à confirmer.
+			// Barème construit le 13/09 à la demande de Fabrice, et VALIDÉ par
+			// le client le 14/09 : les taux de 30 % et 15 % sont les siens.
+			// Ce sont les deux seules valeurs du thème qui l'engagent
+			// commercialement — elles restent modifiables dans le
+			// personnalisateur, un barème évolue.
 			//
 			// Mécanisme DÉCLARATIF et non quotient familial : réclamer un avis
 			// d'imposition pour faire couper un arbre est intrusif, et ça fait

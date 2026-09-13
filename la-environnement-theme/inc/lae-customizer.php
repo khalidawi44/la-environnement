@@ -277,9 +277,9 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute( 'lae_cine_arbre_texte', array( 'label' => 'Révélation — texte', 'section' => 'lae_cine', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne' ) );
 
 	/* ── Tarif adapté aux revenus ──────────────────────────────────────
-	   Un barème est PROPOSÉ (construit le 13/09), pas imposé : il se
-	   remplace ici en une saisie. Champ vidé = la page explique le
-	   principe sans afficher de tableau. */
+	   Barème construit le 13/09 et VALIDÉ par le client le 14/09 : 30 %
+	   et 15 %. Il reste modifiable ici en une saisie — un barème évolue.
+	   Champ vidé = la page explique le principe sans afficher de tableau. */
 	$wp_customize->add_section( 'lae_tarif', array(
 		'title' => 'Tarif adapté aux revenus',
 		'panel' => $panneau,
@@ -294,6 +294,6 @@ add_action( 'customize_register', function ( $wp_customize ) {
 		'section'     => 'lae_tarif',
 		'type'        => 'textarea',
 		'sanitize'    => 'lae_sanitize_multiligne',
-		'description' => 'Une ligne par situation : Libellé | pourcentage. Le pourcentage s\'applique au devis, après la visite. Un barème est proposé par défaut — à confirmer ou à remplacer par le vôtre. Champ vidé = aucun tableau affiché.',
+		'description' => 'Une ligne par situation : Libellé | pourcentage. Le pourcentage s\'applique au devis, après la visite. Le barème livré (30 % et 15 %) a été validé le 14/09 ; modifiez-le ici quand vos tranches évoluent. Champ vidé = aucun tableau affiché.',
 	) );
 }, 20 );

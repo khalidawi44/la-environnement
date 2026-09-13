@@ -105,18 +105,12 @@ chantiers réalisés : elles ne proviennent d'aucune banque d'images ».
 
 Elle est en ligne depuis la v1.17.3, en en-tête de `/urgences`.
 
-**Un point reste à sécuriser côté client, et il n'est pas théorique.**
-L'ouvrier est parfaitement reconnaissable : visage de face, éclairé par le
-projecteur. Une personne identifiable sur une photo publiée a un droit sur son
-image, et cela vaut aussi entre un employeur et son salarié — un accord tacite
-ne suffit pas si la relation se termine mal. Deux lignes signées suffisent :
-« j'autorise L.A Environnement à utiliser sur son site internet les
-photographies me représentant, prises le … sur le chantier de … », datées et
-signées.
+**Droit à l'image — point clos.** L'ouvrier est reconnaissable ; Fabrice
+indique le 14/09 qu'il est d'accord pour figurer sur le site. Le texte
+alternatif ne nomme personne, volontairement : il décrit la scène.
 
-Si l'ouvrier préfère ne pas figurer, la photo reste utilisable : recadrée sur
-l'arbre, la tronçonneuse et le projecteur, elle garde tout ce qui fait son
-intérêt — la nuit, l'intervention, l'urgence. Demander avant de publier coûte
-moins cher que retirer après.
-
-Le texte alternatif ne nomme personne, volontairement : il décrit la scène.
+**Définition — point clos aussi.** 768 × 511 px, et il n'existe pas d'original
+plus grand : ne pas le redemander. Mesuré : agrandissement ×1,5 sur téléphone,
+×1,9 en pleine largeur sur écran de bureau. Ça tient, et ce n'est pas un
+hasard — la scène est nocturne, le voile sombre et le grain absorbent le manque
+de finesse. Une photo de plein jour au même format ne passerait pas.

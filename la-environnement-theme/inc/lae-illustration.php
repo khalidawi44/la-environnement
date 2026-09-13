@@ -48,8 +48,15 @@ function lae_illustration() {
 		   scène. Nommer quelqu'un sur une photo de chantier, c'est publier une
 		   donnée personnelle sans nécessité.
 
-		   Reste à sécuriser côté client : l'ouvrier est reconnaissable, son
-		   accord écrit vaut mieux qu'un accord tacite — voir CHANTIERS-PHOTOS.md. */
+		   L'ouvrier est reconnaissable ; Fabrice indique le 14/09 qu'il est
+		   d'accord pour figurer sur le site. Point clos.
+
+		   Définition : 768 × 511 px, et il n'existe pas d'original plus grand.
+		   Mesuré : agrandissement ×1,5 sur téléphone, ×1,9 en pleine largeur
+		   sur écran de bureau. Ça tient — la scène est nocturne, le voile
+		   sombre et le grain absorbent le manque de finesse, ce qui ne serait
+		   pas le cas d'une photo de plein jour. Ne pas redemander l'original :
+		   il n'y en a pas. */
 		'urgences'         => array( 'chantiers/intervention-nuit.webp',           'Élagueur à la tronçonneuse de nuit, arbre tombé contre une maison, camion-nacelle éclairé en arrière-plan' ),
 		'tarifs'           => array( 'chantiers/haie-taillee-broyat.webp',         'Haie taillée, broyat laissé en paillage au pied' ),
 		'a-propos'         => array( 'chantiers/elagage-grimpe-cordes.webp',       'Élagage en grimpe, travail à la corde' ),
