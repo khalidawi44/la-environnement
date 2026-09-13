@@ -94,3 +94,29 @@ Médiane 31 → 58 sur 255.
 **Limite à connaître :** 768 × 511 px seulement. Suffisant pour un en-tête sur
 téléphone, un peu doux en pleine largeur sur grand écran. Si le client a
 l'original en meilleure définition, il vaut le coup de le redemander.
+
+## Confirmation du 14/09 — provenance de la photo de nuit
+
+Fabrice confirme : `intervention-nuit.webp` a été **prise sur un chantier du
+client**. L'homme à la tronçonneuse est **un de ses ouvriers**, pas Anthony
+lui-même. La photo est donc bien une image maison, et cohérente avec ce que les
+mentions légales du site affirment — « les photographies sont prises sur les
+chantiers réalisés : elles ne proviennent d'aucune banque d'images ».
+
+Elle est en ligne depuis la v1.17.3, en en-tête de `/urgences`.
+
+**Un point reste à sécuriser côté client, et il n'est pas théorique.**
+L'ouvrier est parfaitement reconnaissable : visage de face, éclairé par le
+projecteur. Une personne identifiable sur une photo publiée a un droit sur son
+image, et cela vaut aussi entre un employeur et son salarié — un accord tacite
+ne suffit pas si la relation se termine mal. Deux lignes signées suffisent :
+« j'autorise L.A Environnement à utiliser sur son site internet les
+photographies me représentant, prises le … sur le chantier de … », datées et
+signées.
+
+Si l'ouvrier préfère ne pas figurer, la photo reste utilisable : recadrée sur
+l'arbre, la tronçonneuse et le projecteur, elle garde tout ce qui fait son
+intérêt — la nuit, l'intervention, l'urgence. Demander avant de publier coûte
+moins cher que retirer après.
+
+Le texte alternatif ne nomme personne, volontairement : il décrit la scène.
