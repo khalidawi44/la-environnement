@@ -340,6 +340,20 @@ add_action( 'admin_init', function () {
    Ce verrou-ci est distinct, comme `lae_identite_faite`, et ne repasse
    jamais par-dessus une page existante ni par-dessus les menus du
    client.
+
+   DEUX VERROUS ET NON UN, et ce n'est pas de la coquetterie.
+
+   Le déploiement passe par WP-Cron : aucune page d'administration n'est
+   chargée quand le thème arrive. Un `admin_init` seul ferait attendre
+   la première visite de Fabrice dans le tableau de bord pour que les
+   pages existent — le code serait déployé et le site inchangé, exactement
+   le piège déjà rencontré sur le cache. On écoute donc aussi `init`.
+
+   Mais sur une installation neuve, `init` passe AVANT l'amorce (accrochée
+   à `admin_init`) : les menus n'existent pas encore. Un verrou unique
+   posé à ce moment-là créerait les pages en laissant les menus vides,
+   pour toujours. Les deux étapes ont donc chacune le sien, et celui des
+   menus n'est posé que si un menu a réellement été trouvé.
    ═══════════════════════════════════════════════════════════════════ */
 
 if ( ! function_exists( 'lae_pages_tardives' ) ) {
@@ -369,6 +383,11 @@ if ( ! function_exists( 'lae_pages_tardives' ) ) {
 }
 
 if ( ! function_exists( 'lae_pages_tardives_creer' ) ) {
+	/**
+	 * Crée les pages manquantes et leur rattache leur gabarit.
+	 *
+	 * @return array<int, string> Identifiants des pages créées => libellé de menu.
+	 */
 	function lae_pages_tardives_creer() {
 
 		$nouvelles = array();
@@ -402,13 +421,34 @@ if ( ! function_exists( 'lae_pages_tardives_creer' ) ) {
 			$nouvelles[ (int) $id ] = $page['menu'];
 		}
 
-		if ( ! $nouvelles ) {
-			return;
+		return $nouvelles;
+	}
+}
+
+if ( ! function_exists( 'lae_pages_tardives_menus' ) ) {
+	/**
+	 * Complète les menus en place. On n'en recrée aucun, et on n'ajoute
+	 * rien qui pointe déjà vers la même page.
+	 *
+	 * @return bool Vrai si un menu a été trouvé — c'est ce qui autorise à
+	 *              poser le verrou. Faux tant qu'il n'y a rien à compléter :
+	 *              on repassera.
+	 */
+	function lae_pages_tardives_menus() {
+
+		$libelles = array();
+		foreach ( lae_pages_tardives() as $slug => $page ) {
+			$p = get_page_by_path( $slug );
+			if ( $p ) {
+				$libelles[ (int) $p->ID ] = $page['menu'];
+			}
+		}
+		if ( ! $libelles ) {
+			return false;
 		}
 
-		// Menus : on complète ceux en place, on n'en recrée aucun, et on
-		// n'ajoute rien qui pointe déjà vers la même page.
 		$emplacements = get_theme_mod( 'nav_menu_locations', array() );
+		$trouve       = false;
 
 		foreach ( array( 'principal', 'pied' ) as $cle ) {
 
@@ -419,6 +459,7 @@ if ( ! function_exists( 'lae_pages_tardives_creer' ) ) {
 			if ( ! $menu ) {
 				continue;
 			}
+			$trouve = true;
 
 			$deja = array();
 			foreach ( (array) wp_get_nav_menu_items( $menu->term_id ) as $item ) {
@@ -427,7 +468,7 @@ if ( ! function_exists( 'lae_pages_tardives_creer' ) ) {
 				}
 			}
 
-			foreach ( $nouvelles as $id => $libelle ) {
+			foreach ( $libelles as $id => $libelle ) {
 				if ( in_array( (int) $id, $deja, true ) ) {
 					continue;
 				}
@@ -440,16 +481,32 @@ if ( ! function_exists( 'lae_pages_tardives_creer' ) ) {
 				) );
 			}
 		}
+
+		return $trouve;
 	}
 }
 
-add_action( 'admin_init', function () {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
+if ( ! function_exists( 'lae_pages_tardives_rattrapage' ) ) {
+	function lae_pages_tardives_rattrapage() {
+
+		// Les deux drapeaux sont lus à chaque requête : ils sont autochargés,
+		// sinon c'est deux requêtes SQL de plus pour toujours.
+		if ( ! get_option( 'lae_pages_tardives_faites' ) ) {
+			update_option( 'lae_pages_tardives_faites', 1 );   // verrou posé AVANT le travail
+			lae_pages_tardives_creer();
+		}
+
+		if ( ! get_option( 'lae_pages_tardives_menus' ) ) {
+			if ( lae_pages_tardives_menus() ) {
+				update_option( 'lae_pages_tardives_menus', 1 );
+			}
+		}
 	}
-	if ( get_option( 'lae_pages_tardives_faites' ) ) {
-		return;
-	}
-	update_option( 'lae_pages_tardives_faites', 1, false );   // verrou posé AVANT le travail
-	lae_pages_tardives_creer();
-}, 11 );
+}
+
+/* `init` parce que le thème arrive par WP-Cron, sans administration ;
+   `admin_init` en plus parce que sur une installation neuve c'est là que
+   les menus naissent, après `init`. Les verrous rendent l'ensemble
+   idempotent quel que soit l'ordre. */
+add_action( 'init', 'lae_pages_tardives_rattrapage', 20 );
+add_action( 'admin_init', 'lae_pages_tardives_rattrapage', 11 );
