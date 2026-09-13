@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.16.0
+Version: 1.16.3
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -322,7 +322,14 @@ ul, ol { padding-left: 1.25em; }
 	color: var(--lae-accent);
 }
 
-.lae-header__actions { display: flex; align-items: center; gap: 12px; }
+/* Le bouton d'appel ne rétrécit jamais et ne se coupe jamais.
+   Constaté le 13/09 sur grand écran : il tombait à 102 px de large et le
+   numéro s'empilait sur cinq lignes. La cause n'est pas le bouton mais le
+   menu — voir le commentaire du point de bascule plus bas. Un numéro de
+   téléphone coupé en morceaux ne se compose pas : c'est le seul élément de
+   l'en-tête qui doit gagner l'arbitrage de place. */
+.lae-header__actions { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.lae-header__actions .lae-btn { white-space: nowrap; }
 
 .lae-nav ul {
 	display: flex;
@@ -375,7 +382,36 @@ ul, ol { padding-left: 1.25em; }
 	.lae-header__actions .lae-btn { padding: 12px; }
 }
 
-@media (max-width: 900px) {
+/* MESURÉ le 13/09, et non estimé.
+   Le plafond n'est pas la largeur de l'écran mais celle de la GRILLE :
+   `.lae-shell` est plafonné à --lae-largeur, 1180 px. L'en-tête complet
+   demandait 1297 px — marque 204 + menu 833 + bouton d'appel écrit 220 +
+   gouttières. Il débordait donc à TOUTE largeur d'écran, et pas seulement
+   sur les petits : à 1920 px le dépassement se perdait dans la marge, à
+   1440 il repoussait la page. C'est pour ça que le symptôme paraissait
+   capricieux.
+
+   Deux retraits, pas un : le menu se resserre, et le bouton d'appel garde
+   son icône sans le numéro écrit. 1297 → environ 1100, ça tient. Le numéro
+   n'est perdu nulle part : il reste dans le pied de page, dans la barre du
+   bas sur téléphone, dans le bandeau d'accueil et sur chaque page — et
+   l'icône reste un lien d'appel, à un clic. */
+.lae-nav a { padding: 8px 10px; font-size: .875rem; }
+.lae-nav ul { gap: 2px; }
+.lae-header__inner { gap: 14px; }
+.lae-header__tel-texte { display: none; }
+.lae-header__actions .lae-btn { padding: 13px; }
+
+/* POINT DE BASCULE REMONTÉ DE 900 À 1200 px, et c'est une réparation.
+   L'en-tête a été dessiné pour cinq entrées de menu. J'en ai ajouté trois
+   — Urgences, Tarifs, Conseils — sans toucher à ce seuil : à partir de là
+   le menu ne tenait plus sur une ligne, il poussait le bouton d'appel, et
+   sous 1080 px l'en-tête débordait carrément de l'écran. Mesuré le 13/09 :
+   menu 833 px + marque 250 + bouton 102 + gouttières, il faut environ
+   1297 px pour tout aligner, et encore 1145 une fois le numéro réduit à
+   son icône. Ajouter une entrée au menu, c'est donc toujours revérifier ce
+   seuil — la mesure est dans docs/DESIGN-CODE.md. */
+@media (max-width: 1200px) {
 	.lae-burger { display: inline-flex; }
 	.lae-header__tel-texte { display: none; }
 	.lae-nav {
@@ -784,7 +820,10 @@ ul, ol { padding-left: 1.25em; }
 	background: var(--lae-encre);
 	border-bottom: 0;
 	padding-top: clamp(72px, 11vw, 150px);
-	padding-bottom: clamp(40px, 6vw, 72px);
+	/* La vague monte plus haut sur les côtés qu'au centre : son épaule
+	   gauche venait mordre sur la hachure, qui n'avait que 29 px de marge.
+	   Le retrait bas réserve la hauteur de la vague plus de quoi respirer. */
+	padding-bottom: clamp(86px, 10vw, 132px);
 }
 .lae-page-tete__fond {
 	position: absolute;
