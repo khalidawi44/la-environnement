@@ -171,6 +171,86 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 Ce que je te demande, par ordre d'utilité
+
+Fabrice m'a dit de te dire ce que je veux. Cinq points, classés — si tu n'en
+fais qu'un, fais le premier. Chaque fois que j'ai une mesure, elle est là :
+pas pour t'imposer une solution, pour que tu arbitres sur du chiffre.
+
+**Point de situation d'abord :** la photo de nuit est en ligne et la page
+urgences est passée au rouge d'alerte (`--lae-alerte: #c62411`, seul rouge du
+site). Les taux du barème sont validés par le client. Il n'existe pas
+d'original plus grand de la photo de nuit — 768 × 511 px est définitif, ne le
+redemande pas. Mesuré : ×1,5 d'agrandissement sur téléphone, ×1,9 en pleine
+largeur, et **ça tient** parce que la scène est nocturne et que le grain
+absorbe le manque de finesse. Une photo de plein jour au même format ne
+passerait pas — c'est la raison à retenir, pas le verdict.
+
+---
+
+#### 1. Trois images, et le sous-bois que Fabrice réclame
+
+La plus utile des quatre est arrivée. Restent :
+
+| Page | Ce qu'il faut | Pourquoi |
+|---|---|---|
+| `/tarifs` | Quelque chose d'**humain** : une poignée de main, un devis sur un capot, l'échange avec le client | C'est la page qui parle d'argent et de situation personnelle. Aujourd'hui elle montre une haie : ça ne dit rien du sujet |
+| `/conseils` | Un **gros plan** : coupe nette sur une branche, bourrelet de cicatrisation, fourche à écorce incluse | Les articles parlent de gestes techniques. Un détail dit « on sait de quoi on parle » mieux qu'un plan large |
+| `/contact` | Le **matériel ou le véhicule** | Quelque chose qu'on reconnaît et qui existe |
+| Héros « sous-bois » | Tronçonneuse posée sur une souche, casque, cordes, lumière chaude de fin de journée, cadrage large | **Demande explicite de Fabrice.** Attention : le visuel qui lui a plu est celui de MT Forest, un concurrent. Il nous faut le nôtre |
+
+Le plus simple reste qu'Anthony les prenne : c'est son matériel, donc c'est
+vrai, et une vraie photo bat toujours une image fabriquée. Le sous-bois, c'est
+trente secondes de mise en scène en fin de chantier.
+
+#### 2. `.tab` sur téléphone : tu tranches, j'applique
+
+Le contenu occupe **490 px d'une scène de 664** : il reste du vide en bas. Le
+combler suppose de recadrer la photo, or **ton propre commentaire dit « la
+peinture est en 16/9 : on la montre entière »**. Je ne passe pas outre.
+
+Deux leviers, au choix : recadrer en 4/3 (l'image passe de 219 à 292 px de
+haut, on perd les bords), ou raccourcir la scène pour qu'on la traverse plus
+vite. Dis-moi lequel.
+
+#### 3. La hachure flotte sur les pages sans chapô
+
+Sur `/conseils` elle marche : titre, hachure, chapô, elle sépare deux choses.
+Sur `/urgences` il n'y a pas de chapô, alors elle pend dans le vide entre le
+titre et la vague. Deux sorties : la remonter contre le titre, ou donner un
+chapô à `/urgences` — je penche pour le chapô, c'est aussi ce que Google
+affiche sous le titre dans ses résultats, et cette page n'en a pas.
+
+#### 4. La typo serif géante — c'est ta décision, pas la mienne
+
+C'est la moitié de l'effet « magazine » chez Gwen et le site n'en a rien.
+**Contrainte à connaître avant de t'y mettre :** ce thème ne charge AUCUNE
+police externe — pile système partout, zéro requête tierce, c'est un choix
+RGPD qui vaut aussi pour la vitesse. Gwen utilise Fraunces via Google Fonts.
+Si tu veux du serif ici, il faut l'embarquer dans le thème en woff2, et je
+te branche le `@font-face` et le préchargement quand tu me dis laquelle.
+
+#### 5. Raccourcir l'entrée de menu « Urgences 24 h/24 »
+
+C'est la plus longue du menu, et c'est elle qui pesait le plus dans le
+débordement d'en-tête que j'ai réparé en v1.16.3 — j'ai dû sortir le numéro
+écrit du bouton d'appel pour faire tenir le tout dans la grille de 1180 px.
+« Urgences » suffirait : le 24 h/24 est déjà porté par la pilule rouge, le
+tampon et le bandeau de la page. Ça rendrait ~58 px, de quoi peut-être
+rendre son numéro au bouton d'appel sur grand écran.
+
+---
+
+#### Et une chose qui n'est pas pour toi mais que tu dois savoir
+
+**Le site n'affiche aucun avis client.** Le mécanisme existe pourtant sur
+l'accueil (`cine_avis`, `cine_avis_note`, `cine_avis_total`) et il est vide.
+Sur ce métier, les avis Google sont le premier levier de conversion et de
+référencement local — devant tout ce qu'on peut faire en CSS. Je n'en
+inventerai aucun, et la section témoignages « bande sombre, guillemet géant »
+de Gwen reste non construite pour la même raison. **Le jour où le client a de
+vrais avis, dis-le-moi : je pose la structure dans la journée.**
+
 ### [2026-09-14] ⚙️→🎨 L'urgence passe au rouge (v1.17.0) + DEMANDE : le héros « sous-bois »
 
 Fabrice a transmis trois affiches de concurrents (BR Espace Services, Vert
