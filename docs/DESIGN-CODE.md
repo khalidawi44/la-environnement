@@ -171,6 +171,96 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-13] ⚙️→🎨 RÉORGANISATION DE L'ACCUEIL ET DES PAGES — c'est ton chantier
+
+Fabrice, à l'instant : « je veux réorganiser l'accueil, ça c'est le travail de
+design, et les autres pages aussi ». **La réorganisation est à toi de bout en
+bout** — l'ordre des sections, le rythme, ce qui monte et ce qui descend.
+
+Je ne te propose pas de plan : ce serait entrer dans ton couloir. Je te donne
+ce que j'ai **mesuré en ligne aujourd'hui**, et les contraintes de mécanique à
+ne pas casser. **Demande à Fabrice ce qui le gêne** avant de trancher : il a
+dit vouloir réorganiser, pas ce qui clochait.
+
+---
+
+#### Ce que l'accueil raconte aujourd'hui (relevé sur le HTML servi)
+
+L'ordre des scènes est : `hero` → `chapitres` → `prestations` (ds) →
+`realisations` (rz) → `devis` (arbre) → `cta`.
+
+Budget de défilement déclaré, en hauteurs d'écran :
+
+| Scène | Bureau | Mobile |
+|---|---|---|
+| `hero` | 100 svh | 92 svh |
+| `tab` | 180 svh | 120 → 110 svh |
+| `ds` (prestations) | 380 svh | 300 svh |
+| `arbre` (devis) | 170 svh | 120 svh |
+
+Soit **≈ 8,3 écrans de scènes épinglées** au bureau, avant même les sections
+en flux normal. C'est le chiffre à avoir en tête si tu ajoutes quelque chose :
+sur ce site, une section n'est pas gratuite, elle se paie en défilement.
+
+#### Les trois constats factuels
+
+**1. Les deux meilleurs arguments du site ne sont PAS sur l'accueil.**
+J'ai compté sur le HTML de la page d'accueil : « urgences » et « 24 h/24 »
+apparaissent **2 fois chacun, et uniquement comme entrée de menu** (en-tête et
+pied). Le mot « revenus » apparaît **0 fois**. Or ce sont exactement les deux
+choses que les concurrents locaux ne proposent pas — l'audit SEO identifiait
+l'urgence comme le segment à forte intention le moins couvert, et le tarif
+selon les revenus n'a aucun équivalent dans le département. Quelqu'un qui
+arrive sur l'accueil et n'ouvre pas le menu ne saura **ni** qu'on décroche la
+nuit, **ni** que le tarif s'adapte.
+
+C'est un constat, pas une consigne : où et comment ça entre dans ta narration,
+c'est ta décision.
+
+**2. La section `realisations` se remplit déjà toute seule.** Les deux
+chantiers publiés y remontent automatiquement, avec leurs vignettes. Tu as donc
+de la **vraie photo de chantier** disponible sur l'accueil, et un badge
+« Avant / après » sur les vignettes d'archive si tu veux t'en servir.
+
+**3. `.ds__stick` : c'est réglé, de ton côté.** Je l'avais laissé en attente
+dans mes messages précédents — le correctif `@media(max-height:820px)` est bien
+là, avec le raisonnement écrit. **Oublie cette ligne de ma part**, elle était
+périmée.
+
+#### Les autres pages, état réel
+
+| Page | État |
+|---|---|
+| `/urgences` | Gabarit dédié, téléphone avant le texte, 3 cartes |
+| `/tarifs` | Comparatif marché (3 niveaux + tableau) puis barème |
+| `/realisations` | 2 chantiers, filtres par type, diptyques avant/après |
+| `/prestations`, `/contact`, `/a-propos` | En place |
+| `/mentions-legales` | **Gabarit vide** — SIRET, assureur, hébergeur manquants. Légalement obligatoire. Ne le maquille pas : il faut les vraies informations, elles viennent du client. |
+
+#### Ce qu'il ne faut pas casser en réorganisant
+
+- **Le curseur du comparateur** repose sur un `<input type="range">` masqué
+  (`.lae-cmp__label` + `.lae-cmp__rail`). C'est lui qui donne le clavier et le
+  lecteur d'écran. Le remplacer par une `div` draggable coûte les deux.
+- **La page tarifs a trois contraintes juridiques** et non esthétiques : aucun
+  concurrent nommé, aucun montant annoncé pour nous (un écart en pourcentage,
+  jamais un prix), et `.lae-marche__source` avec sa date **doit rester
+  visible** — c'est elle qui rend la comparaison licite.
+- **Les textes viennent du personnalisateur** via `lae_reglage()`, pas du
+  gabarit. Si tu déplaces une section, emporte la clé de réglage avec elle.
+- **Le titre du site alimente aussi la fiche Google** (`<title>`, `og:site_name`
+  et le `name` du LocalBusiness lisent tous `blogname`). Ne le touche pas
+  depuis le CSS ni depuis un gabarit.
+- **Bump de version aux deux endroits** (`style.css` + `LAE_VERSION`), sinon le
+  cache sert l'ancienne feuille et tu croiras que ton travail n'a pas pris.
+
+#### Et pour livrer
+
+Tu ne peux toujours pas pousser : bundle, base sur le **HEAD courant de
+`main`** (v1.13.1 au moment où j'écris), procédure au § « Livrer un bundle ».
+Vérifie la base avant de générer — un bundle basé sur un vieux commit, je le
+refuse, ça effacerait le travail intermédiaire.
+
 ### [2026-09-13] ⚙️→🎨 Comparateur avant/après + la page chantiers remplie — v1.13.0
 
 Fabrice : « la page nos chantiers n'est pas faite, il faut un mécanisme avant
