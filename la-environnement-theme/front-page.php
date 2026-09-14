@@ -1353,47 +1353,23 @@ if ( $lae_tab_titre || $lae_tab_texte ) : ?>
 </section>
 <?php endif; ?>
 <?php
-/* Chapitres : une ligne par chapitre, « Titre | Texte | mot, mot, mot ».
-   L'image de chaque chapitre est un réglage à part (cine_ch1_image…). */
-$lae_chs = lae_lignes( 'cine_chapitres' );
-if ( $lae_chs ) : ?>
-<section class="chs wrap" id="chapitres">
-  <?php foreach ( $lae_chs as $lae_i => $lae_ligne ) :
-    list( $lae_t, $lae_p, $lae_meta ) = lae_morceaux( $lae_ligne, 3 );
-    $lae_ch_img = lae_reglage( 'cine_ch' . ( $lae_i + 1 ) . '_image' );
-    if ( '' === $lae_ch_img ) {
-      // Photos de chantier fournies par l'entreprise, une par chapitre :
-      // la cime (grimpe), le tronc (abattage), les racines (jardin).
-      $lae_ch_defauts = array(
-        0 => 'elagage-grimpe.webp',
-        1 => 'abattage-troncs.webp',
-        2 => 'pelouse-haie.webp',
-      );
-      if ( isset( $lae_ch_defauts[ $lae_i ] ) ) {
-        $lae_ch_img = $dir . '/assets/images/' . $lae_ch_defauts[ $lae_i ];
-      }
-    }
-    ?>
-    <article class="ch<?php echo $lae_ch_img ? '' : ' ch--nu'; ?>">
-      <div class="ch__txt">
-        <div class="ch__n" data-rv><?php echo esc_html( sprintf( '%02d', $lae_i + 1 ) ); ?></div>
-        <h3 class="ch__t" data-mots><?php echo lae_titre_em( $lae_t ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
-        <?php if ( $lae_p ) : ?><p class="ch__p" data-txt><?php echo esc_html( $lae_p ); ?></p><?php endif; ?>
-        <?php if ( $lae_meta ) : ?>
-          <div class="ch__meta" data-rv>
-            <?php foreach ( array_filter( array_map( 'trim', explode( ',', $lae_meta ) ) ) as $lae_mot ) : ?>
-              <span><?php echo esc_html( $lae_mot ); ?></span>
-            <?php endforeach; ?>
-          </div>
-        <?php endif; ?>
-      </div>
-      <?php if ( $lae_ch_img ) : ?>
-        <div class="ch__media" data-media><?php echo lae_img( $lae_ch_img, '' ); ?></div>
-      <?php endif; ?>
-    </article>
-  <?php endforeach; ?>
-</section>
-<?php endif; ?>
+/* ──────────────────────────────────────────────────────────────────
+   LES CHAPITRES ONT QUITTÉ L'ACCUEIL — 14/09, arbitrage de Fabrice.
+   « La cime — l'élagage en grimpe », « Le tronc — l'abattage maîtrisé »,
+   « Les racines — le jardin qui tient » disaient la même chose que la
+   scène des prestations juste au-dessus, en trois fois plus long :
+   2,1 écrans sur 10. C'était le seul vrai doublon de la page.
+   Le contenu n'est PAS perdu : il vit toujours dans le réglage
+   « Accueil cinématique → Chapitres » du personnalisateur, et le CSS
+   .chs / .ch est conservé plus haut. Pour le reposer sur /a-propos, où
+   le récit cime-tronc-racines est à sa place, il faut sortir ce bloc en
+   template-part ET porter son CSS dans style.css — l'accueil le porte
+   aujourd'hui en ligne.
+   Le JS n'a rien à faire : la boucle sur [data-media] ne trouve plus de
+   chapitre et ne s'exécute pas.
+   ────────────────────────────────────────────────────────────────── */
+?>
+
 
 
 
