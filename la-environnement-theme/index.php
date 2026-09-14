@@ -34,7 +34,7 @@ get_template_part( 'template-parts/entete', 'page', array(
 								</div>
 							<?php endif; ?>
 							<div class="lae-carte__corps">
-								<p class="lae-article-meta"><?php echo esc_html( get_the_date() ); ?></p>
+								<p class="lae-article-meta"><?php echo esc_html( get_the_date( 'j F Y' ) ); ?></p>
 								<h2 class="lae-carte__titre"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 								<p><?php echo esc_html( get_the_excerpt() ); ?></p>
 							</div>

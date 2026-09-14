@@ -18,8 +18,8 @@ while ( have_posts() ) : the_post();
 	$lae_blog    = get_option( 'page_for_posts' );
 	$lae_lien_bl = $lae_blog ? get_permalink( (int) $lae_blog ) : '';
 	$lae_fil     = $lae_lien_bl
-		? '<a href="' . esc_url( $lae_lien_bl ) . '">' . esc_html( get_the_title( (int) $lae_blog ) ) . '</a> &rsaquo; ' . esc_html( get_the_date() )
-		: esc_html( get_the_date() );
+		? '<a href="' . esc_url( $lae_lien_bl ) . '">' . esc_html( get_the_title( (int) $lae_blog ) ) . '</a> &rsaquo; ' . esc_html( get_the_date( 'j F Y' ) )
+		: esc_html( get_the_date( 'j F Y' ) );
 	get_template_part( 'template-parts/entete', 'page', array(
 		'titre' => get_the_title(),
 		'chapo' => has_excerpt() ? get_the_excerpt() : '',

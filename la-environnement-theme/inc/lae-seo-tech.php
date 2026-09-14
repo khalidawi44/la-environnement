@@ -149,11 +149,21 @@ add_filter( 'wp_sitemaps_taxonomies', function ( $taxonomies ) {
    le 14/09, les deux URL étaient absentes des huit sous-sitemaps. On
    les ajoute en tête de leur propre type, avec la date de la fiche la
    plus récemment modifiée pour `lastmod`. */
-add_filter( 'wp_sitemaps_posts_url_list', function ( $liste, $type, $page ) {
+/* Signature DÉFENSIVE : `$page` et `$type` ont une valeur par défaut.
+   Première version déployée le 14/09 avec trois paramètres obligatoires —
+   elle n'a rien produit en ligne, alors que les deux autres filtres du même
+   fichier, déployés dans le même commit, fonctionnaient. Si WordPress
+   n'avait passé que deux arguments, le rappel aurait levé une erreur fatale
+   et le sitemap n'aurait plus rendu du tout ; il rendait. On rend donc les
+   paramètres optionnels, ce qui ne coûte rien et écarte cette piste. */
+add_filter( 'wp_sitemaps_posts_url_list', function ( $liste, $type = '', $page = 1 ) {
 	if ( 1 !== (int) $page ) {
 		return $liste;
 	}
 	if ( ! in_array( $type, array( 'lae_prestation', 'lae_realisation' ), true ) ) {
+		return $liste;
+	}
+	if ( ! is_array( $liste ) ) {
 		return $liste;
 	}
 	$archive = get_post_type_archive_link( $type );
