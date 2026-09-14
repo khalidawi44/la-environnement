@@ -19,6 +19,19 @@ if ( ! function_exists( 'lae_sanitize_multiligne' ) ) {
 	}
 }
 
+/**
+ * Nettoyage : régime de TVA.
+ *
+ * Trois valeurs possibles, pas une de plus. Tout le reste est ramené à
+ * « non renseigné » : une mention fiscale ne se devine pas, et une valeur
+ * inattendue doit faire DISPARAÎTRE la mention, jamais en inventer une.
+ */
+if ( ! function_exists( 'lae_sanitize_tva' ) ) {
+	function lae_sanitize_tva( $valeur ) {
+		return in_array( $valeur, array( 'franchise', 'assujetti' ), true ) ? $valeur : '';
+	}
+}
+
 /** Nettoyage : case à cocher. */
 if ( ! function_exists( 'lae_sanitize_bool' ) ) {
 	function lae_sanitize_bool( $valeur ) {
@@ -60,13 +73,17 @@ add_action( 'customize_register', function ( $wp_customize ) {
 			return;
 		}
 
-		$wp_customize->add_control( $id, array(
+		$controle = array(
 			'label'       => $args['label'],
 			'section'     => $args['section'],
 			'type'        => $type,
 			'description' => isset( $args['description'] ) ? $args['description'] : '',
 			'input_attrs' => isset( $args['input_attrs'] ) ? $args['input_attrs'] : array(),
-		) );
+		);
+		if ( isset( $args['choices'] ) ) {
+			$controle['choices'] = $args['choices'];
+		}
+		$wp_customize->add_control( $id, $controle );
 	};
 
 	// ── Identité ────────────────────────────────────────────────────────
@@ -94,6 +111,74 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute( 'lae_horaires', array( 'label' => 'Horaires', 'section' => 'lae_coordonnees', 'type' => 'textarea', 'sanitize' => 'lae_sanitize_multiligne', 'description' => 'Une ligne par créneau.' ) );
 	$ajoute( 'lae_siret', array( 'label' => 'Mention légale de pied de page', 'section' => 'lae_coordonnees', 'description' => 'Exemple : SIRET, numéro d\'assurance décennale. Affiché tel quel.' ) );
 	$ajoute( 'lae_url_contact', array( 'label' => 'URL de la page contact', 'section' => 'lae_coordonnees', 'sanitize' => 'esc_url_raw', 'description' => 'Vide = la page dont l\'adresse se termine par /contact est utilisée automatiquement.' ) );
+
+	// ── Mentions légales : les trois manques ────────────────────────────
+	/* Ces champs ne servent qu'aux mentions légales, et remplir l'un d'eux
+	   RÉÉCRIT la page mentions-legales — mais seulement si personne ne l'a
+	   modifiée à la main entre-temps (voir lae_mentions_maj()). D'où la
+	   description explicite : quelqu'un qui saisit ici doit savoir que la
+	   page publique bouge dans la foulée. */
+	$wp_customize->add_section( 'lae_legal', array(
+		'title'       => 'Mentions légales — à compléter',
+		'panel'       => $panneau,
+		'description' => 'Les trois informations qui manquent encore à la page Mentions légales. '
+			. 'Un champ vide = la section correspondante n\'apparaît pas sur le site : rien n\'est inventé. '
+			. 'Dès qu\'un champ est enregistré, la page Mentions légales se met à jour toute seule — '
+			. 'sauf si elle a été modifiée à la main, auquel cas elle n\'est plus touchée.',
+	) );
+
+	$ajoute( 'lae_assurance_assureur', array(
+		'label'       => 'Assurance RC pro — assureur',
+		'section'     => 'lae_legal',
+		'description' => 'Nom de la compagnie. C\'est ce qu\'un client prudent cherche en premier chez un élagueur.',
+	) );
+	$ajoute( 'lae_assurance_police', array(
+		'label'   => 'Assurance RC pro — numéro de police',
+		'section' => 'lae_legal',
+	) );
+	$ajoute( 'lae_assurance_zone', array(
+		'label'       => 'Assurance RC pro — couverture géographique',
+		'section'     => 'lae_legal',
+		'description' => 'Exemple : « France métropolitaine ». À recopier du contrat, pas à supposer.',
+	) );
+
+	$ajoute( 'lae_tva_regime', array(
+		'label'       => 'Régime de TVA',
+		'section'     => 'lae_legal',
+		'type'        => 'select',
+		'sanitize'    => 'lae_sanitize_tva',
+		'description' => 'En franchise en base, la page affiche « TVA non applicable, art. 293 B du CGI » et AUCUN numéro. '
+			. 'Assujetti, elle affiche le numéro intracommunautaire. Les deux mentions s\'excluent : '
+			. 'annoncer l\'une pour l\'autre serait une fausse mention fiscale.',
+		'choices'     => array(
+			''           => '— non renseigné (aucune mention) —',
+			'franchise'  => 'Franchise en base (art. 293 B du CGI)',
+			'assujetti'  => 'Assujetti à la TVA',
+		),
+	) );
+	$ajoute( 'lae_tva_numero', array(
+		'label'       => 'Numéro de TVA intracommunautaire',
+		'section'     => 'lae_legal',
+		'description' => 'Uniquement si assujetti. En franchise en base, ce numéro n\'existe pas : laisser vide.',
+	) );
+
+	$ajoute( 'lae_mediateur_nom', array(
+		'label'       => 'Médiateur de la consommation — nom',
+		'section'     => 'lae_legal',
+		'description' => 'Obligatoire (art. L. 616-1 du code de la consommation) pour tout professionnel vendant à des particuliers. '
+			. 'C\'est aujourd\'hui la seule obligation légale que le site ne remplit pas.',
+	) );
+	$ajoute( 'lae_mediateur_adresse', array(
+		'label'   => 'Médiateur — adresse postale',
+		'section' => 'lae_legal',
+		'type'    => 'textarea',
+		'sanitize'=> 'lae_sanitize_multiligne',
+	) );
+	$ajoute( 'lae_mediateur_site', array(
+		'label'    => 'Médiateur — site web',
+		'section'  => 'lae_legal',
+		'sanitize' => 'esc_url_raw',
+	) );
 
 	// ── Accueil : bandeau principal ─────────────────────────────────────
 	$wp_customize->add_section( 'lae_hero', array(

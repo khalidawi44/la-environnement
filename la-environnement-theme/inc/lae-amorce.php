@@ -574,6 +574,19 @@ if ( ! function_exists( 'lae_mentions_texte' ) ) {
 		$tel   = lae_defaut( 'telephone' );
 		$mail  = lae_defaut( 'email' );
 
+		/* Les trois manques légaux se lisent dans le PERSONNALISATEUR, pas
+		   dans la table des défauts : c'est là qu'Anthony les saisira, et on
+		   veut que la saisie suffise, sans déploiement. Vides = sections
+		   absentes. Jamais de valeur inventée en repli. */
+		$assureur  = lae_reglage( 'assurance_assureur' );
+		$police    = lae_reglage( 'assurance_police' );
+		$zone      = lae_reglage( 'assurance_zone' );
+		$tva_reg   = lae_reglage( 'tva_regime' );
+		$tva_num   = lae_reglage( 'tva_numero' );
+		$med_nom   = lae_reglage( 'mediateur_nom' );
+		$med_adr   = lae_reglage( 'mediateur_adresse' );
+		$med_site  = lae_reglage( 'mediateur_site' );
+
 		$blocs = array();
 
 		$blocs[] = '<!-- wp:heading --><h2>Éditeur du site</h2><!-- /wp:heading -->';
@@ -582,6 +595,17 @@ if ( ! function_exists( 'lae_mentions_texte' ) ) {
 			. 'Exerçant sous le nom commercial <strong>L.A Environnement</strong><br>'
 			. esc_html( $rue ) . '<br>' . esc_html( $cp . ' ' . $ville ) . '<br>'
 			. 'SIRET : ' . esc_html( $siret ) . '<br>'
+			/* Une seule des deux lignes, jamais les deux, jamais aucune des
+			   deux « au cas où » : en franchise en base il n'existe PAS de
+			   numéro intracommunautaire à afficher, et l'absence de mention
+			   chez un assujetti est une omission. Tant que le régime n'est
+			   pas renseigné, la ligne n'existe simplement pas. */
+			. ( 'assujetti' === $tva_reg && $tva_num
+				? 'TVA intracommunautaire : ' . esc_html( $tva_num ) . '<br>'
+				: '' )
+			. ( 'franchise' === $tva_reg
+				? 'TVA non applicable, article 293 B du code général des impôts<br>'
+				: '' )
 			. 'Activité : services d\'aménagement paysager (code APE 81.30Z)<br>'
 			. 'Immatriculé au Registre national des entreprises (RNE)<br>'
 			. 'Téléphone : ' . esc_html( $tel ) . '<br>'
@@ -596,6 +620,20 @@ if ( ! function_exists( 'lae_mentions_texte' ) ) {
 			. '61 Lordou Vironos Street, 6023 Larnaca, Chypre<br>'
 			. '<a href="https://www.hostinger.fr" rel="nofollow noopener">www.hostinger.fr</a></p><!-- /wp:paragraph -->';
 
+		/* ASSURANCE RC PRO. Un élagueur travaille au-dessus des toitures et
+		   des voitures des voisins : c'est l'information qu'un client prudent
+		   cherche en premier. La section n'apparaît que si l'assureur est
+		   renseigné — le numéro de police et la zone restent facultatifs,
+		   parce qu'un nom d'assureur seul vaut déjà mieux que rien, alors
+		   qu'un numéro sans assureur ne veut rien dire. */
+		if ( $assureur ) {
+			$blocs[] = '<!-- wp:heading --><h2>Assurance responsabilité civile professionnelle</h2><!-- /wp:heading -->';
+			$blocs[] = '<!-- wp:paragraph --><p>' . esc_html( $assureur )
+				. ( $police ? '<br>Numéro de police : ' . esc_html( $police ) : '' )
+				. ( $zone ? '<br>Couverture géographique : ' . esc_html( $zone ) : '' )
+				. '</p><!-- /wp:paragraph -->';
+		}
+
 		$blocs[] = '<!-- wp:heading --><h2>Propriété intellectuelle</h2><!-- /wp:heading -->';
 		$blocs[] = '<!-- wp:paragraph --><p>Les textes de ce site et les photographies de chantier sont la propriété d\''
 			. esc_html( $nom ) . '. Les photographies sont prises sur les chantiers réalisés : elles ne proviennent d\'aucune banque d\'images. Toute reproduction sans autorisation écrite est interdite.</p><!-- /wp:paragraph -->';
@@ -607,15 +645,27 @@ if ( ! function_exists( 'lae_mentions_texte' ) ) {
 		$blocs[] = '<!-- wp:heading --><h2>Cookies et mesure d\'audience</h2><!-- /wp:heading -->';
 		$blocs[] = '<!-- wp:paragraph --><p>Ce site ne dépose <strong>aucun cookie</strong> de mesure d\'audience ni de publicité, et ne charge aucune police de caractères ni ressource hébergée par un tiers. Aucune bannière de consentement n\'est donc nécessaire : il n\'y a rien à consentir.</p><!-- /wp:paragraph -->';
 
-		/* PAS DE SECTION MÉDIATION. Le premier jet écrivait « les coordonnées
-		   du médiateur figurent sur les devis et factures » : je n'en sais
-		   rien, et l'affirmer aurait été inventer un fait sur les documents
-		   du client. Or l'article L. 616-1 du code de la consommation oblige
-		   tout professionnel vendant à des particuliers à communiquer sur son
-		   site le médiateur auquel il adhère — donc la section MANQUE, elle
-		   n'est pas superflue. Elle s'ajoutera quand il aura désigné son
-		   médiateur. Une section absente est un manque connu ; une section
-		   fausse est un mensonge en ligne. */
+		/* MÉDIATION DE LA CONSOMMATION — article L. 616-1 du code de la
+		   consommation. Tout professionnel qui vend à des particuliers doit
+		   communiquer sur son site le médiateur auquel il adhère. C'est
+		   aujourd'hui la seule obligation du site non remplie.
+
+		   Le premier jet écrivait « les coordonnées du médiateur figurent sur
+		   les devis et factures ». Je n'en savais rien : c'était inventer un
+		   fait sur les documents du client. La section reste donc ABSENTE
+		   tant que le médiateur n'est pas désigné — une section absente est
+		   un manque connu, une section fausse est un mensonge en ligne. Le
+		   jour où il adhère, un champ du personnalisateur suffit. */
+		if ( $med_nom ) {
+			$blocs[] = '<!-- wp:heading --><h2>Médiation de la consommation</h2><!-- /wp:heading -->';
+			$blocs[] = '<!-- wp:paragraph --><p>Conformément à l\'article L. 616-1 du code de la consommation, '
+				. 'vous pouvez recourir gratuitement au médiateur de la consommation auquel nous adhérons, '
+				. 'après avoir tenté de résoudre le litige directement avec nous par une réclamation écrite.</p><!-- /wp:paragraph -->';
+			$blocs[] = '<!-- wp:paragraph --><p><strong>' . esc_html( $med_nom ) . '</strong>'
+				. ( $med_adr ? '<br>' . esc_html( $med_adr ) : '' )
+				. ( $med_site ? '<br><a href="' . esc_url( $med_site ) . '" rel="nofollow noopener">' . esc_html( $med_site ) . '</a>' : '' )
+				. '</p><!-- /wp:paragraph -->';
+		}
 
 		return implode( "\n\n", $blocs );
 	}
@@ -642,11 +692,117 @@ if ( ! function_exists( 'lae_mentions_rattrapage' ) ) {
 
 		update_option( 'lae_mentions_remplies', 1 );   // verrou posé AVANT l'écriture
 
+		$texte = lae_mentions_texte();
+		update_option( 'lae_mentions_signature', md5( $texte ) );
+
 		wp_update_post( array(
 			'ID'           => (int) $page->ID,
-			'post_content' => lae_mentions_texte(),
+			'post_content' => $texte,
 		) );
 	}
 }
 add_action( 'init', 'lae_mentions_rattrapage', 22 );
 add_action( 'admin_init', 'lae_mentions_rattrapage', 13 );
+
+/* ═══════════════════════════════════════════════════════════════════
+   METTRE À JOUR LES MENTIONS QUAND LES MANQUES SONT COMBLÉS
+
+   LE PROBLÈME QUE ÇA RÉSOUT. Les mentions sont écrites une fois, puis
+   deviennent du contenu WordPress ordinaire. Ajouter les champs assurance,
+   TVA et médiateur au personnalisateur ne servirait donc à RIEN : la page
+   déjà publiée ne les verrait jamais. Anthony remplirait consciencieusement
+   ses champs et la page resterait incomplète, sans le moindre signal.
+
+   LE PRINCIPE, ET C'EST LE SEUL QUI COMPTE : on ne réécrit QUE ce qu'on a
+   écrit soi-même. La signature du texte généré est mémorisée ; si la page
+   porte encore exactement ce texte, elle est à nous et on la régénère. Dès
+   qu'un caractère a changé — Anthony a corrigé une virgule, ajouté un
+   paragraphe — la signature ne correspond plus et on ne touche plus jamais
+   à cette page. Aucune modification humaine ne peut être écrasée.
+
+   LE CAS DES SITES DÉJÀ EN LIGNE. Sur le site actuel, les mentions ont été
+   écrites avant que cette signature existe. On la reconstitue : si la page
+   est identique au texte que le générateur produit quand les trois manques
+   sont vides — c'est-à-dire exactement ce qui a été publié le 13/09 — alors
+   elle est à nous, et on adopte la signature. Sinon on s'abstient.
+   ═══════════════════════════════════════════════════════════════════ */
+
+if ( ! function_exists( 'lae_mentions_maj' ) ) {
+	function lae_mentions_maj() {
+
+		// Le premier remplissage n'a pas encore eu lieu : ce n'est pas ici.
+		if ( ! get_option( 'lae_mentions_remplies' ) ) {
+			return;
+		}
+
+		$page = get_page_by_path( 'mentions-legales' );
+		if ( ! $page ) {
+			return;
+		}
+
+		$actuel  = (string) $page->post_content;
+		$attendu = lae_mentions_texte();
+
+		// Déjà à jour : rien à faire, et surtout pas d'écriture inutile en base.
+		if ( md5( $actuel ) === md5( $attendu ) ) {
+			update_option( 'lae_mentions_signature', md5( $attendu ) );
+			return;
+		}
+
+		$signature = get_option( 'lae_mentions_signature' );
+
+		if ( ! $signature ) {
+			/* Site antérieur à la signature : on la reconstitue en comparant
+			   à ce que le générateur produisait sans les trois manques. */
+			$signature = md5( lae_mentions_texte_sans_manques() );
+		}
+
+		// La page a été touchée à la main : elle ne nous appartient plus.
+		if ( md5( $actuel ) !== $signature ) {
+			return;
+		}
+
+		update_option( 'lae_mentions_signature', md5( $attendu ) );
+
+		wp_update_post( array(
+			'ID'           => (int) $page->ID,
+			'post_content' => $attendu,
+		) );
+	}
+}
+
+/**
+ * Le texte des mentions tel qu'il était AVANT que les trois manques
+ * existent : assurance, TVA et médiateur neutralisés.
+ *
+ * Sert uniquement à reconnaître une page écrite par une version
+ * antérieure du thème. Passe par les mêmes filtres que le générateur, donc
+ * il n'y a pas deux textes à maintenir en parallèle.
+ *
+ * @return string
+ */
+if ( ! function_exists( 'lae_mentions_texte_sans_manques' ) ) {
+	function lae_mentions_texte_sans_manques() {
+		$vider = function () { return ''; };
+		$cles  = array(
+			'assurance_assureur', 'assurance_police', 'assurance_zone',
+			'tva_regime', 'tva_numero',
+			'mediateur_nom', 'mediateur_adresse', 'mediateur_site',
+		);
+		foreach ( $cles as $cle ) {
+			add_filter( 'theme_mod_lae_' . $cle, $vider, 99 );
+		}
+		$texte = lae_mentions_texte();
+		foreach ( $cles as $cle ) {
+			remove_filter( 'theme_mod_lae_' . $cle, $vider, 99 );
+		}
+		return $texte;
+	}
+}
+
+add_action( 'init', 'lae_mentions_maj', 23 );
+add_action( 'admin_init', 'lae_mentions_maj', 14 );
+/* Et dès qu'un réglage change dans le personnalisateur, sans attendre la
+   prochaine visite : c'est le moment exact où Anthony s'attend à voir la
+   page bouger. */
+add_action( 'customize_save_after', 'lae_mentions_maj', 20 );

@@ -61,6 +61,39 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'editeur_forme'        => 'Entrepreneur individuel (EI)',
 			'siret_numero'         => '839 920 147 00023',
 			'siret'                => 'Anthony Lamarque · EI · SIRET 839 920 147 00023',
+
+			/* ── LES TROIS MANQUES LÉGAUX, EN ATTENTE DU CLIENT ─────────────
+			   Ces cinq champs sont VIDES à dessein, et ils doivent le rester
+			   tant qu'Anthony n'a pas donné les valeurs réelles. Chacun
+			   commande une section des mentions légales qui n'apparaît que
+			   s'il est rempli : rien d'inventé ne peut donc partir en ligne,
+			   et il n'y a plus de code à écrire le jour où il répond — juste
+			   un champ à saisir dans le personnalisateur.
+
+			   1. ASSURANCE RC PRO. Un élagueur travaille au-dessus des
+			      toitures et des voitures des voisins : c'est l'information
+			      qu'un client prudent cherche en premier, et c'est aussi ce
+			      qui le rassure sur la différence avec le travail au noir.
+			   2. RÉGIME DE TVA. Deux régimes possibles, et on ne peut pas
+			      deviner : en franchise en base (art. 293 B du CGI), les
+			      devis et factures doivent porter « TVA non applicable » et
+			      il n'y a PAS de numéro intracommunautaire ; assujetti, le
+			      numéro doit figurer dans les mentions légales. Annoncer
+			      l'un pour l'autre serait une fausse mention fiscale.
+			   3. MÉDIATEUR DE LA CONSOMMATION. Obligation de l'article
+			      L. 616-1 du code de la consommation pour tout
+			      professionnel qui vend à des particuliers : le médiateur
+			      auquel il adhère doit être communiqué sur le site. C'est
+			      aujourd'hui la seule obligation du site non remplie.
+			   ──────────────────────────────────────────────────────────── */
+			'assurance_assureur'   => '',
+			'assurance_police'     => '',
+			'assurance_zone'       => '',
+			'tva_regime'           => '',   // '' | 'franchise' | 'assujetti'
+			'tva_numero'           => '',
+			'mediateur_nom'        => '',
+			'mediateur_adresse'    => '',
+			'mediateur_site'       => '',
 			'hero_surtitre'        => 'Élagage · Abattage · Création de jardin',
 			'hero_titre'           => 'Un arbre trop grand, trop près, *trop vieux ?*',
 			'hero_chapo'           => 'On monte, on regarde, et on vous dit ce qu\'il faut faire : tailler, haubaner ou abattre. Élagage en grimpe, démontage par câble, création et entretien de jardin.',
