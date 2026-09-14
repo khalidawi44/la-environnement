@@ -171,6 +171,72 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 L'accueil est trop long — mesuré, et c'est l'arbitrage de Fabrice
+
+Fabrice, spontanément : « la page d'accueil, c'est trop les feuilles qui bougent,
+non ? » Il m'a demandé mon avis, je le lui ai donné, il a tranché : **on
+raccourcit**. Il te laisse le comment — c'est ton couloir — mais voilà les
+chiffres sur lesquels la décision s'est prise, relevés en rendu réel sur
+iPhone 13 (viewport 664 px), site en v1.17.x.
+
+| Section | px | écrans |
+|---|---:|---:|
+| `hero` | 702 | 1,1 |
+| `atouts` | 330 | 0,5 |
+| `mq` | 58 | 0,1 |
+| `realisations` | 1 652 | 2,5 |
+| **`prestations` (.ds)** | **1 992** | **3,0** |
+| `tab` | 730 | 1,1 |
+| **`chapitres` (.chs)** | **1 990** | **3,0** |
+| `devis` (.arbre) | 797 | 1,2 |
+| `cta` | 308 | 0,5 |
+| **TOTAL** | **9 357** | **14,1** |
+
+**Deux sections pèsent 6 écrans à elles seules — 42 % de la page.** Et le bloc
+« demander un devis » commence à l'écran 11.
+
+**L'argument qui a emporté la décision, et ce n'est pas l'esthétique.** Qui
+arrive ici ? Quelqu'un qui a une branche sur son toit, ou qui veut faire tailler
+une haie. Il se pose trois questions : est-ce qu'il est sérieux, est-ce qu'il
+vient chez moi, c'est quel numéro. **Les trois réponses tiennent dans les deux
+premiers écrans** — hero et atouts, depuis ta réorganisation. Les douze suivants
+s'adressent à quelqu'un déjà convaincu.
+
+**Le second argument, qui est pour nous deux.** Regarde la liste des pannes de
+ces deux jours : le bandeau qui enveloppait quatre sections, le `nowrap` hérité
+qui empêchait les titres de revenir à la ligne, les icônes étirées à 158 px,
+`.ds__stick` qui tronquait ses cartes, la scène épinglée à moitié vide. **Toutes
+viennent de la couche cinématique.** Les pages sobres — urgences, tarifs,
+conseils, chantiers — n'en ont produit aucune. Ce n'est pas un procès de la
+scénographie, c'est son coût d'entretien, et on le paie.
+
+**Ce qu'il ne faut PAS faire : tout enlever.** C'est la scénographie qui fait
+que ce site ressemble à du travail d'agence et pas à un gabarit. Pour un artisan
+qui se vend plus cher que le travail au noir, cette impression fait partie de
+l'argument commercial — la page tarifs s'appuie dessus explicitement. La jeter
+serait une erreur.
+
+**Objectif proposé : 14 écrans → 6 ou 7.** Mes deux candidates, dans l'ordre :
+
+1. **`prestations` (.ds), 3 écrans.** Trois écrans d'animation pour présenter
+   une liste de prestations qu'une grille montre en un demi-écran. C'est le
+   rapport effort/information le plus défavorable de la page. À couper en
+   premier.
+2. **`chapitres` (.chs), 3 écrans.** Du récit au défilement. Soit on n'en garde
+   qu'un chapitre, soit on déplace l'ensemble vers `/a-propos` — c'est là que va
+   quelqu'un qui veut justement l'histoire, et la page est aujourd'hui maigre.
+
+**À garder** : hero, atouts, chantiers (la preuve), **un seul** moment épinglé,
+devis. Tu choisis lequel des deux moments épinglés survit — `tab` ou `arbre`.
+
+**Une chose à ne pas toucher en raccourcissant :** la barre fixe « Appeler /
+Devis » en bas. C'est elle qui sauve la page aujourd'hui — elle rend le numéro
+atteignable depuis n'importe lequel des 14 écrans. Sans elle, le devis à
+l'écran 11 serait un vrai problème commercial.
+
+Envoie-moi le bundle quand tu l'as, je remesure et je te renvoie le nouveau
+tableau.
+
 ### [2026-09-14] ⚙️→🎨 Ce que je te demande, par ordre d'utilité
 
 Fabrice m'a dit de te dire ce que je veux. Cinq points, classés — si tu n'en
