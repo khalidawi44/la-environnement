@@ -41,7 +41,15 @@ add_filter( 'wp_robots', function ( $robots ) {
 	if ( is_paged() ) {
 		$robots['noindex'] = true;
 	}
-	$robots['index']              = true;
+	// Ne JAMAIS reposer `index` par-dessus un `noindex` deja pose. Ce filtre
+	// passe en priorite 20, apres celui des taxonomies fermees (priorite 11) :
+	// sans ce garde, /famille/arbre/ sortait « noindex, follow, index » dans la
+	// meme balise. Google retient la directive la plus restrictive, donc le
+	// noindex gagnait quand meme — mais une balise qui se contredit est
+	// illisible pour qui la relit. Constate en ligne le 14/09.
+	if ( empty( $robots['noindex'] ) ) {
+		$robots['index'] = true;
+	}
 	$robots['follow']             = true;
 	$robots['max-image-preview']  = 'large';
 	// Des CHAÎNES, pas des entiers : wp_robots() n'écrit « clé:valeur » que
@@ -139,7 +147,12 @@ add_filter( 'wp_sitemaps_add_provider', function ( $fournisseur, $nom ) {
    mêmes trois articles, aucun lien entrant. Elle n'a rien à indexer de
    propre, et elle concurrence la page qu'on veut positionner. */
 add_filter( 'wp_sitemaps_taxonomies', function ( $taxonomies ) {
-	unset( $taxonomies['category'] );
+	// Regle simple : ce qu'on ferme a l'indexation ne va pas au sitemap.
+	// Soumettre une URL en `noindex` fait remonter « URL soumise avec balise
+	// noindex » dans Search Console — le motif d'erreur qu'on vient justement
+	// de supprimer cote `users`. Les trois familles et les deux types de
+	// chantier sont dans ce cas.
+	unset( $taxonomies['category'], $taxonomies['lae_famille'], $taxonomies['lae_type_chantier'] );
 	return $taxonomies;
 } );
 
@@ -184,7 +197,7 @@ add_filter( 'wp_sitemaps_taxonomies', function ( $taxonomies ) {
    et concurrencent les pages qu'on veut positionner. On les ferme à
    l'indexation tout en laissant suivre les liens. */
 add_filter( 'wp_robots', function ( $robots ) {
-	if ( is_tax( 'lae_famille' ) || is_category() ) {
+	if ( is_tax( 'lae_famille' ) || is_tax( 'lae_type_chantier' ) || is_category() ) {
 		$robots['noindex'] = true;
 		$robots['follow']  = true;
 	}

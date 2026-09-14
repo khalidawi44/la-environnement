@@ -101,7 +101,7 @@ function lae_partage_description() {
 		$chapo = lae_reglage( 'hero_chapo' );
 		if ( is_string( $chapo ) && '' !== trim( $chapo ) ) {
 			$chapo = lae_partage_texte( $chapo );
-			if ( '' !== $chapo ) return wp_html_excerpt( $chapo, 155, '…' );
+			if ( '' !== $chapo ) return lae_partage_couper( $chapo );
 		}
 	}
 	if ( is_singular() ) {
@@ -109,11 +109,38 @@ function lae_partage_description() {
 		if ( $p ) {
 			$txt = $p->post_excerpt ? $p->post_excerpt : (string) $p->post_content;
 			$txt = lae_partage_texte( $txt );
-			if ( '' !== $txt ) return wp_html_excerpt( $txt, 155, '…' );
+			if ( '' !== $txt ) return lae_partage_couper( $txt );
 		}
 	}
 	$d = get_bloginfo( 'description', 'display' );
 	return $d ? $d : '';
+}
+
+/**
+ * Coupe une description a la longueur utile d'un extrait Google — mais
+ * SEULEMENT si elle deborde vraiment.
+ *
+ * `wp_html_excerpt( $txt, 155 )` coupait a 155 sans se demander si le texte
+ * faisait 156 ou 900 : un extrait ecrit a la main se retrouvait ampute d'un
+ * mot pour rien. Constate le 14/09 sur /quand-tailler-haie-elaguer-arbre/, ou
+ * la meta s'arretait sur « meilleure que l… » alors que le JSON-LD de la meme
+ * page portait la phrase entiere. Les deux se contredisaient.
+ *
+ * On laisse donc passer jusqu'a 160 caracteres (Google en affiche autour de
+ * 155-160 selon la largeur reelle des lettres), et au-dela on coupe sur le
+ * dernier espace pour ne jamais trancher un mot en deux.
+ */
+function lae_partage_couper( $txt ) {
+	$txt = trim( (string) $txt );
+	if ( '' === $txt || mb_strlen( $txt, 'UTF-8' ) <= 160 ) {
+		return $txt;
+	}
+	$court = mb_substr( $txt, 0, 155, 'UTF-8' );
+	$espace = mb_strrpos( $court, ' ', 0, 'UTF-8' );
+	if ( false !== $espace && $espace > 100 ) {
+		$court = mb_substr( $court, 0, $espace, 'UTF-8' );
+	}
+	return rtrim( $court, " \t\n,;:." ) . '…';
 }
 
 /**
@@ -135,6 +162,7 @@ function lae_partage_description() {
  * @param string $html Contenu brut.
  * @return string Texte propre, espaces normalisés.
  */
+
 function lae_partage_texte( $html ) {
 	$txt = strip_shortcodes( (string) $html );
 	$txt = preg_replace( '#<(?:/p|/h[1-6]|/li|/div|br\s*/?|/tr)\s*>#i', ' ', $txt );

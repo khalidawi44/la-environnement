@@ -112,6 +112,78 @@ function lae_seo_pages() {
 			'titre' => 'Chantiers d\'élagage et d\'abattage à Vertou et en 44',
 			'desc'  => "Avant et après de chantiers réels d'élagage et d'abattage, à Vertou et autour de Nantes. Photos prises sur place.",
 		),
+
+		/* ─────────────────────────────────────────────────────────────
+		   LES 11 PAGES DE DÉTAIL — ajoutées le 14/09 après ré-audit.
+
+		   Elles n'avaient ni titre ni description écrits : le filtre ne
+		   couvrait que les 9 pages ci-dessus et laissait passer le reste
+		   tel quel. Mesuré en ligne : « Élagage en grimpe – L.A
+		   Environnement » dépensait 22 de ses 37 caractères en suffixe de
+		   marque et ne nommait aucune commune ; deux titres d'article
+		   dépassaient 60 caractères et étaient coupés dans Google ; les
+		   six descriptions de prestation faisaient 66 à 90 caractères là
+		   où la zone utile en accepte 155 — entre un tiers et la moitié
+		   de l'extrait laissé vide, sur les six pages qui portent
+		   l'intention d'achat.
+
+		   Même discipline que ci-dessus : rien d'inventé. Chaque phrase
+		   reprend ce que la page dit déjà (le texte de la prestation, le
+		   récit du chantier, le fond de l'article). Aucun prix, aucune
+		   ancienneté, aucun superlatif. ───────────────────────────── */
+
+		/* Les six prestations. */
+		'elagage-en-grimpe' => array(
+			'titre' => 'Élagage en grimpe à Vertou (44) : taille douce d\'arbre',
+			'desc'  => "Éclaircie, réduction de couronne, bois mort : on monte à la corde, on coupe au bourrelet, jamais en étêtage. Vertou et Nantes Sud.",
+		),
+		'abattage-et-demontage' => array(
+			'titre' => 'Abattage et démontage d\'arbre par câble — Vertou (44)',
+			'desc'  => "Abattage direct quand la place le permet, démontage par câble quand elle ne le permet pas : chaque pièce descend en rétention. Vertou (44).",
+		),
+		'haubanage-et-securisation' => array(
+			'titre' => 'Haubanage d\'arbre à Vertou (44) : tenir sans abattre',
+			'desc'  => "Fourche à écorce incluse, charpentière fissurée : un arbre fragilisé se haubane et se surveille plutôt qu'il ne s'abat. Vertou (44).",
+		),
+		'creation-de-jardin' => array(
+			'titre' => 'Création de jardin à Vertou (44) : plantation, gazon',
+			'desc'  => "Le sol, l'exposition, l'eau : un jardin se dessine avant de se planter. Massifs, haies, engazonnement, arbres plantés pour durer.",
+		),
+		'entretien-de-jardin' => array(
+			'titre' => 'Entretien de jardin à Vertou (44) : taille, tonte',
+			'desc'  => "Taille des haies au bon moment, tonte, débroussaillage, désherbage manuel, feuilles. Au coup par coup ou par passages convenus (44).",
+		),
+		'evacuation-et-broyage' => array(
+			'titre' => 'Broyage et évacuation de branches à Vertou (44)',
+			'desc'  => "Branches broyées sur place en paillage, ou rémanents chargés et évacués. Allées dégagées, sciure ramassée, terrain rendu net.",
+		),
+
+		/* Les deux chantiers. Ce sont des photos réelles prises sur
+		   place : la description le dit, sans en rajouter. */
+		'demontage-arbres-abri-jardin' => array(
+			'titre' => 'Démontage de cinq arbres au-dessus d\'un jardin (44)',
+			'desc'  => "Cinq sujets démontés section par section au-dessus d'un terrain occupé, sans zone de chute possible, puis le terrain rendu net.",
+		),
+		'broyage-sur-place-mur-mitoyen' => array(
+			'titre' => 'Conifères réduits le long d\'un mur mitoyen (44)',
+			'desc'  => "Une rangée de conifères réduite au ras d'un mur mitoyen, sans recul pour travailler, avec broyage des branches directement sur place.",
+		),
+
+		/* Les trois articles. Les deux premiers titres dépassaient 60
+		   caractères une fois le suffixe de marque ajouté, et étaient
+		   coupés dans les résultats. */
+		'distance-plantation-arbre-limite-propriete' => array(
+			'titre' => 'Distance de plantation d\'un arbre : ce que dit la loi',
+			'desc'  => "50 cm, 2 m, et la prescription trentenaire que presque personne ne mentionne : ce que disent les articles 671, 672 et 673 du code civil.",
+		),
+		'quand-tailler-haie-elaguer-arbre' => array(
+			'titre' => 'Quand tailler une haie — et quand surtout s\'abstenir',
+			'desc'  => "Du 16 mars au 15 août : une interdiction pour les agriculteurs aidés, une recommandation pour vous. La nuance est réelle, la raison meilleure.",
+		),
+		'pourquoi-ne-pas-eteter-un-arbre' => array(
+			'titre' => 'Pourquoi l\'étêtage abîme un arbre, et quoi faire sinon',
+			'desc'  => "Couper à mi-hauteur déplace le problème de trois ans et l'aggrave : gourmands mal accrochés, plaie qui ne se referme jamais.",
+		),
 	) );
 }
 
@@ -138,7 +210,13 @@ function lae_seo_page_cle() {
 	if ( is_post_type_archive( 'lae_realisation' ) ) {
 		return 'archive_realisation';
 	}
-	if ( is_page() ) {
+	/* Toute page singuliere, pas seulement les `page` : les six
+	   prestations, les deux chantiers et les trois articles sont des
+	   contenus singuliers eux aussi, et c'est eux qui portent les
+	   requetes commerciales. La cle est le slug ; la table ne repond
+	   que pour les slugs qu'elle connait, le reste garde le
+	   comportement d'origine, suffixe de marque compris. */
+	if ( is_singular() ) {
 		$p = get_post();
 		return $p ? $p->post_name : '';
 	}

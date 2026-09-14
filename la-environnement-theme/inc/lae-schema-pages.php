@@ -45,6 +45,27 @@ function lae_schema_id_entreprise() {
 }
 
 /** Écrit un bloc JSON-LD, ou rien si le tableau est vide. */
+/**
+ * Texte d'extrait pret a partir dans du JSON-LD.
+ *
+ * `wp_strip_all_tags()` retire les balises mais LAISSE les entites HTML.
+ * Or le JSON-LD n'est pas decode comme du HTML : Google lisait litteralement
+ * les huit caracteres `&rsquo;` la ou WordPress avait pose une apostrophe
+ * typographique. Constate le 14/09 sur /urgences/ (« une branche fendue
+ * au-dessus d&rsquo;une toiture »). Les autres pages n'etaient epargnees que
+ * parce que leur extrait n'avait pas d'apostrophe courbe — un coup de chance,
+ * pas une protection. On decode donc, comme le fait deja lae_partage_texte()
+ * pour la meta description.
+ */
+function lae_schema_texte( $html ) {
+	if ( function_exists( 'lae_partage_texte' ) ) {
+		return lae_partage_texte( $html );
+	}
+	$txt = wp_strip_all_tags( (string) $html );
+	$txt = html_entity_decode( $txt, ENT_QUOTES, 'UTF-8' );
+	return trim( preg_replace( '/\s+/u', ' ', $txt ) );
+}
+
 function lae_schema_ecrire( $donnees ) {
 	if ( ! $donnees ) {
 		return;
@@ -87,8 +108,8 @@ add_action( 'wp_head', function () {
 		lae_schema_ecrire( array(
 			'@type'       => 'Service',
 			'@id'         => get_permalink( $p ) . '#service',
-			'name'        => wp_strip_all_tags( get_the_title( $p ) ),
-			'description' => wp_strip_all_tags( get_the_excerpt( $p ) ),
+			'name'        => lae_schema_texte( get_the_title( $p ) ),
+			'description' => lae_schema_texte( get_the_excerpt( $p ) ),
 			'url'         => get_permalink( $p ),
 			'provider'    => $entreprise,
 			'areaServed'  => array(
@@ -109,7 +130,7 @@ add_action( 'wp_head', function () {
 			'@type'       => 'Service',
 			'@id'         => get_permalink( $page ) . '#service',
 			'name'        => 'Intervention d\'urgence sur arbre',
-			'description' => wp_strip_all_tags( get_the_excerpt( $page ) ),
+			'description' => lae_schema_texte( get_the_excerpt( $page ) ),
 			'serviceType' => 'Intervention d\'urgence',
 			'url'         => get_permalink( $page ),
 			'provider'    => $entreprise,
@@ -149,7 +170,7 @@ add_action( 'wp_head', function () {
 		$art = array(
 			'@type'            => 'BlogPosting',
 			'@id'              => get_permalink( $a ) . '#article',
-			'headline'         => wp_strip_all_tags( get_the_title( $a ) ),
+			'headline'         => lae_schema_texte( get_the_title( $a ) ),
 			'url'              => get_permalink( $a ),
 			'datePublished'    => get_the_date( DATE_W3C, $a ),
 			'dateModified'     => get_the_modified_date( DATE_W3C, $a ),
@@ -158,7 +179,7 @@ add_action( 'wp_head', function () {
 			'publisher'        => $entreprise,
 			'mainEntityOfPage' => array( '@type' => 'WebPage', '@id' => get_permalink( $a ) ),
 		);
-		$extrait = wp_strip_all_tags( get_the_excerpt( $a ) );
+		$extrait = lae_schema_texte( get_the_excerpt( $a ) );
 		if ( $extrait ) {
 			$art['description'] = $extrait;
 		}
@@ -206,7 +227,7 @@ add_action( 'wp_head', function () {
 		$elements[] = array(
 			'@type'    => 'ListItem',
 			'position' => $rang,
-			'name'     => wp_strip_all_tags( get_the_title() ),
+			'name'     => lae_schema_texte( get_the_title() ),
 		);
 		lae_schema_ecrire( array(
 			'@type'           => 'BreadcrumbList',
