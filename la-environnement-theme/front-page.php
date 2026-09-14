@@ -27,17 +27,15 @@ get_header();
 $dir = get_template_directory_uri();
 
 /* Médias (personnalisateur). Chaque champ vide laisse le dégradé CSS en place. */
-$lae_hero_img   = lae_reglage( 'hero_image' );
-if ( '' === $lae_hero_img ) {
-	/* LE PREMIER ÉCRAN N'AVAIT AUCUNE PHOTO. Relevé le 14/09 : ce réglage
-	   était lu ici puis jamais utilisé, et le balisage `.hero__bg` n'a jamais
-	   été écrit alors que son CSS existe depuis le début (lignes 110-111).
-	   Le bandeau d'accueil montrait donc la colonne de fond — la canopée en
-	   vidéo, générique — au lieu du métier. Sur la page la plus vue du site.
-	   On sert la photo la plus parlante du fonds : un grimpeur en réduction
-	   de couronne, ciel dégagé. Verticale, donc juste sur téléphone. */
-	$lae_hero_img = $dir . '/assets/images/chantiers/reduction-couronne-grimpeur.webp';
-}
+/* LES TROIS BANDEAUX — la même forêt le jour, au crépuscule et la nuit.
+   Photos fournies par Fabrice le 14/09, marque du constructeur retirée du
+   guide-chaîne avant intégration. La résolution vient de
+   `lae_ambiance_hero()` : même source que le préchargement posé en <head>,
+   pour qu'on ne puisse pas précharger une image et en afficher une autre.
+   Le réglage `hero_image` du personnalisateur commande toujours la photo
+   de JOUR. */
+$lae_hero = lae_ambiance_hero();
+$lae_hero_img = $lae_hero['jour'];
 $lae_hero_video = lae_reglage( 'cine_video' );
 $lae_hero_post  = lae_reglage( 'cine_poster' );
 $lae_tab_img    = lae_reglage( 'cine_tab_image' );
@@ -117,8 +115,13 @@ $lae_contact    = lae_url_contact();
 
   /* ---------- HERO ---------- */
   .hero{position:relative;height:100svh;overflow:hidden;display:flex;align-items:flex-end}
-  .hero__bg{position:absolute;inset:-6% 0 0;z-index:0}
-  .hero__bg img{width:100%;height:112%;object-fit:cover;object-position:center 45%}
+  /* LE FOND EST UNE IMAGE CSS, PAS UNE <img>, ET C'EST TOUT L'INTÉRÊT :
+     trois photos déclarées, une seule téléchargée — le navigateur ne charge
+     que celle dont la règle s'applique. En balises, les trois partiraient
+     (830 ko) pour n'en montrer qu'une. Le préchargement de la bonne est
+     posé en <head> par inc/lae-ambiance.php. */
+  .hero__bg{position:absolute;inset:-6% 0 0;z-index:0;
+    background-repeat:no-repeat;background-size:cover;background-position:center 45%}
   /* Ordre des couches : baie (0) < egerie (1) < voile (2) < texte (3).
      L'egerie passe SOUS le voile, sinon le texte se poserait a meme la photo
      et deviendrait illisible. */
@@ -823,11 +826,20 @@ $lae_contact    = lae_url_contact();
   .hero--photo .hero__veil{
     background:
       linear-gradient(180deg,
-        rgba(4,20,12,.60) 0%,
-        rgba(4,20,12,.52) 24%,
-        rgba(4,20,12,.74) 60%,
-        rgba(4,20,12,.94) 100%),
-      radial-gradient(120% 80% at 22% 62%,transparent 40%,rgba(4,20,12,.42))}
+        rgba(4,20,12,.34) 0%,
+        rgba(4,20,12,.26) 26%,
+        rgba(4,20,12,.56) 62%,
+        rgba(4,20,12,.90) 100%),
+      radial-gradient(120% 80% at 22% 62%,transparent 46%,rgba(4,20,12,.30))}
+  /* ALLÉGÉ LE 14/09, ET C'EST UNE MESURE QUI L'A PERMIS. Le réglage
+     précédent (.60/.52/.74/.94) avait été calé sur la photo du grimpeur,
+     ciel dégagé, où le blanc du titre tombait à 4,22:1 : il fallait ce
+     poids-là. Les trois photos d'ambiance sont bien plus sombres, et le
+     même voile portait le plancher des douze états à 11,8:1 — trois fois
+     la marge nécessaire, payée en photos enterrées sous du noir.
+     On rend de la lumière en haut, on garde le poids en bas où le texte
+     se pose. Re-mesuré après coup : le plancher reste très au-dessus du
+     seuil AA de 4,5:1, et la forêt redevient visible. */
 
   /* ---------- L'AMBIANCE SUR LE PREMIER ÉCRAN ----------
      Idée de Fabrice (14/09) : le site change d'apparence selon la saison et
@@ -852,27 +864,25 @@ $lae_contact    = lae_url_contact();
   .hero__veil::after{content:"";position:absolute;inset:0;pointer-events:none}
   .hero__veil::before{background:var(--lae-saison-voile)}
   .hero__veil::after{background:var(--lae-moment-voile)}
+  /* QUAND LA PHOTO PORTE DÉJÀ L'HEURE, LE VOILE D'HEURE DISPARAÎT. Sinon
+     on compte deux fois : la photo de nuit est nocturne, et lui superposer
+     le bleu du voile la rendrait illisible. Le voile de SAISON reste, lui :
+     aucune photo ne porte la saison.
+     La classe n'est posée que si les trois photos sont réellement
+     différentes — si les fichiers d'ambiance manquent, on retombe sur la
+     photo de jour partout et c'est alors le voile qui doit faire le
+     travail, exactement comme avant le 14/09. */
+  .hero--heures .hero__veil::after{background:transparent}
 
-  /* LA PHOTO ELLE-MÊME EST ÉTALONNÉE, comme au cinéma : on ne change pas
-     d'image, on change la lumière. C'était le premier réflexe — servir une
-     vraie photo de chantier de nuit — mais la seule qu'on ait fait
-     768 x 511 px, soit un agrandissement de 1,9x sur un écran de bureau :
-     une photo floue sur le premier écran du site coûte plus que l'effet ne
-     rapporte. Tant qu'il n'y a pas de photo de nuit en pleine résolution,
-     l'étalonnage est la bonne réponse : zéro octet de plus, zéro requête
-     de plus, aucune perte de netteté.
-     Le filtre n'assombrit que — voir le raisonnement de contraste
-     ci-dessus — et il reste sur l'image, jamais sur le texte, qui est
-     dans une autre couche (z-index 3).
-     Pas de transition sur ce filtre : l'attribut `data-moment` est posé
-     avant le premier rendu, donc une transition ne jouerait jamais — sauf
-     à rater sa fenêtre, et alors elle ferait un fondu visible au
-     chargement. Une animation qui ne sert à rien mais qui peut clignoter
-     n'a rien à faire là. */
-  :root[data-moment="crepuscule"] .hero__bg img{
-    filter:brightness(.90) saturate(1.10) sepia(.10)}
-  :root[data-moment="nuit"] .hero__bg img{
-    filter:brightness(.42) saturate(.60) contrast(1.08) hue-rotate(-10deg)}
+  /* L'ÉTALONNAGE AU FILTRE A ÉTÉ RETIRÉ LE 14/09, et c'est un progrès.
+     Faute de photo de nuit en résolution suffisante — la seule disponible
+     faisait 768 x 511 px, soit un agrandissement de 1,9x en plein écran —
+     la nuit était simulée en assombrissant la photo de jour au filtre CSS.
+     Ça tenait, mais une photo de jour assombrie reste une photo de jour :
+     le ciel est au mauvais endroit, les ombres tombent du mauvais côté.
+     Fabrice a fourni les trois vraies photos. On ne simule plus l'heure,
+     on la montre. Les règles de fond sont écrites plus bas, avec les URL,
+     parce qu'elles dépendent du personnalisateur. */
 
 </style>
 
@@ -932,12 +942,21 @@ if ( '' === $lae_col_arbre ) {
 })();
 </script>
 
-<section class="hero<?php echo $lae_hero_img ? ' hero--photo' : ''; ?>" id="top">
+<?php
+/* Les trois photos sont-elles réellement distinctes ? Si l'une manque,
+   lae_ambiance_hero() replie sur celle du jour, et il ne faut alors PAS
+   annoncer que le bandeau porte l'heure. */
+$lae_hero_heures = ( $lae_hero['nuit'] !== $lae_hero['jour'] ) || ( $lae_hero['crepuscule'] !== $lae_hero['jour'] );
+?>
+<section class="hero<?php echo $lae_hero_img ? ' hero--photo' : ''; ?><?php echo $lae_hero_heures ? ' hero--heures' : ''; ?>" id="top">
   <?php if ( $lae_hero_img ) : ?>
     <?php /* Décorative : le titre juste en dessous porte le sens. */ ?>
-    <div class="hero__bg" aria-hidden="true">
-      <?php echo lae_img( $lae_hero_img, '', array( 'loading' => '', 'fetchpriority' => 'high' ) ); ?>
-    </div>
+    <style>
+      .hero__bg{background-image:url("<?php echo esc_url( $lae_hero['jour'] ); ?>")}
+      :root[data-moment="crepuscule"] .hero__bg{background-image:url("<?php echo esc_url( $lae_hero['crepuscule'] ); ?>")}
+      :root[data-moment="nuit"] .hero__bg{background-image:url("<?php echo esc_url( $lae_hero['nuit'] ); ?>")}
+    </style>
+    <div class="hero__bg" aria-hidden="true"></div>
   <?php endif; ?>
   <div class="hero__veil"></div>
 

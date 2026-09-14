@@ -635,8 +635,17 @@ if ( ! function_exists( 'lae_mentions_texte' ) ) {
 		}
 
 		$blocs[] = '<!-- wp:heading --><h2>Propriété intellectuelle</h2><!-- /wp:heading -->';
+		/* CORRIGÉ LE 14/09, ET IL LE FALLAIT. Cette phrase disait, sans
+		   nuance, que « les photographies ne proviennent d'aucune banque
+		   d'images ». C'était vrai tant que le site ne portait que des
+		   photos de chantier. Depuis l'ajout des trois bandeaux d'ambiance
+		   — la forêt le jour, au crépuscule et la nuit —, qui sont des
+		   images générées, la phrase serait devenue fausse telle quelle.
+		   On distingue donc les deux : les photos de chantier restent ce
+		   qu'elles sont, et c'est ça qui vaut quelque chose pour un client ;
+		   les images d'ambiance sont annoncées pour ce qu'elles sont. */
 		$blocs[] = '<!-- wp:paragraph --><p>Les textes de ce site et les photographies de chantier sont la propriété d\''
-			. esc_html( $nom ) . '. Les photographies sont prises sur les chantiers réalisés : elles ne proviennent d\'aucune banque d\'images. Toute reproduction sans autorisation écrite est interdite.</p><!-- /wp:paragraph -->';
+			. esc_html( $nom ) . '. <strong>Les photographies de chantier — avant/après, réalisations, illustrations de pages — sont prises sur les chantiers réellement réalisés</strong> : elles ne proviennent d\'aucune banque d\'images. Les images d\'ambiance du bandeau d\'accueil sont, elles, des illustrations créées pour ce site et ne représentent aucun chantier. Toute reproduction sans autorisation écrite est interdite.</p><!-- /wp:paragraph -->';
 
 		$blocs[] = '<!-- wp:heading --><h2>Données personnelles</h2><!-- /wp:heading -->';
 		$blocs[] = '<!-- wp:paragraph --><p>Le formulaire de contact transmet votre demande par courriel et <strong>n\'enregistre rien sur le site</strong> : ni compte, ni base de données de prospects. Les informations que vous envoyez (nom, coordonnées, description du chantier) ne servent qu\'à vous répondre et à établir un devis, et ne sont transmises à personne.</p><!-- /wp:paragraph -->';

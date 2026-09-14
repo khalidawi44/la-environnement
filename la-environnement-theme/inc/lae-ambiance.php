@@ -89,3 +89,86 @@ add_action( 'wp_head', function () {
 	<?php
 }, 1 );
 
+
+/**
+ * Les trois bandeaux d'accueil : le jour, le crépuscule, la nuit.
+ *
+ * LA MÊME FORÊT À TROIS HEURES. C'est ce qui rend l'idée de Fabrice
+ * lisible plutôt que subtile : ce n'est pas une teinte qui change, c'est le
+ * moment de la journée. Quelqu'un dont un arbre tombe à 23 h arrive sur un
+ * site éclairé à la lune — l'astreinte 24 h/24 n'est plus une phrase, c'est
+ * ce qu'il voit avant de lire.
+ *
+ * UNE SEULE DES TROIS EST TÉLÉCHARGÉE. Elles sont posées en fond CSS et non
+ * en balise <img> : le navigateur ne charge que l'image dont la règle
+ * s'applique. Trois <img> auraient coûté 800 ko pour n'en montrer qu'une.
+ * Le revers — un fond CSS échappe au scanner de préchargement, et le
+ * bandeau est l'élément que Google chronomètre — est réglé par le lien de
+ * préchargement posé plus bas, dans <head>, donc plus tôt qu'une <img>
+ * placée dans le corps de page.
+ *
+ * LA PHOTO DE JOUR RESTE RÉGLABLE (`hero_image`) : c'est celle que le client
+ * voudra changer. Les deux autres ne le sont pas — une photo de jour posée
+ * dans le réglage « nuit » casserait tout l'effet sans prévenir, et ces
+ * deux-là n'ont de sens que si elles sont réellement crépusculaires et
+ * nocturnes.
+ *
+ * @return array{jour:string,crepuscule:string,nuit:string} URL absolues.
+ */
+function lae_ambiance_hero() {
+	$dir  = get_template_directory_uri();
+	$base = '/assets/images/ambiance/';
+
+	$fichier = function ( $nom ) use ( $dir, $base ) {
+		$rel = $base . $nom . '.webp';
+		return file_exists( get_template_directory() . $rel ) ? $dir . $rel : '';
+	};
+
+	$jour = lae_reglage( 'hero_image' );
+	if ( '' === $jour ) {
+		$jour = $fichier( 'sous-bois-jour' );
+	}
+	if ( '' === $jour ) {
+		// Dernier repli : une vraie photo de chantier de l'entreprise.
+		$jour = $dir . '/assets/images/chantiers/reduction-couronne-grimpeur.webp';
+	}
+
+	/* Repli sur le jour, jamais sur rien : un bandeau vide serait pire
+	   qu'un bandeau qui ne change pas d'heure. */
+	$crep = $fichier( 'sous-bois-crepuscule' );
+	$nuit = $fichier( 'sous-bois-nuit' );
+
+	return array(
+		'jour'       => $jour,
+		'crepuscule' => $crep ? $crep : $jour,
+		'nuit'       => $nuit ? $nuit : $jour,
+	);
+}
+
+/**
+ * Précharger la seule photo de bandeau qui va s'afficher.
+ *
+ * Écrit juste après le script qui pose `data-moment`, donc l'attribut est
+ * déjà là quand celui-ci s'exécute. Sans JavaScript : pas de préchargement,
+ * et le fond du jour charge normalement à la lecture de la feuille de
+ * style. Rien de cassé, juste non préchargé.
+ */
+add_action( 'wp_head', function () {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	$h = lae_ambiance_hero();
+	?>
+<script>
+(function(){try{
+  var m=document.documentElement.getAttribute('data-moment'),
+      u={jour:<?php echo wp_json_encode( $h['jour'] ); ?>,
+         crepuscule:<?php echo wp_json_encode( $h['crepuscule'] ); ?>,
+         nuit:<?php echo wp_json_encode( $h['nuit'] ); ?>}[m||'jour'],
+      l=document.createElement('link');
+  l.rel='preload';l.as='image';l.href=u;l.setAttribute('fetchpriority','high');
+  document.head.appendChild(l);
+}catch(e){}}());
+</script>
+	<?php
+}, 2 );
