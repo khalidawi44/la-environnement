@@ -832,6 +832,51 @@ $lae_contact    = lae_url_contact();
         rgba(4,20,12,.94) 100%),
       radial-gradient(120% 80% at 22% 62%,transparent 40%,rgba(4,20,12,.42))}
 
+  /* ---------- L'AMBIANCE SUR LE PREMIER ÉCRAN ----------
+     Idée de Fabrice (14/09) : le site change d'apparence selon la saison et
+     l'heure. Les jetons `--lae-saison-voile` et `--lae-moment-voile` sont
+     définis dans style.css, section 16 ; ici on les pose sur le bandeau,
+     qui est la plus grande surface du site et donc là où ça se voit.
+
+     DEUX COUCHES, PAS UNE REDÉCLARATION. Le voile du bandeau est déjà
+     écrit trois fois plus haut (base, thème clair, puis renfort photo) et
+     son réglage a été mesuré au contraste le 14/09. Le réécrire pour y
+     glisser une teinte, c'est reperdre cette mesure au prochain
+     changement. Les teintes passent donc par deux pseudo-éléments posés
+     par-dessus, et le voile mesuré n'est pas touché.
+
+     CONTRASTE : mesuré, pas déduit. Les douze états (quatre saisons x trois
+     moments) ont été rendus et le titre blanc relevé texte masqué, fond
+     réellement peint, en 390x844 et en 1440x900. Plancher des douze :
+     10,01:1 au 5e centile (printemps/jour, grand écran), pour un seuil AA
+     de 4,5:1 ; plafond 17,7:1 la nuit. Le détail, et la mise en garde qui
+     va avec, sont dans style.css section 16. */
+  .hero__veil::before,
+  .hero__veil::after{content:"";position:absolute;inset:0;pointer-events:none}
+  .hero__veil::before{background:var(--lae-saison-voile)}
+  .hero__veil::after{background:var(--lae-moment-voile)}
+
+  /* LA PHOTO ELLE-MÊME EST ÉTALONNÉE, comme au cinéma : on ne change pas
+     d'image, on change la lumière. C'était le premier réflexe — servir une
+     vraie photo de chantier de nuit — mais la seule qu'on ait fait
+     768 x 511 px, soit un agrandissement de 1,9x sur un écran de bureau :
+     une photo floue sur le premier écran du site coûte plus que l'effet ne
+     rapporte. Tant qu'il n'y a pas de photo de nuit en pleine résolution,
+     l'étalonnage est la bonne réponse : zéro octet de plus, zéro requête
+     de plus, aucune perte de netteté.
+     Le filtre n'assombrit que — voir le raisonnement de contraste
+     ci-dessus — et il reste sur l'image, jamais sur le texte, qui est
+     dans une autre couche (z-index 3).
+     Pas de transition sur ce filtre : l'attribut `data-moment` est posé
+     avant le premier rendu, donc une transition ne jouerait jamais — sauf
+     à rater sa fenêtre, et alors elle ferait un fondu visible au
+     chargement. Une animation qui ne sert à rien mais qui peut clignoter
+     n'a rien à faire là. */
+  :root[data-moment="crepuscule"] .hero__bg img{
+    filter:brightness(.90) saturate(1.10) sepia(.10)}
+  :root[data-moment="nuit"] .hero__bg img{
+    filter:brightness(.42) saturate(.60) contrast(1.08) hue-rotate(-10deg)}
+
 </style>
 
 <script>

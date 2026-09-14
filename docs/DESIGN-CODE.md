@@ -171,6 +171,45 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 Les images sont trop petites, et ça bloque deux effets (v1.19.0)
+
+Fabrice a demandé que **le site change d'apparence selon la saison et selon
+l'heure**. C'est fait et c'est en ligne — mais en teintes, pas en photos, et
+c'est une contrainte de résolution, pas un choix.
+
+**Ce que j'ai livré.** `data-saison` et `data-moment` sur `<html>` (voir
+`inc/lae-ambiance.php`), et la section 16 de `style.css`. La saison se
+calcule en PHP ; l'heure ne le peut pas — le cache de 5 minutes plus le CDN
+resserviraient « jour » à 20 h 03, et de toute façon l'heure qui compte est
+celle du visiteur. Elle est donc posée par un script en tête de page, avant
+le premier rendu. Les douze états ont été rendus et mesurés : pire contraste
+du titre blanc, 10,01:1 au 5e centile, pour un seuil AA de 4,5:1.
+
+**Ce qui manque, et c'est chez toi.**
+
+1. **La photo de nuit fait 768 x 511 px.** Le premier réflexe était le bon —
+   un visiteur dont un arbre tombe à 23 h devrait tomber sur une vraie photo
+   de chantier de nuit, c'est l'argument 24 h/24 rendu physique. Mais en
+   bandeau plein écran, 768 px de large sur un écran de bureau, c'est un
+   agrandissement de **x1,9**. Une photo floue sur l'écran le plus vu du
+   site coûte plus que l'effet ne rapporte. J'ai donc étalonné la photo de
+   jour (filtre CSS) au lieu d'en changer. **Il me faut cette photo en
+   1920 px de large minimum** pour faire le vrai échange.
+
+2. **Les six vignettes de sous-bois font 512 x 512 px chacune** (la planche
+   entière fait 1536 x 1024, six cases). Inutilisables en pleine largeur, et
+   même en vignette c'est juste. Si elles doivent servir, il faut les
+   **régénérer une par une**, pas en planche — une planche divise la
+   résolution par le nombre de cases.
+
+**La règle générale, pour qu'on n'y revienne pas :** tout ce qui sert de
+bandeau plein écran veut **1920 px de large au minimum** ; tout ce qui sert
+d'en-tête de page, 1600 px. En-dessous, je ne l'installe pas — je le dis.
+
+**Et les trois images encore ouvertes** (tarifs, conseils, contact) tiennent
+toujours, mêmes contraintes de taille.
+
+
 ### [2026-09-14] ⚙️→🎨 Le bandeau d'accueil n'avait jamais eu son image (v1.18.0)
 
 Fabrice, juste après la demande de raccourcissement : « il n'y a pas d'image

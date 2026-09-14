@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.18.1
+Version: 1.19.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -1548,4 +1548,114 @@ ul, ol { padding-left: 1.25em; }
 	   que le titre de la page. On garde la pleine largeur, on rend la
 	   taille au clamp. */
 	.lae-urgence-appel .lae-btn { width: 100%; padding-inline: 12px; }
+}
+
+/* ==========================================================================
+   16. L'ambiance : la saison et l'heure
+   Idée de Fabrice (14/09). Le site d'un élagueur n'a pas de raison d'avoir
+   la même lumière en janvier et en juin, ni à 14 h et à 23 h. Les attributs
+   `data-saison` et `data-moment` sont posés sur <html> par
+   inc/lae-ambiance.php — la saison en PHP, l'heure par un script en tête de
+   page, parce qu'un cache de 5 minutes et un CDN resserviraient « jour » à
+   20 h 03 et parce que l'heure qui compte est celle du visiteur.
+
+   RÈGLE DE SÛRETÉ : l'ambiance ne touche que des SURFACES DÉCORATIVES.
+   Aucune paire texte/fond n'est redéfinie ici, aucune couleur de marque non
+   plus — l'identité reste la même toute l'année, c'est la lumière qui bouge.
+
+   MESURÉ, PAS SUPPOSÉ (14/09). Les douze états — quatre saisons x trois
+   moments — ont été rendus et le contraste du titre blanc du bandeau relevé
+   texte masqué, fond réellement peint, en 390x844 et en 1440x900. Le pire
+   des douze est le 5e centile de printemps/jour sur grand écran : 10,01:1,
+   pour un seuil AA de 4,5:1. La nuit est le meilleur (jusqu'à 17,7:1), ce
+   qui est logique puisqu'elle assombrit.
+
+   Et une mise en garde, parce que l'intuition se trompe ici : « une teinte
+   sombre ne peut qu'améliorer le contraste d'un texte blanc » est FAUX, et
+   la mesure le montre. Les voiles de saison ne sont pas noirs ; sur les
+   zones déjà très sombres du voile, ils RELÈVENT un peu la luminance — le
+   plancher passe de 10,79:1 (été, sans voile) à 10,01:1 au printemps. La
+   marge reste énorme, mais toute teinte ajoutée ici se remesure au lieu de
+   se déduire.
+
+   Pas une animation de plus : Fabrice a dit le 14/09 que l'accueil bougeait
+   déjà trop. L'ambiance se voit à l'arrêt.
+   ========================================================================== */
+
+:root {
+	/* Neutre par défaut : sans attribut, le site est exactement celui d'avant. */
+	--lae-saison:        var(--lae-accent);
+	--lae-saison-clair:  var(--lae-accent-clair);
+	--lae-saison-voile:  rgba(0, 0, 0, 0);
+	--lae-moment-voile:  rgba(0, 0, 0, 0);
+}
+
+/* ── Les quatre saisons ──────────────────────────────────────────────
+   Les tons sont ceux que le métier voit vraiment : le vert-gris d'un
+   conifère sous le gel, la pousse claire d'avril, le vert plein de
+   juillet (la référence, donc l'accent du thème inchangé), la rouille
+   d'octobre. Les voiles sont des bruns et des bleus SOMBRES, jamais des
+   pastels : c'est ce qui garantit qu'ils assombrissent. */
+:root[data-saison="hiver"] {
+	--lae-saison:       #5b7f74;
+	--lae-saison-clair: #cfe3dc;
+	--lae-saison-voile: rgba(20, 54, 92, .30);
+}
+:root[data-saison="printemps"] {
+	--lae-saison:       #4f9a2c;
+	--lae-saison-clair: #cdefb4;
+	--lae-saison-voile: rgba(40, 92, 24, .28);
+}
+:root[data-saison="ete"] {
+	--lae-saison:       #2f7d4f;
+	--lae-saison-clair: #e3f0e7;
+	--lae-saison-voile: rgba(0, 0, 0, 0);
+}
+:root[data-saison="automne"] {
+	--lae-saison:       #a35a12;
+	--lae-saison-clair: #f2cca0;
+	--lae-saison-voile: rgba(104, 52, 6, .26);
+}
+
+/* ── Les trois moments ───────────────────────────────────────────────
+   Le crépuscule couvre les deux bascules (6 h-8 h et 18 h-22 h) : l'or
+   rasant. La nuit, le bleu — et plus appuyé, parce que c'est le moment
+   où l'entreprise a quelque chose à dire, l'astreinte 24 h/24. Celui
+   dont un arbre tombe à 23 h doit arriver sur un site qui a l'air
+   ouvert à 23 h. */
+:root[data-moment="crepuscule"] { --lae-moment-voile: rgba(122, 54, 12, .15); }
+:root[data-moment="nuit"]       { --lae-moment-voile: rgba(8, 22, 48, .40); }
+
+/* ── La hachure prend la couleur de la saison ────────────────────────
+   La signature du site, celle qui est sous chaque titre. C'est le seul
+   endroit où la saison se lit en positif et non en voile. Purement
+   décoratif (aria-hidden côté balisage) : aucune information n'en
+   dépend, et un contraste faible n'y coûte rien. */
+.lae-hachure {
+	background: repeating-linear-gradient(115deg, var(--lae-saison) 0 3px, transparent 3px 7px);
+}
+.lae-page-tete--photo .lae-hachure {
+	background: repeating-linear-gradient(115deg, var(--lae-saison-clair) 0 3px, transparent 3px 7px);
+}
+/* L'urgence garde son rouge en toute saison : sur cette page-là, la
+   couleur porte un sens, elle n'est pas une humeur. */
+.page-template-page-urgences .lae-page-tete--photo .lae-hachure {
+	background: repeating-linear-gradient(115deg, var(--lae-alerte-clair) 0 3px, transparent 3px 7px);
+}
+
+/* ── Les deux voiles sur la photo d'en-tête ──────────────────────────
+   Deux couches de plus, posées AU-DESSUS des dégradés d'origine (une
+   couche listée avant est peinte par-dessus) pour que la teinte se voie
+   aussi là où le dégradé est presque opaque. Écrites en
+   `linear-gradient(couleur, couleur)` parce qu'une couche de `background`
+   veut une image : seule la dernière peut être une couleur nue.
+   Les deux dégradés d'origine sont repris à l'identique — c'est le prix
+   d'une redéclaration de `background`, et les changer ici serait changer
+   le contraste mesuré le 13/09. */
+.lae-page-tete__fond::after {
+	background:
+		linear-gradient(var(--lae-moment-voile), var(--lae-moment-voile)),
+		linear-gradient(var(--lae-saison-voile), var(--lae-saison-voile)),
+		linear-gradient(180deg, rgba(10, 30, 19, .35) 0%, rgba(10, 30, 19, .62) 45%, rgba(10, 30, 19, .9) 100%),
+		linear-gradient(90deg, rgba(10, 30, 19, .5), rgba(10, 30, 19, .12));
 }
