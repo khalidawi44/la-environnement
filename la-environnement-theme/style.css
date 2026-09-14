@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.22.0
+Version: 1.23.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -1287,8 +1287,16 @@ ul, ol { padding-left: 1.25em; }
 	width: 100%;
 	border-collapse: collapse;
 	font-size: var(--lae-t-sm);
-	min-width: 30rem;
 }
+/* `min-width: 30rem` a été RETIRÉ le 14/09. Il forçait le tableau à 480 px
+   dans un cadre qui n'en fait que 346 sur un téléphone : le contenu ne
+   débordait pas de la page — le cadre défile — mais il sortait du cadre,
+   et ce qui sortait était la colonne des PRIX, c'est-à-dire la seule qu'on
+   vienne lire. Le défilement latéral reste possible sur `.lae-marche-cadre`
+   au cas où une fourchette très longue serait saisie un jour ; il n'est
+   simplement plus la manière normale de lire ce tableau. */
+.lae-marche__quoi { display: block; }
+
 .lae-marche th,
 .lae-marche td {
 	text-align: left;
@@ -1310,7 +1318,68 @@ ul, ol { padding-left: 1.25em; }
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
 }
-.lae-marche__zone { color: var(--lae-doux); white-space: nowrap; }
+/* La zone n'est plus une colonne : c'est une précision sur la ligne. Elle
+   se lit comme une étiquette sous le libellé, ce qui rend le tableau à
+   deux colonnes — et donc tenable sur un écran de téléphone. */
+.lae-marche__zone {
+	display: inline-block;
+	margin-top: 5px;
+	padding: 2px 9px;
+	border-radius: 100px;
+	background: var(--lae-fond-vert);
+	color: var(--lae-doux);
+	font-size: var(--lae-t-xs);
+	white-space: nowrap;
+}
+.lae-marche td:last-child { text-align: right; vertical-align: middle; }
+.lae-marche th:last-child { text-align: right; }
+
+/* ── Le forfait ──────────────────────────────────────────────────────
+   Information donnée par Anthony le 14/09 : il chiffre au forfait, tout
+   compris. C'est le pendant du tableau du dessus — les prix du marché
+   sont affichés, les siens non, et cette section dit pourquoi. */
+.lae-forfait {
+	border: 1px solid var(--lae-trait);
+	border-left: 4px solid var(--lae-accent);
+	border-radius: var(--lae-rayon);
+	padding: 22px 24px;
+	margin: 0 0 18px;
+	background: var(--lae-fond);
+	max-width: 68ch;
+}
+.lae-forfait__phrase {
+	margin: 0 0 14px;
+	font-size: var(--lae-t-lg);
+	color: var(--lae-encre-2);
+}
+.lae-forfait__liste { margin: 0; padding: 0; list-style: none; }
+.lae-forfait__liste li {
+	position: relative;
+	padding: 0 0 0 24px;
+	margin: 0 0 12px;
+	color: var(--lae-doux);
+}
+.lae-forfait__liste li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: .62em;
+	width: 9px;
+	height: 9px;
+	border-radius: 2px;
+	background: var(--lae-accent);
+	/* Le même biais que la hachure de signature : un carré droit ferait
+	   puce de traitement de texte, l'oblique rappelle la coupe. */
+	transform: rotate(20deg);
+}
+.lae-forfait__liste li strong { color: var(--lae-encre-2); }
+.lae-forfait__pourquoi {
+	margin: 18px 0 0;
+	padding-top: 16px;
+	border-top: 1px solid var(--lae-trait);
+	color: var(--lae-doux);
+}
+.lae-forfait__pourquoi strong { color: var(--lae-encre-2); }
 
 .lae-tarif-position {
 	background: var(--lae-accent-clair);
@@ -1540,7 +1609,12 @@ ul, ol { padding-left: 1.25em; }
 	.lae-tarif-ligne { flex-direction: column; gap: 4px; padding: 14px 16px; }
 	.lae-tarif-ligne--plein { flex-direction: row; justify-content: space-between; }
 	.lae-tarif-h2 { margin-top: 36px; }
-	.lae-marche th, .lae-marche td { padding: 11px 14px; }
+	/* Serré, mais deux colonnes tiennent : le libellé prend ce qu'il
+	   reste, le prix ne se coupe jamais. */
+	.lae-marche th, .lae-marche td { padding: 11px 12px; }
+	.lae-marche { font-size: var(--lae-t-xs); }
+	.lae-marche__prix { font-size: var(--lae-t-sm); }
+	.lae-forfait { padding: 18px 18px; }
 	.lae-tarif-position, .lae-niveau { padding: 17px 18px; }
 	/* Le numéro reste grand sur téléphone — c'est là qu'on appelle.
 	   Cette règle le rabaissait à 1,2 rem et écrasait le clamp posé plus

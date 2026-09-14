@@ -55,17 +55,35 @@ while ( have_posts() ) : the_post();
 				<h2 class="lae-tarif-h2">Ce que coûte un chantier ailleurs</h2>
 				<p class="lae-tarif-intro">Des fourchettes constatées sur le marché, pas les tarifs d&rsquo;une entreprise en particulier. Elles servent de repère : c&rsquo;est en dessous que nous nous plaçons.</p>
 
+				<?php
+				/* DEUX COLONNES, PLUS TROIS. Relevé par Fabrice le 14/09 : sur
+				   un téléphone, le tableau dépassait de l'écran. Mesuré — il
+				   était forcé à 480 px de large (`min-width:30rem`) dans un
+				   cadre de 346 px, et c'est la COLONNE DES PRIX qui sortait,
+				   c'est-à-dire la seule qu'on vient lire. Le lecteur voyait
+				   « 30 à 70 € H… » et « à partir de 4… ».
+				   La zone ne mérite pas une colonne à elle : c'est une
+				   précision sur la ligne, pas une donnée qu'on compare. Elle
+				   passe sous le libellé, le tableau tombe à deux colonnes et
+				   tient dans n'importe quel écran sans défilement latéral. */
+				?>
 				<div class="lae-marche-cadre">
 					<table class="lae-marche">
+						<?php /* Légende lue par les lecteurs d'écran, pas affichée : le
+						     paragraphe juste au-dessus dit déjà la même chose à
+						     l'œil, et la répéter ferait doublon. */ ?>
+						<caption class="lae-invisible">Fourchettes de prix constatées sur le marché, par prestation et par zone.</caption>
 						<thead>
-							<tr><th scope="col">Prestation</th><th scope="col">Prix constatés</th><th scope="col">Zone</th></tr>
+							<tr><th scope="col">Prestation</th><th scope="col">Prix constatés</th></tr>
 						</thead>
 						<tbody>
 							<?php foreach ( $lae_marche as $m ) : ?>
 								<tr>
-									<td><?php echo esc_html( $m['quoi'] ); ?></td>
+									<td>
+										<span class="lae-marche__quoi"><?php echo esc_html( $m['quoi'] ); ?></span>
+										<span class="lae-marche__zone"><?php echo esc_html( $m['zone'] ); ?></span>
+									</td>
 									<td class="lae-marche__prix"><?php echo esc_html( $m['fourchette'] ); ?></td>
-									<td class="lae-marche__zone"><?php echo esc_html( $m['zone'] ); ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
@@ -73,11 +91,14 @@ while ( have_posts() ) : the_post();
 				</div>
 
 				<?php if ( $lae_ecart[0] && $lae_ecart[1] ) : ?>
+					<?php /* La deuxième moitié de ce paragraphe — « l'accès, la hauteur
+					         et l'évacuation ne se devinent pas depuis un écran » — a été
+					         retirée le 14/09 : la section « Comment nous chiffrons » qui
+					         suit dit exactement la même chose, deux blocs plus bas. La
+					         même phrase deux fois affaiblit les deux. */ ?>
 					<p class="lae-tarif-position">
 						<strong>Notre devis se situe <?php echo (int) $lae_ecart[0]; ?> à <?php echo (int) $lae_ecart[1]; ?>&nbsp;% sous le milieu de ces fourchettes</strong>,
-						à prestation équivalente et garanties identiques. Le chiffre exact dépend du chantier :
-						l&rsquo;accès, la hauteur, le risque et l&rsquo;évacuation ne se devinent pas depuis un écran.
-						C&rsquo;est pour ça qu&rsquo;on vient voir avant de chiffrer.
+						à prestation équivalente et garanties identiques.
 					</p>
 				<?php endif; ?>
 
@@ -85,6 +106,34 @@ while ( have_posts() ) : the_post();
 					<p class="lae-marche__source">Fourchettes relevées le <?php echo esc_html( $lae_releve ); ?> sur des barèmes publics du secteur (Loire-Atlantique et moyennes nationales). Elles bougent : si vous avez un devis en main qui dit autre chose, montrez-le-nous.</p>
 				<?php endif; ?>
 			<?php endif; ?>
+
+			<?php
+			/* LE FORFAIT — information donnée par Anthony et rapportée par
+			   Fabrice le 14/09. Elle est ici, juste après le comparatif,
+			   parce que c'est elle qui explique pourquoi les prix du marché
+			   sont affichés et les nôtres non : les autres chiffrent à
+			   l'heure ou à l'unité, lui chiffre un chantier entier.
+			   Rien n'est écrit ici qui n'ait été dit : il travaille au
+			   forfait, une haie se chiffre au mètre linéaire, et le forfait
+			   comprend tout, broyage compris. Le reste — délais, garanties —
+			   n'a pas été dit, donc n'est pas écrit. */
+			?>
+			<h2 class="lae-tarif-h2">Comment nous chiffrons, nous</h2>
+			<div class="lae-forfait">
+				<p class="lae-forfait__phrase"><strong>Nous travaillons au forfait, et le forfait comprend tout.</strong></p>
+				<ul class="lae-forfait__liste">
+					<li><strong>Un chantier, un prix.</strong> Pas un taux horaire qui court, pas une ligne qui s'ajoute à la fin. Ce qui est annoncé est ce qui est payé.</li>
+					<li><strong>Le broyage est dedans.</strong> C'est souvent ce qui fait la différence entre deux devis : couper un arbre coûte une chose, faire disparaître ce qui reste au sol en coûte une autre. Chez nous, les deux sont dans le même chiffre.</li>
+					<li><strong>Une haie se chiffre au mètre linéaire.</strong> Mais le prix au mètre n'est pas le même partout : la hauteur, la largeur, ce qu'il y a derrière et la place pour travailler le font bouger du simple au double.</li>
+				</ul>
+				<p class="lae-forfait__pourquoi">
+					<strong>C'est pour ça qu'aucun prix n'est affiché sur cette page pour nos chantiers, et c'est volontaire.</strong>
+					Un chiffre mis en ligne sans avoir vu le terrain est soit trop haut — et vous payez la
+					prudence de celui qui l'a écrit — soit trop bas, et il faudra bien le rattraper quelque
+					part. L'accès, la hauteur, ce qu'il y a en dessous et ce qu'il faut évacuer ne se devinent
+					pas depuis un écran. On vient voir, on annonce un forfait, et il ne bouge plus.
+				</p>
+			</div>
 
 			<?php if ( $lae_tranches ) : ?>
 				<h2 class="lae-tarif-h2">Et une réduction selon ce que vous gagnez</h2>
