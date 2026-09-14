@@ -77,41 +77,17 @@ visiteurs sur la page.
 
 ## B. Images d'ambiance — générées, aucun problème
 
-### B1. Le sous-bois en version ÉTÉ — ✅ le JOUR est fait, il manque 2 photos
+### B1. Le sous-bois en version ÉTÉ — ✅ FAIT, les trois photos sont en ligne
 
-**Reçue et installée le 14/09 : la version JOUR** (1672 × 941, aucune marque,
-aucun agrandissement nécessaire). Le site l'utilise déjà en été ET au
-printemps — un feuillage vert est un feuillage vert, c'est la teinte de saison
-qui distingue avril de juillet.
+Reçues et installées le 14/09 : **jour, crépuscule et nuit**, toutes en
+1672 x 940, aucune marque sur les outils, aucun agrandissement nécessaire
+(×0,86 à 1440 px). Le site sert désormais un jeu cohérent à toute heure en
+été ET au printemps — un feuillage vert est un feuillage vert, c'est la
+teinte de saison qui distingue avril de juillet.
 
-**Il manque le CRÉPUSCULE et la NUIT en version verte.** En attendant, un
-visiteur qui ouvre le site un soir de juillet voit la forêt d'automne : le
-mécanisme retombe photo par photo sur le jeu par défaut, ce qui ne casse
-rien mais se remarque. Les deux prompts sont ci-dessous.
-
-
-
-Le site change d'apparence selon l'heure et la saison. Les trois photos
-fournies le 14/09 sont **automnales** : en juin, le site affiche donc une
-forêt rousse avec une teinte verte par-dessus. Ça tient, mais l'idée n'est
-pas allée au bout.
-
-Il faut **la même scène, le même cadrage, en feuillage vert d'été**, aux trois
-mêmes moments. Prompt à coller, en changeant seulement la fin :
-
-> Photographie réaliste, forêt de feuillus en plein été, feuillage vert dense.
-> Au premier plan à gauche, une grosse souche moussue sur laquelle sont posés
-> un casque de protection forestier orange avec visière et protège-oreilles,
-> une tronçonneuse thermique orange et blanche, et une corde d'élagage
-> enroulée qui retombe de la souche. À droite, des troncs fraîchement coupés
-> empilés, sections visibles. Au fond, un chemin forestier qui s'éloigne.
-> Aucun texte, aucune marque, aucun logo visible sur la tronçonneuse ni sur
-> le casque. Format paysage 16:9, 1920 × 1080 minimum, très haute définition.
-> **Lumière : [ plein jour, soleil filtrant entre les arbres ]**
-
-Les deux autres variantes, même texte, en changeant la dernière ligne :
-- **crépuscule** : « coucher de soleil orangé au fond du chemin, lumière rasante »
-- **nuit** : « nuit noire, pleine lune dans un ciel dégagé, brume au sol, quelques lumières de village au loin »
+Contraste des douze états re-mesuré après coup : plancher 7,05:1
+(été/jour, grand écran) pour un seuil AA de 4,5:1. Les deux nouvelles
+photos ne l'ont pas fait bouger.
 
 ### B2. Le sous-bois en version HIVER — si tu veux aller au bout
 
