@@ -209,6 +209,16 @@ d'en-tête de page, 1600 px. En-dessous, je ne l'installe pas — je le dis.
 **Et les trois images encore ouvertes** (tarifs, conseils, contact) tiennent
 toujours, mêmes contraintes de taille.
 
+**Vérifié en ligne (14/09).** `style.css` sert bien `Version: 1.19.0` avec
+les six jetons de saison ; la page d'accueil sort avec
+`<html lang="fr-FR" data-saison="ete" data-moment="jour">`, le script qui
+corrige le moment avec l'heure du visiteur est présent, et les règles
+`hero__veil::after` et le filtre de nuit sont dans le CSS en ligne de
+l'accueil. Note au passage : Hostinger a activé une protection anti-robot
+qui renvoie un défi JavaScript en 403 sur les requêtes sans User-Agent de
+navigateur — pour vérifier le live, il faut désormais `-A` avec un UA
+Chrome et un `Referer`, sinon on mesure la page de défi et pas le site.
+
 
 ### [2026-09-14] ⚙️→🎨 Le bandeau d'accueil n'avait jamais eu son image (v1.18.0)
 
