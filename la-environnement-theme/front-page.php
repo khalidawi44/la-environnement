@@ -613,8 +613,6 @@ $lae_contact    = lae_url_contact();
      mise en avant est renseignée.
      ========================================================== */
   .card__media--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8));display:grid;place-items:center}
-  .card__glyphe{color:var(--feuille-hi);opacity:.85}
-  .card__glyphe svg{width:44px;height:44px}
   /* Chapitre sans photo : une seule colonne, le texte se pose sur l'arbre. */
   .rz__vue--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8))}
   .pack--nu .pack__txt{display:block}
@@ -623,9 +621,6 @@ $lae_contact    = lae_url_contact();
      Ici il n'y a pas de prix — sans cette remise à zéro, le titre part à droite. */
   .pack__nom{font-family:var(--sans);font-size:1.06rem;font-weight:700;color:#fff;line-height:1.3;
     display:flex;align-items:center;justify-content:flex-start;gap:2px}
-  .pack__ic{display:inline-grid;place-items:center;width:34px;height:34px;flex:none;margin-right:9px;
-    border-radius:10px;background:rgba(127,176,74,.16);color:var(--feuille-hi)}
-  .pack__ic svg{width:19px;height:19px}
   .pack__res{margin-top:9px;color:var(--muted);font-size:.89rem;line-height:1.55}
   .pack__delai{margin-top:9px;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--feuille)}
   /* Chez Alliance Groupe la carte porte une image et le bouton est seul dans
@@ -1244,7 +1239,6 @@ if ( is_wp_error( $lae_familles ) ) {
               $lae_grille->the_post();
               $lae_termes = get_the_terms( get_the_ID(), 'lae_famille' );
               $lae_cat    = ( $lae_termes && ! is_wp_error( $lae_termes ) ) ? 'f-' . (int) $lae_termes[0]->term_id : '';
-              $lae_icone  = get_post_meta( get_the_ID(), '_lae_icone', true );
               ?>
               <a class="card" data-cat="<?php echo esc_attr( $lae_cat ); ?>" href="<?php the_permalink(); ?>">
                 <div class="card__media<?php echo has_post_thumbnail() ? '' : ' card__media--nu'; ?>">
@@ -1252,10 +1246,14 @@ if ( is_wp_error( $lae_familles ) ) {
                     <span class="card__badge"><?php echo esc_html( $lae_termes[0]->name ); ?></span>
                   <?php endif; ?>
                   <?php
+                  /* La photo, ou rien. Le pictogramme de repli a été retiré le
+                     14/09 : six cartes sans image à la une affichaient six
+                     grands glyphes verts en pleine page d'accueil, à la place
+                     des photos de chantier que l'entreprise possède. Le manque
+                     est comblé côté contenu (lae_prestations_photos), et le
+                     repli supprimé pour qu'il ne revienne pas. */
                   if ( has_post_thumbnail() ) {
                       the_post_thumbnail( 'lae-carte', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) );
-                  } elseif ( $lae_icone ) {
-                      echo '<span class="card__glyphe">' . lae_icone( $lae_icone ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
                   }
                   ?>
                 </div>
@@ -1284,7 +1282,6 @@ if ( is_wp_error( $lae_familles ) ) {
           while ( $lae_phares->have_posts() ) :
               $lae_phares->the_post();
               $lae_tms = get_the_terms( get_the_ID(), 'lae_famille' );
-              $lae_ico = get_post_meta( get_the_ID(), '_lae_icone', true );
               $lae_nu  = ! has_post_thumbnail();
               ?>
               <article class="pack<?php echo $lae_nu ? ' pack--nu' : ''; ?>" data-pack>
@@ -1294,7 +1291,7 @@ if ( is_wp_error( $lae_familles ) ) {
                 <div class="pack__body">
                   <div class="pack__txt">
                     <h3 class="pack__nom">
-                      <?php if ( $lae_nu && $lae_ico ) : ?><span class="pack__ic"><?php echo lae_icone( $lae_ico ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span><?php endif; ?>
+                      <?php /* Pictogramme de repli retiré le 14/09 : la photo, ou rien. */ ?>
                       <?php the_title(); ?>
                     </h3>
                     <?php if ( has_excerpt() ) : ?>

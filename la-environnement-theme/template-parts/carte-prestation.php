@@ -7,7 +7,12 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$icone = get_post_meta( get_the_ID(), '_lae_icone', true );
+/* PAS DE PICTOGRAMME EN REPLI — demande de Fabrice du 14/09, et elle est
+   permanente : « pas d'icône de ce genre-là dans le site ». Une carte sans
+   photo n'affiche donc rien à la place ; elle est plus sobre, et surtout
+   elle SE VOIT comme incomplète, ce qui pousse à lui donner sa photo. Un
+   repli qui a l'air fini est un repli qu'on oublie de remplacer — c'est
+   exactement ce qui est arrivé aux six prestations livrées. */
 ?>
 <article <?php post_class( 'lae-carte' ); ?>>
 	<?php if ( has_post_thumbnail() ) : ?>
@@ -17,10 +22,6 @@ $icone = get_post_meta( get_the_ID(), '_lae_icone', true );
 	<?php endif; ?>
 
 	<div class="lae-carte__corps">
-		<?php if ( ! has_post_thumbnail() && $icone ) : ?>
-			<span class="lae-carte__icone"><?php echo lae_icone( $icone ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-		<?php endif; ?>
-
 		<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
 
 		<?php if ( has_excerpt() ) : ?>

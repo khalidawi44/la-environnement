@@ -100,55 +100,46 @@ add_action( 'pre_get_posts', function ( $query ) {
 	}
 } );
 
-// ── Icône d'une prestation ──────────────────────────────────────────────
+// ── Ce qu'il faut sur une prestation : une photo ────────────────────────
+/* LA BOÎTE « ICÔNE » A ÉTÉ RETIRÉE LE 14/09. Elle proposait de choisir un
+   pictogramme affiché « à défaut d'image mise en avant ». Ce repli n'existe
+   plus nulle part dans le thème — demande de Fabrice, capture à l'appui :
+   « pas d'icône de ce genre-là dans le site ». Garder le choix aurait été
+   pire que de le retirer : le client choisit une icône, enregistre, et rien
+   ne change sur le site. Un réglage sans effet est un piège.
+
+   À la place, un rappel là où il sert : c'est l'image à la une qui illustre
+   une prestation, et il en faut une. La méta `_lae_icone` déjà enregistrée
+   sur d'anciennes prestations n'est pas supprimée — elle ne sert plus à rien
+   et ne gêne personne, alors qu'une suppression en masse toucherait des
+   données du client sans raison. */
 
 add_action( 'add_meta_boxes', function () {
 	add_meta_box(
-		'lae_prestation_icone',
-		'Icône',
-		'lae_boite_icone',
+		'lae_prestation_photo',
+		'Photo de la prestation',
+		'lae_boite_photo',
 		'lae_prestation',
 		'side',
-		'default'
+		'high'
 	);
 } );
 
-/** Affiche la boîte de choix d'icône. */
-if ( ! function_exists( 'lae_boite_icone' ) ) {
-	function lae_boite_icone( $post ) {
-		wp_nonce_field( 'lae_icone_save', 'lae_icone_nonce' );
-		$actuelle = get_post_meta( $post->ID, '_lae_icone', true );
-		echo '<p><label for="lae_icone" class="screen-reader-text">Icône</label>';
-		echo '<select name="lae_icone" id="lae_icone" style="width:100%">';
-		echo '<option value="">— Aucune —</option>';
-		foreach ( lae_icones_disponibles() as $cle => $libelle ) {
-			printf(
-				'<option value="%s"%s>%s</option>',
-				esc_attr( $cle ),
-				selected( $actuelle, $cle, false ),
-				esc_html( $libelle )
-			);
+/** Rappelle que l'illustration d'une prestation est son image à la une. */
+if ( ! function_exists( 'lae_boite_photo' ) ) {
+	function lae_boite_photo( $post ) {
+		$a = has_post_thumbnail( $post->ID );
+		echo '<p>';
+		if ( $a ) {
+			echo '<strong style="color:#1b7a3e">Cette prestation a sa photo.</strong> ';
+			echo 'Elle s\'affiche sur la carte, en page d\'accueil et dans la liste des prestations.';
+		} else {
+			echo '<strong style="color:#a33">Cette prestation n\'a pas de photo.</strong> ';
+			echo 'Sa carte s\'affichera sans image. Ajoutez-en une dans « Image mise en avant », ';
+			echo 'plus bas dans cette colonne.';
 		}
-		echo '</select></p>';
-		echo '<p class="description">Affichée sur la carte de la prestation, à défaut d\'image mise en avant.</p>';
+		echo '</p>';
+		echo '<p class="description">Une vraie photo de chantier, prise sur place — jamais une image ';
+		echo 'd\'illustration : les mentions légales du site s\'y engagent.</p>';
 	}
 }
-
-add_action( 'save_post_lae_prestation', function ( $post_id ) {
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return;
-	}
-	if ( ! isset( $_POST['lae_icone_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['lae_icone_nonce'] ) ), 'lae_icone_save' ) ) {
-		return;
-	}
-	if ( ! current_user_can( 'edit_post', $post_id ) ) {
-		return;
-	}
-
-	$valeur = isset( $_POST['lae_icone'] ) ? sanitize_key( wp_unslash( $_POST['lae_icone'] ) ) : '';
-	if ( $valeur && array_key_exists( $valeur, lae_icones_disponibles() ) ) {
-		update_post_meta( $post_id, '_lae_icone', $valeur );
-	} else {
-		delete_post_meta( $post_id, '_lae_icone' );
-	}
-} );

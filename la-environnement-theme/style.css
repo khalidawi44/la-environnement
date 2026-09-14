@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.25.0
+Version: 1.26.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -554,16 +554,6 @@ ul, ol { padding-left: 1.25em; }
 .lae-carte__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms cubic-bezier(.2,.6,.3,1); }
 .lae-carte:hover .lae-carte__media img { transform: scale(1.04); }
 .lae-carte__corps { padding: 26px 24px 28px; display: flex; flex-direction: column; flex: 1; }
-.lae-carte__icone {
-	width: 46px; height: 46px;
-	display: grid;
-	place-items: center;
-	margin-bottom: 16px;
-	border-radius: 13px;
-	background: var(--lae-accent-clair);
-	color: var(--lae-accent-fonce);
-}
-.lae-carte__icone svg { width: 24px; height: 24px; }
 .lae-carte h2, .lae-carte h3 { margin-bottom: .4em; font-size: var(--lae-t-xl); }
 .lae-carte h2 a, .lae-carte h3 a { color: inherit; text-decoration: none; }
 .lae-carte h2 a::after, .lae-carte h3 a::after { content: ""; position: absolute; inset: 0; }

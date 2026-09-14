@@ -815,3 +815,80 @@ add_action( 'admin_init', 'lae_mentions_maj', 14 );
    prochaine visite : c'est le moment exact où Anthony s'attend à voir la
    page bouger. */
 add_action( 'customize_save_after', 'lae_mentions_maj', 20 );
+
+/* ═══════════════════════════════════════════════════════════════════
+   UNE VRAIE PHOTO SUR CHAQUE PRESTATION
+
+   Fabrice, le 14/09, capture à l'appui : « les icônes ne sont vraiment pas
+   belles, je veux des trucs réalistes, pas un truc bricolé style WordPress,
+   pas d'icône de ce genre-là dans le site ».
+
+   LA CAUSE N'ÉTAIT PAS LE DESSIN DES ICÔNES. La carte de prestation
+   préfère DÉJÀ la photo à l'icône : `has_post_thumbnail()` d'abord, le
+   pictogramme seulement en repli. Les six prestations livrées avec le
+   thème n'avaient simplement jamais reçu d'image à la une — le repli
+   s'appliquait donc systématiquement, et six pictogrammes verts se
+   retrouvaient en pleine page d'accueil à la place des photos de chantier
+   que l'entreprise possède pourtant.
+
+   On comble le manque à la source. Le repli, lui, est retiré du balisage
+   dans le même geste : tant qu'il existe, il reviendra le jour où
+   quelqu'un ajoutera une prestation sans photo.
+
+   Photos réelles, prises sur les chantiers de l'entreprise — c'est ce que
+   les mentions légales affirment, et ça doit rester vrai.
+   ═══════════════════════════════════════════════════════════════════ */
+
+if ( ! function_exists( 'lae_prestations_photos' ) ) {
+	function lae_prestations_photos() {
+
+		if ( get_option( 'lae_prestations_photos_faites' ) ) {
+			return;
+		}
+		if ( ! function_exists( 'lae_chantier_importe_image' ) ) {
+			return;   // lae-chantiers.php pas encore chargé : on réessaiera
+		}
+
+		/* Le titre plutôt que le slug : les prestations sont créées à partir
+		   de `lae_amorce_prestations()`, où le titre est la donnée de
+		   référence. Le slug, lui, est dérivé par WordPress et peut avoir été
+		   modifié à la main depuis. */
+		$carte = array(
+			'Élagage en grimpe'         => array( 'elagage-grimpe.webp',                 'Élagueur en grimpe dans un houppier' ),
+			'Abattage et démontage'     => array( 'chantiers/demontage-bouleau.webp',    'Démontage d\'un bouleau par tronçons' ),
+			'Haubanage et sécurisation' => array( 'chantiers/elagage-grimpe-cordes.webp','Travail à la corde dans un arbre' ),
+			'Création de jardin'        => array( 'jardin-piscine.webp',                 'Jardin créé et entretenu au bord d\'une piscine' ),
+			'Entretien de jardin'       => array( 'chantiers/haie-taillee-broyat.webp',  'Haie taillée, broyat laissé en paillage au pied' ),
+			'Évacuation et broyage'     => array( 'chantiers/dechets-verts-tas.webp',    'Tas de déchets verts prêt à être broyé' ),
+		);
+
+		$posts = get_posts( array(
+			'post_type'      => 'lae_prestation',
+			'post_status'    => 'any',
+			'posts_per_page' => 50,
+		) );
+		if ( ! $posts ) {
+			return;   // rien à illustrer : l'amorce n'a pas encore tourné
+		}
+
+		update_option( 'lae_prestations_photos_faites', 1 );   // verrou AVANT l'écriture
+
+		foreach ( $posts as $p ) {
+			// Une image posée à la main par le client ne se remplace jamais.
+			if ( has_post_thumbnail( $p->ID ) ) {
+				continue;
+			}
+			$titre = trim( wp_strip_all_tags( $p->post_title ) );
+			if ( ! isset( $carte[ $titre ] ) ) {
+				continue;
+			}
+			$id = lae_chantier_importe_image( $carte[ $titre ][0], $carte[ $titre ][1] );
+			if ( $id ) {
+				set_post_thumbnail( $p->ID, $id );
+				update_post_meta( $id, '_wp_attachment_image_alt', $carte[ $titre ][1] );
+			}
+		}
+	}
+}
+add_action( 'init', 'lae_prestations_photos', 24 );
+add_action( 'admin_init', 'lae_prestations_photos', 15 );
