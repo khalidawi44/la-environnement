@@ -103,6 +103,93 @@ add_filter( 'wp_sitemaps_post_types', function ( $types ) {
 	return $types;
 } );
 
+/* ═══════════════════════════════════════════════════════════════════
+   LE SITEMAP PUBLIAIT L'ADRESSE E-MAIL DE L'ÉDITEUR
+
+   Constaté en ligne le 14/09. `wp-sitemap-users-1.xml` contenait une
+   seule URL :
+
+       https://elagage-vertou.fr/author/advise-alliance-groupgmail-com/
+
+   Le slug est dérivé mot pour mot de l'adresse du compte éditeur. Une
+   adresse personnelle publiée en clair dans un XML public, offerte aux
+   moissonneurs de spam — et par un fichier dont le rôle est justement
+   d'être lu par des robots.
+
+   Deuxième défaut, dans le même fichier : cette URL répond 301 vers
+   l'accueil (durcissement anti-énumération d'auteur, lae-hardening.php).
+   Un sitemap ne doit contenir que des URL canoniques répondant 200 ;
+   Search Console remonte « URL soumise avec redirection » à chaque
+   passage. Le durcissement était donc contourné par le sitemap, qui
+   publiait l'URL que le durcissement s'employait à fermer.
+
+   Ce site n'a qu'un auteur et n'affiche aucune page d'auteur : le
+   fournisseur entier est retiré.
+
+   ATTENTION, CE CORRECTIF NE SUFFIT PAS SEUL : l'adresse reste
+   dérivable du `user_nicename` en base. Il faut aussi renommer ce
+   champ côté WordPress — signalé à Fabrice, ça ne se fait pas depuis
+   le thème.
+   ═══════════════════════════════════════════════════════════════════ */
+add_filter( 'wp_sitemaps_add_provider', function ( $fournisseur, $nom ) {
+	return ( 'users' === $nom ) ? false : $fournisseur;
+}, 10, 2 );
+
+/* La catégorie « Uncategorized » duplique /conseils/ à l'identique —
+   mêmes trois articles, aucun lien entrant. Elle n'a rien à indexer de
+   propre, et elle concurrence la page qu'on veut positionner. */
+add_filter( 'wp_sitemaps_taxonomies', function ( $taxonomies ) {
+	unset( $taxonomies['category'] );
+	return $taxonomies;
+} );
+
+/* Les archives /prestations/ et /realisations/ sont les deux pages
+   commerciales du site, et WordPress ne les met JAMAIS au sitemap : son
+   fournisseur n'énumère que les fiches, jamais leur archive. Constaté
+   le 14/09, les deux URL étaient absentes des huit sous-sitemaps. On
+   les ajoute en tête de leur propre type, avec la date de la fiche la
+   plus récemment modifiée pour `lastmod`. */
+add_filter( 'wp_sitemaps_posts_url_list', function ( $liste, $type, $page ) {
+	if ( 1 !== (int) $page ) {
+		return $liste;
+	}
+	if ( ! in_array( $type, array( 'lae_prestation', 'lae_realisation' ), true ) ) {
+		return $liste;
+	}
+	$archive = get_post_type_archive_link( $type );
+	if ( ! $archive ) {
+		return $liste;
+	}
+	$entree  = array( 'loc' => $archive );
+	$dernier = get_posts( array(
+		'post_type'      => $type,
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'orderby'        => 'modified',
+		'order'          => 'DESC',
+		'fields'         => 'ids',
+	) );
+	if ( $dernier ) {
+		$entree['lastmod'] = get_post_modified_time( DATE_W3C, true, $dernier[0] );
+	}
+	array_unshift( $liste, $entree );
+	return $liste;
+}, 10, 3 );
+
+/* Les archives de familles (/famille/arbre/…) et la catégorie par
+   défaut ne reçoivent AUCUN lien interne — vérifié sur les dix-huit
+   pages du site — et leur contenu est celui de /prestations/ et de
+   /conseils/. Laissées indexables, elles consomment du budget de crawl
+   et concurrencent les pages qu'on veut positionner. On les ferme à
+   l'indexation tout en laissant suivre les liens. */
+add_filter( 'wp_robots', function ( $robots ) {
+	if ( is_tax( 'lae_famille' ) || is_category() ) {
+		$robots['noindex'] = true;
+		$robots['follow']  = true;
+	}
+	return $robots;
+}, 11 );
+
 /* ---- 5. Nettoyage du <head> ----
  * Balises héritées, sans usage aujourd'hui, qui alourdissent chaque page. */
 remove_action( 'wp_head', 'wp_shortlink_wp_head' );

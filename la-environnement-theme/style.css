@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.27.1
+Version: 1.28.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -1827,4 +1827,54 @@ ul, ol { padding-left: 1.25em; }
 	   suivant : on ne savait plus à qui elle appartenait. En tête, chaque
 	   chapitre se lit comme une carte — photo, numéro, titre, texte. */
 	.lae-chapitre__media { order: -1; aspect-ratio: auto; height: 170px; }
+}
+
+/* ==========================================================================
+   18. La suite d'un article
+   Les trois articles ne contenaient AUCUN lien — ni vers une prestation, ni
+   vers les urgences, ni entre eux. Quelqu'un arrivé de Google sur « distance
+   de plantation arbre voisin » lisait une réponse juste, puis n'avait nulle
+   part où aller. C'est pourtant exactement quelqu'un qui a un arbre qui pose
+   problème.
+
+   Les chemins sont posés AUTOUR du texte, jamais dedans : les articles
+   appartiennent au client, et y injecter des liens par programme reviendrait
+   à réécrire son contenu dans son dos.
+   ========================================================================== */
+
+.lae-suite {
+	background: var(--lae-fond-doux);
+	border-top: 1px solid var(--lae-trait);
+}
+.lae-suite__t {
+	margin: 0 0 6px;
+	font-size: var(--lae-t-xl);
+}
+.lae-suite__t + .lae-suite__liste { margin-top: 14px; }
+.lae-suite__p { margin: 0; color: var(--lae-doux); }
+.lae-suite__liste {
+	list-style: none;
+	margin: 14px 0 34px;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+.lae-suite__liste:last-child { margin-bottom: 0; }
+.lae-suite__liste a {
+	display: inline-block;
+	padding: 10px 18px;
+	border-radius: 100px;
+	border: 1px solid var(--lae-trait-fort);
+	background: var(--lae-blanc);
+	color: var(--lae-encre-2);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: var(--lae-t-sm);
+	transition: border-color var(--lae-transition), color var(--lae-transition);
+}
+.lae-suite__liste a:hover,
+.lae-suite__liste a:focus {
+	border-color: var(--lae-accent);
+	color: var(--lae-accent-fonce);
 }
