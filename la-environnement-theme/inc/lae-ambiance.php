@@ -124,9 +124,34 @@ function lae_ambiance_hero() {
 		return file_exists( get_template_directory() . $rel ) ? $dir . $rel : '';
 	};
 
+	/* LA SAISON CHOISIT LA FAMILLE DE PHOTOS, L'HEURE CHOISIT LAQUELLE.
+	   Le jeu livré est automnal ; une famille saisonnière se greffe dessus
+	   en nommant les fichiers `sous-bois-<famille>-<moment>.webp`. Ce qui
+	   manque retombe sur le jeu par défaut, fichier par fichier — on peut
+	   donc ajouter UNE photo à la fois sans rien casser.
+
+	   Le printemps partage la famille de l'été : un feuillage vert est un
+	   feuillage vert, et c'est la teinte de saison (style.css section 16)
+	   qui distingue avril de juillet. L'hiver reste sur le jeu par défaut,
+	   faute de photo de saison froide — sa teinte bleue fait le travail.
+
+	   La saison se décide ICI, côté serveur, et c'est possible parce
+	   qu'elle ne change que quatre fois par an : le cache de 5 minutes la
+	   digère. L'heure, elle, ne peut pas — voir l'en-tête du fichier. */
+	$famille = '';
+	$saison  = lae_saison();
+	if ( 'ete' === $saison || 'printemps' === $saison ) {
+		$famille = 'ete-';
+	}
+
+	$photo = function ( $moment ) use ( $fichier, $famille ) {
+		$saisonnier = $famille ? $fichier( 'sous-bois-' . $famille . $moment ) : '';
+		return $saisonnier ? $saisonnier : $fichier( 'sous-bois-' . $moment );
+	};
+
 	$jour = lae_reglage( 'hero_image' );
 	if ( '' === $jour ) {
-		$jour = $fichier( 'sous-bois-jour' );
+		$jour = $photo( 'jour' );
 	}
 	if ( '' === $jour ) {
 		// Dernier repli : une vraie photo de chantier de l'entreprise.
@@ -135,8 +160,8 @@ function lae_ambiance_hero() {
 
 	/* Repli sur le jour, jamais sur rien : un bandeau vide serait pire
 	   qu'un bandeau qui ne change pas d'heure. */
-	$crep = $fichier( 'sous-bois-crepuscule' );
-	$nuit = $fichier( 'sous-bois-nuit' );
+	$crep = $photo( 'crepuscule' );
+	$nuit = $photo( 'nuit' );
 
 	return array(
 		'jour'       => $jour,

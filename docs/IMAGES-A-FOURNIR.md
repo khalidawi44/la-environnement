@@ -77,7 +77,19 @@ visiteurs sur la page.
 
 ## B. Images d'ambiance — générées, aucun problème
 
-### B1. Le sous-bois en version ÉTÉ — priorité
+### B1. Le sous-bois en version ÉTÉ — ✅ le JOUR est fait, il manque 2 photos
+
+**Reçue et installée le 14/09 : la version JOUR** (1672 × 941, aucune marque,
+aucun agrandissement nécessaire). Le site l'utilise déjà en été ET au
+printemps — un feuillage vert est un feuillage vert, c'est la teinte de saison
+qui distingue avril de juillet.
+
+**Il manque le CRÉPUSCULE et la NUIT en version verte.** En attendant, un
+visiteur qui ouvre le site un soir de juillet voit la forêt d'automne : le
+mécanisme retombe photo par photo sur le jeu par défaut, ce qui ne casse
+rien mais se remarque. Les deux prompts sont ci-dessous.
+
+
 
 Le site change d'apparence selon l'heure et la saison. Les trois photos
 fournies le 14/09 sont **automnales** : en juin, le site affiche donc une
