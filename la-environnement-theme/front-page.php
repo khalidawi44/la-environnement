@@ -28,6 +28,16 @@ $dir = get_template_directory_uri();
 
 /* Médias (personnalisateur). Chaque champ vide laisse le dégradé CSS en place. */
 $lae_hero_img   = lae_reglage( 'hero_image' );
+if ( '' === $lae_hero_img ) {
+	/* LE PREMIER ÉCRAN N'AVAIT AUCUNE PHOTO. Relevé le 14/09 : ce réglage
+	   était lu ici puis jamais utilisé, et le balisage `.hero__bg` n'a jamais
+	   été écrit alors que son CSS existe depuis le début (lignes 110-111).
+	   Le bandeau d'accueil montrait donc la colonne de fond — la canopée en
+	   vidéo, générique — au lieu du métier. Sur la page la plus vue du site.
+	   On sert la photo la plus parlante du fonds : un grimpeur en réduction
+	   de couronne, ciel dégagé. Verticale, donc juste sur téléphone. */
+	$lae_hero_img = $dir . '/assets/images/chantiers/reduction-couronne-grimpeur.webp';
+}
 $lae_hero_video = lae_reglage( 'cine_video' );
 $lae_hero_post  = lae_reglage( 'cine_poster' );
 $lae_tab_img    = lae_reglage( 'cine_tab_image' );
@@ -857,6 +867,12 @@ if ( '' === $lae_col_arbre ) {
 </script>
 
 <section class="hero" id="top">
+  <?php if ( $lae_hero_img ) : ?>
+    <?php /* Décorative : le titre juste en dessous porte le sens. */ ?>
+    <div class="hero__bg" aria-hidden="true">
+      <?php echo lae_img( $lae_hero_img, '', array( 'loading' => '', 'fetchpriority' => 'high' ) ); ?>
+    </div>
+  <?php endif; ?>
   <div class="hero__veil"></div>
 
   <div class="hero__in wrap">
