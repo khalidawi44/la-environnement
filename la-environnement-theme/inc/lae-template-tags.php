@@ -85,6 +85,33 @@ if ( ! function_exists( 'lae_reglage' ) ) {
 	}
 }
 
+/**
+ * Numéro de téléphone au format international E.164, pour le balisage.
+ *
+ * « 07 59 79 03 96 » se lit bien pour un humain, mais Google et les
+ * assistants vocaux réconcilient une fiche d'établissement sur un numéro
+ * international. Un 0 initial français devient +33. L'affichage du site
+ * n'est pas touché : cette forme ne sert qu'aux données structurées.
+ *
+ * @param string $tel Numéro tel que saisi.
+ * @return string +33XXXXXXXXX, ou le numéro nettoyé si la forme est inconnue.
+ */
+if ( ! function_exists( 'lae_tel_e164' ) ) {
+	function lae_tel_e164( $tel ) {
+		$brut = preg_replace( '/[^0-9+]/', '', (string) $tel );
+		if ( '' === $brut ) {
+			return '';
+		}
+		if ( 0 === strpos( $brut, '+' ) ) {
+			return $brut;
+		}
+		if ( 10 === strlen( $brut ) && '0' === $brut[0] ) {
+			return '+33' . substr( $brut, 1 );
+		}
+		return $brut;
+	}
+}
+
 /** Numéro de téléphone au format lien tel: (chiffres et + uniquement). */
 if ( ! function_exists( 'lae_tel_lien' ) ) {
 	function lae_tel_lien() {

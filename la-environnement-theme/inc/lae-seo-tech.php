@@ -191,6 +191,36 @@ add_filter( 'wp_robots', function ( $robots ) {
 	return $robots;
 }, 11 );
 
+/* ═══════════════════════════════════════════════════════════════════
+   VÉRIFICATION GOOGLE SEARCH CONSOLE
+
+   Pour prouver à Google qu'on est propriétaire du site, la méthode la
+   plus simple est une balise `<meta>` dans le <head>. Le champ se
+   remplit dans le personnalisateur (« Référencement »), sans toucher au
+   code ni téléverser de fichier à la racine — un fichier serait écrasé
+   à la prochaine synchro du thème.
+
+   On accepte la balise ENTIÈRE collée depuis Google autant que le seul
+   jeton : quelqu'un qui copie l'écran de Google colle
+   `<meta name="google-site-verification" content="abc..." />`, et ça
+   doit marcher aussi. Champ vide = aucune balise émise.
+   ═══════════════════════════════════════════════════════════════════ */
+add_action( 'wp_head', function () {
+	$brut = function_exists( 'lae_reglage' ) ? (string) lae_reglage( 'google_verification' ) : '';
+	if ( '' === trim( $brut ) ) {
+		return;
+	}
+	/* Si c'est une balise complète, on n'en garde que le jeton. */
+	if ( preg_match( '/content=["\']([^"\']+)["\']/', $brut, $m ) ) {
+		$brut = $m[1];
+	}
+	$jeton = preg_replace( '/[^A-Za-z0-9_\-]/', '', $brut );
+	if ( '' === $jeton ) {
+		return;
+	}
+	printf( '<meta name="google-site-verification" content="%s">' . "\n", esc_attr( $jeton ) );
+}, 2 );
+
 /* ---- 5. Nettoyage du <head> ----
  * Balises héritées, sans usage aujourd'hui, qui alourdissent chaque page. */
 remove_action( 'wp_head', 'wp_shortlink_wp_head' );

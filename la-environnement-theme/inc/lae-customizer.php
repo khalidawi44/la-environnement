@@ -112,6 +112,22 @@ add_action( 'customize_register', function ( $wp_customize ) {
 	$ajoute( 'lae_siret', array( 'label' => 'Mention légale de pied de page', 'section' => 'lae_coordonnees', 'description' => 'Exemple : SIRET, numéro d\'assurance décennale. Affiché tel quel.' ) );
 	$ajoute( 'lae_url_contact', array( 'label' => 'URL de la page contact', 'section' => 'lae_coordonnees', 'sanitize' => 'esc_url_raw', 'description' => 'Vide = la page dont l\'adresse se termine par /contact est utilisée automatiquement.' ) );
 
+	// ── Référencement ───────────────────────────────────────────────────
+	$wp_customize->add_section( 'lae_seo', array(
+		'title'       => 'Référencement (Google)',
+		'panel'       => $panneau,
+		'description' => 'Le strict nécessaire. Les titres et descriptions des pages sont écrits dans le thème : '
+			. 'ils ne se règlent pas ici, pour qu\'ils restent mesurés et cohérents entre eux.',
+	) );
+
+	$ajoute( 'lae_google_verification', array(
+		'label'       => 'Vérification Google Search Console',
+		'section'     => 'lae_seo',
+		'description' => 'Collez ici le code donné par Google (méthode « balise HTML »). '
+			. 'La balise entière fonctionne aussi bien que le code seul. '
+			. 'Vide = aucune balise ajoutée.',
+	) );
+
 	// ── Mentions légales : les trois manques ────────────────────────────
 	/* Ces champs ne servent qu'aux mentions légales, et remplir l'un d'eux
 	   RÉÉCRIT la page mentions-legales — mais seulement si personne ne l'a

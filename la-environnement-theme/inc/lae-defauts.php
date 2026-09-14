@@ -112,6 +112,10 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			   C'est pourtant l'argument qui distingue un artisan joignable
 			   la nuit d'une entreprise en horaires de bureau. */
 			'horaires'             => "Lundi au samedi : 8 h – 19 h\nUrgences : 24 h/24, 7 j/7, dimanches et jours fériés compris",
+			/* Jeton de vérification Google Search Console. Vide tant que
+			   Fabrice n'a pas créé la propriété — et une balise vide ne
+			   s'émet pas. */
+			'google_verification'  => '',
 			'zone_titre'           => 'Zone d\'intervention',
 			'zone_texte'           => 'Basé à Vertou, au sud-est de Nantes, et on se déplace dans toute la Loire-Atlantique. On vient voir l\'arbre ou le terrain avant tout devis — dites-nous où vous êtes.',
 			/* LES COMMUNES NOMMÉES — ajoutées le 14/09 après audit SEO.
