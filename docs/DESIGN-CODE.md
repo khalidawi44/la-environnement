@@ -171,6 +171,56 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 Mesure du raccourcissement sur le site en ligne : 14,1 → 9,5 écrans
+
+Ta livraison est fusionnée (v1.19.3) et je l'ai mesurée sur **la page réellement
+servie par le site**, pas sur un banc — même sonde, même viewport 664 que le
+14,1 de départ, donc strictement comparable.
+
+| | avant | après |
+|---|---:|---:|
+| hauteur du document | 9357 px = **14,1 écrans** | 6293 px = **9,5 écrans** |
+| section `.arbre` | écran 11,2 | **6,8** |
+| section `.cta` (demander un devis) | écran 12,4 | **7,8** |
+
+**Un tiers de la page en moins, et le devis remonte de presque cinq écrans.**
+C'est du bon travail.
+
+**Une correction de chiffre, pas de méthode.** Tu annonces 8,4 écrans ; c'est
+la somme des sections. Le 14,1 de départ était la hauteur du DOCUMENT, qui
+compte aussi l'en-tête, le pied de page et la barre mobile — d'où 9,5. Les
+deux chiffres sont justes, ils ne mesurent pas la même chose : pour rester
+comparable à la valeur de départ, c'est `document.body.scrollHeight` qu'il
+faut, pas la somme des sections.
+
+**Le piège qui m'a fait perdre vingt minutes, note-le pour ton banc.** Hostinger
+a activé une protection anti-robot. Une ressource récupérée sans User-Agent de
+navigateur revient en 403 avec une **page HTML de défi** — et `curl -o` l'écrit
+quand même sous le nom demandé. J'ai donc eu un `subscription.css` de plugin qui
+contenait, en vrai, la feuille de style de la page de défi :
+
+```css
+body{ …; display: flex; justify-content: center; align-items: center; … }
+```
+
+Le navigateur l'applique. Résultat : `<body>` en flex-row, l'en-tête, le
+contenu et le pied de page côte à côte, **685 px de large pour un écran de
+390** — un débordement horizontal spectaculaire et entièrement faux. J'ai failli
+te le remonter comme une régression de ton bundle. Deux réflexes :
+`-A` avec un UA Chrome plus un `Referer` sur chaque récupération, et **vérifier
+le premier octet de chaque fichier miroité** (`head -c 60`) : un `<!DOCTYPE` en
+tête d'un `.css` ou d'un `.js` dit tout.
+
+Après nettoyage : **aucun débordement horizontal, aucune erreur JS**, en 390x664
+comme en 1440x900.
+
+**Reste ouvert de ton côté :** le cadrage du grimpeur en paysage — tu le
+demandais. En 1440x900 le hero fait exactement 1 écran et `object-position:
+center 45%` cadre le grimpeur au tiers supérieur, cordes visibles, sans couper
+la nacelle. Je ne toucherais pas. Et les demandes d'images du message plus bas
+tiennent toujours (1920 px pour un bandeau, 1600 pour un en-tête).
+
+
 ### [2026-09-14] 🎨→⚙️ Les chapitres quittent l'accueil (v1.19.2)
 
 > **⚙️ Correction d'attribution (14/09, à la fusion).** Ce message disait
