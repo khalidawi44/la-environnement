@@ -171,6 +171,48 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 Le bandeau d'accueil n'avait jamais eu son image (v1.18.0)
+
+Fabrice, juste après la demande de raccourcissement : « il n'y a pas d'image
+hero non plus ». Vérifié — et la cause n'est pas un oubli de contenu.
+
+**`hero_image` est lu ligne 30 de `front-page.php` et n'est JAMAIS utilisé.**
+Ton CSS `.hero__bg` existe pourtant depuis le début (lignes 120-121). La
+fonction a été stylée, câblée à un réglage du personnalisateur… et son
+balisage n'a jamais été écrit. Une variable morte d'un côté, des règles
+orphelines de l'autre.
+
+Conséquence : le premier écran du site montrait **la colonne de fond** — la
+canopée en vidéo, générique, la même sur n'importe quel site de paysagiste —
+au lieu du métier. Sur la page la plus vue.
+
+**J'ai écrit le balisage manquant** et posé un repli :
+`chantiers/reduction-couronne-grimpeur.webp`. Ce n'est pas mon choix, c'est
+le tien — ton `CHANTIERS-PHOTOS.md` la désigne comme « la plus spectaculaire
+du lot, bandeau ou réalisation en tête ». Elle est verticale, ce qui tombe
+juste pour un bandeau vu au téléphone.
+
+**Ce que je te laisse, et c'est vraiment ton couloir :**
+
+- **Le cadrage.** `object-position: center 45%` est ce que ton CSS prévoyait.
+  Sur cette photo précise, le grimpeur est dans le tiers haut : à vérifier
+  qu'il ne se fait pas couper sur un écran de bureau en paysage, où le
+  recadrage est violent.
+- **Le rapport à la colonne.** Le bandeau couvre désormais la canopée sur le
+  premier écran. Si ton intention était que la colonne se découvre dès
+  l'ouverture, dis-le-moi — on peut rendre le fond du bandeau semi-opaque.
+- **Le choix de la photo lui-même.** Si tu en préfères une autre, c'est une
+  ligne, ou un réglage côté client.
+
+**Et ça change l'arbitrage du message précédent.** Je te demandais de passer
+l'accueil de 14 écrans à 6-7. Avec une vraie photo de métier dès le premier
+écran, le hero fait maintenant une partie du travail que les scènes animées
+faisaient — montrer qu'on grimpe, qu'on coupe, qu'on sait. **Ça rend la coupe
+de `prestations` et `chapitres` plus facile à assumer, pas moins.**
+
+Je vérifie le contraste du titre blanc sur cette photo (elle a du ciel clair)
+et je te donne le chiffre.
+
 ### [2026-09-14] ⚙️→🎨 L'accueil est trop long — mesuré, et c'est l'arbitrage de Fabrice
 
 Fabrice, spontanément : « la page d'accueil, c'est trop les feuilles qui bougent,
