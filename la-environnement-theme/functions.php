@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LAE_VERSION', '1.26.1' );
+define( 'LAE_VERSION', '1.27.0' );
 
 /** Supports WordPress de base. */
 add_action( 'after_setup_theme', function () {
@@ -78,6 +78,7 @@ require_once get_template_directory() . '/inc/lae-template-tags.php';
 require_once get_template_directory() . '/inc/lae-customizer.php';
 require_once get_template_directory() . '/inc/lae-cpt.php';
 require_once get_template_directory() . '/inc/lae-seo.php';
+require_once get_template_directory() . '/inc/lae-seo-pages.php';
 require_once get_template_directory() . '/inc/lae-amorce.php';
 require_once get_template_directory() . '/inc/lae-contact.php';
 

@@ -76,23 +76,71 @@ function lae_partage_dimensions( $url ) {
  * d'environ 170 caractères — la bonne longueur pour un extrait de résultat.
  */
 function lae_partage_description() {
-	if ( ( is_front_page() || is_home() ) && function_exists( 'lae_reglage' ) ) {
+
+	/* D'ABORD LA DESCRIPTION ÉCRITE, s'il y en a une pour cette page.
+	   Audit du 14/09 : cinq descriptions sur neuf étaient des troncatures
+	   automatiques à 200 caractères, coupées en plein mot — « …d'une
+	   mauvaise inter… », « …par un f… », « …Le tarif es… » — et deux
+	   paires de pages partageaient la même au caractère près. Une
+	   description rédigée bat toujours un extrait découpé à la hache.
+	   Voir inc/lae-seo-pages.php. */
+	if ( function_exists( 'lae_seo_page' ) ) {
+		$ecrite = lae_seo_page();
+		if ( ! empty( $ecrite['desc'] ) ) {
+			return $ecrite['desc'];
+		}
+	}
+
+	/* L'accueil, et LUI SEUL. `is_home()` était traité avec
+	   `is_front_page()` : avec une page d'accueil statique, la page des
+	   articles est `is_home()` — /conseils/ héritait donc mot pour mot de
+	   la description de l'accueil, et de son URL de partage. Deux pages
+	   indexées avec la même description, et un partage de /conseils/ qui
+	   renvoyait vers l'accueil. */
+	if ( is_front_page() && function_exists( 'lae_reglage' ) ) {
 		$chapo = lae_reglage( 'hero_chapo' );
 		if ( is_string( $chapo ) && '' !== trim( $chapo ) ) {
-			$chapo = trim( preg_replace( '/\s+/', ' ', wp_strip_all_tags( $chapo ) ) );
-			if ( '' !== $chapo ) return wp_html_excerpt( $chapo, 200, '…' );
+			$chapo = lae_partage_texte( $chapo );
+			if ( '' !== $chapo ) return wp_html_excerpt( $chapo, 155, '…' );
 		}
 	}
 	if ( is_singular() ) {
 		$p = get_post();
 		if ( $p ) {
-			$txt = $p->post_excerpt ? $p->post_excerpt : wp_strip_all_tags( (string) $p->post_content );
-			$txt = trim( preg_replace( '/\s+/', ' ', $txt ) );
-			if ( '' !== $txt ) return wp_html_excerpt( $txt, 200, '…' );
+			$txt = $p->post_excerpt ? $p->post_excerpt : (string) $p->post_content;
+			$txt = lae_partage_texte( $txt );
+			if ( '' !== $txt ) return wp_html_excerpt( $txt, 155, '…' );
 		}
 	}
 	$d = get_bloginfo( 'description', 'display' );
 	return $d ? $d : '';
+}
+
+/**
+ * Réduit un contenu WordPress à du texte lisible dans un résultat Google.
+ *
+ * DEUX DÉFAUTS CORRIGÉS ICI, tous deux visibles en ligne le 14/09.
+ *
+ * 1. LE SHORTCODE PARTAIT BRUT. La page contact servait
+ *    `content="… c'est là que le devis se fait. [lae_contact]"` — dans la
+ *    balise description ET dans l'Open Graph. `wp_strip_all_tags()`
+ *    retire les balises, pas les crochets.
+ *
+ * 2. LES MOTS SE SOUDAIENT. `wp_strip_all_tags()` supprime `</p>` et
+ *    `<br>` sans rien mettre à la place : les mentions légales servaient
+ *    « …(EI)Exerçant sous le nom commercial L.A Environnement554 route de
+ *    Clisson44120 VertouSIRET… ». On remplace donc les balises de bloc
+ *    par une espace AVANT de dépouiller.
+ *
+ * @param string $html Contenu brut.
+ * @return string Texte propre, espaces normalisés.
+ */
+function lae_partage_texte( $html ) {
+	$txt = strip_shortcodes( (string) $html );
+	$txt = preg_replace( '#<(?:/p|/h[1-6]|/li|/div|br\s*/?|/tr)\s*>#i', ' ', $txt );
+	$txt = wp_strip_all_tags( $txt );
+	$txt = html_entity_decode( $txt, ENT_QUOTES, 'UTF-8' );
+	return trim( preg_replace( '/\s+/u', ' ', $txt ) );
 }
 
 add_action( 'wp_head', function () {
@@ -105,17 +153,38 @@ add_action( 'wp_head', function () {
 
 	$titre = wp_get_document_title();
 	$desc  = lae_partage_description();
-	$url   = home_url( add_query_arg( array() ) );
+	/* L'URL DE PARTAGE, SANS PARAMÈTRE. `home_url( add_query_arg( array() ) )`
+	   réinjectait la chaîne de requête entière : un lien partagé depuis
+	   Facebook (?fbclid=…) ou une campagne (?utm_source=…) produisait autant
+	   d'objets sociaux distincts, et autant de signaux d'URL contradictoires.
+	   Constaté en ligne le 14/09 sur les archives, qui n'ont en plus aucune
+	   balise canonique pour rattraper le coup. */
+	$url = home_url( '/' );
 	if ( is_singular() ) {
 		$permalien = get_permalink();
 		if ( $permalien ) $url = $permalien;
-	} elseif ( is_front_page() || is_home() ) {
-		$url = home_url( '/' );
+	} elseif ( is_home() && ! is_front_page() ) {
+		$page = get_option( 'page_for_posts' );
+		$lien = $page ? get_permalink( (int) $page ) : '';
+		if ( $lien ) $url = $lien;
+	} elseif ( is_post_type_archive() ) {
+		$type = get_query_var( 'post_type' );
+		$lien = get_post_type_archive_link( is_array( $type ) ? reset( $type ) : $type );
+		if ( $lien ) $url = $lien;
+	} elseif ( is_tax() || is_category() || is_tag() ) {
+		$terme = get_queried_object();
+		if ( $terme && ! is_wp_error( $terme ) && isset( $terme->term_id ) ) {
+			$lien = get_term_link( $terme );
+			if ( ! is_wp_error( $lien ) ) $url = $lien;
+		}
 	}
 	$img = lae_partage_image();
 
 	echo "\n<!-- Partage (LAE) -->\n";
-	printf( '<meta property="og:type" content="%s">' . "\n", is_singular() && ! is_front_page() ? 'article' : 'website' );
+	/* `is_singular()` déclarait « article » les mentions légales, les
+	   tarifs, les urgences, le contact et la page à propos. Seul un
+	   article de blog en est un. */
+	printf( '<meta property="og:type" content="%s">' . "\n", is_singular( 'post' ) ? 'article' : 'website' );
 	printf( '<meta property="og:site_name" content="%s">' . "\n", esc_attr( get_bloginfo( 'name' ) ) );
 	printf( '<meta property="og:locale" content="%s">' . "\n", esc_attr( str_replace( '-', '_', get_bloginfo( 'language' ) ) ) );
 	printf( '<meta property="og:title" content="%s">' . "\n", esc_attr( $titre ) );

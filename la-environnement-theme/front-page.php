@@ -879,6 +879,39 @@ $lae_contact    = lae_url_contact();
      on la montre. Les règles de fond sont écrites plus bas, avec les URL,
      parce qu'elles dépendent du personnalisateur. */
 
+  /* ---------- ZONE D'INTERVENTION ----------
+     Ajoutée le 14/09 après audit SEO. Le constat qui l'a motivée est
+     mesuré, pas supposé : « Vertou » apparaissait ZÉRO fois dans le corps
+     des neuf pages du site — y compris dans les 2 747 mots de cette
+     page-ci — et « Loire-Atlantique » n'existait que dans les données
+     structurées. Sur un domaine qui s'appelle elagage-vertou.fr, le site
+     ne disait nulle part où il travaille. Un habitant de Rezé ne pouvait
+     pas savoir qu'on se déplace chez lui, et Google n'avait rien à lire.
+
+     Une section existait déjà (template-parts/section-zone.php), écrite et
+     stylée — mais appelée par aucun gabarit en service, et bâtie autour
+     d'un pictogramme de carte. Or Fabrice a demandé le 14/09 qu'il n'y ait
+     « pas d'icône de ce genre-là dans le site ». On ne la rebranche donc
+     pas : on écrit la section dans la matière de cet accueil, et les
+     communes portent l'information toutes seules.
+
+     Compacte à dessein : la page vient d'être ramenée de 14,1 à 9,5
+     écrans, il n'est pas question de la rallonger d'un écran pour ça. */
+  .zn{padding:clamp(44px,6vh,80px) 0;background:rgba(6,26,16,.55);
+    border-top:1px solid rgba(127,176,74,.16);border-bottom:1px solid rgba(127,176,74,.16)}
+  .zn__t{font-family:var(--serif);font-weight:500;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.1;margin:.3em 0 .5em}
+  .zn__p{color:var(--muted);font-size:1rem;line-height:1.7;max-width:62ch;margin:0}
+  .zn__villes{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+  .zn__villes li{padding:7px 14px;border-radius:100px;border:1px solid rgba(127,176,74,.3);
+    background:rgba(127,176,74,.08);color:#d5ded6;font-size:.85rem;line-height:1}
+  /* La commune du siège se détache : c'est celle du nom de domaine. */
+  .zn__villes li:first-child{border-color:rgba(127,176,74,.7);background:rgba(127,176,74,.18);color:var(--feuille-hi);font-weight:600}
+  @media(max-width:760px){
+    .zn{padding:34px 0}
+    .zn__villes{gap:6px}
+    .zn__villes li{padding:6px 11px;font-size:.78rem}
+  }
+
 </style>
 
 <script>
@@ -916,7 +949,15 @@ if ( '' === $lae_col_arbre ) {
   <?php endif; ?>
 
   <div class="lae-colonne__lueur"></div>
-  <div class="lae-colonne__arbre"><img src="<?php echo esc_url( $lae_col_arbre ); ?>" alt="" width="1200" height="6000" decoding="async" fetchpriority="low"></div>
+  <?php /* `loading="lazy"` ajouté le 14/09 après audit. Cette image fait
+          596 014 octets en 1200 x 6000 — c'est le plus gros fichier du site,
+          plus lourd que la photo du bandeau — et elle n'avait AUCUN attribut
+          `loading` : elle partait donc en chargement immédiat, en concurrence
+          de bande passante avec l'image que Google chronomètre (le bandeau,
+          404 ko), alors qu'elle est hors du premier écran et affichée sur
+          520 px de large au maximum. `fetchpriority="low"` baissait sa
+          priorité sans empêcher son téléchargement. */ ?>
+  <div class="lae-colonne__arbre"><img src="<?php echo esc_url( $lae_col_arbre ); ?>" alt="" width="1200" height="6000" loading="lazy" decoding="async" fetchpriority="low"></div>
   <div class="lae-colonne__voile"></div>
 </div>
 
@@ -1421,6 +1462,33 @@ if ( $lae_ar_titre || $lae_arbre_img ) : ?>
 $lae_cta_titre = lae_reglage( 'appel_titre', 'Un projet, un arbre à traiter ?' );
 $lae_cta_texte = lae_reglage( 'appel_texte' );
 if ( $lae_tel_lien || $lae_contact ) : ?>
+<?php
+/* La zone d'intervention, avant l'appel : on dit où on travaille juste
+   avant de demander d'appeler. Les communes viennent du réglage
+   `zone_communes` du personnalisateur — même source que le `areaServed`
+   des données structurées, donc le site et Google disent la même chose
+   sans qu'on ait à le maintenir à deux endroits. */
+$lae_zn_villes = lae_communes();
+$lae_zn_texte  = lae_reglage( 'zone_texte' );
+if ( $lae_zn_villes || $lae_zn_texte ) : ?>
+<section class="zn" id="zone" aria-labelledby="zone-t">
+  <div class="wrap">
+    <span class="eyebrow" data-rv>Où nous intervenons</span>
+    <h2 class="zn__t" id="zone-t" data-mots><?php echo esc_html( lae_reglage( 'zone_titre', 'Zone d\'intervention' ) ); ?></h2>
+    <?php if ( $lae_zn_texte ) : ?>
+      <p class="zn__p" data-txt><?php echo esc_html( $lae_zn_texte ); ?></p>
+    <?php endif; ?>
+    <?php if ( $lae_zn_villes ) : ?>
+      <ul class="zn__villes" data-rv>
+        <?php foreach ( $lae_zn_villes as $lae_zn_v ) : ?>
+          <li><?php echo esc_html( $lae_zn_v ); ?></li>
+        <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </div>
+</section>
+<?php endif; ?>
+
 <section class="cta wrap">
   <h2 class="stitle" data-mots><?php echo lae_titre_em( $lae_cta_titre ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h2>
   <?php if ( $lae_cta_texte ) : ?><p data-rv><?php echo esc_html( $lae_cta_texte ); ?></p><?php endif; ?>

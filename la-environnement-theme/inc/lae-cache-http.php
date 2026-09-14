@@ -52,7 +52,13 @@ add_action( 'send_headers', function () {
 add_action( 'send_headers', function () {
 	if ( is_admin() || headers_sent() ) return;
 	if ( is_user_logged_in() ) return;          // l'admin ne doit jamais être mis en cache
-	if ( is_feed() || is_robots() ) return;
+	/* `is_robots()` a été RETIRÉ de cette exclusion le 14/09. Le robots.txt
+	   sortait donc avec le TTL hérité du serveur — relevé en ligne :
+	   `x-litespeed-cache-control: public,max-age=604665`, soit sept jours.
+	   Une correction du robots.txt mettait une semaine à être vue de
+	   Googlebot : exactement le problème que ce fichier existe pour régler.
+	   Le flux RSS, lui, reste exclu : il porte ses propres en-têtes. */
+	if ( is_feed() ) return;
 
 	/*
 	 * max-age=0            : le navigateur revalide à chaque visite.

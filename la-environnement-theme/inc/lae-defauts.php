@@ -104,9 +104,37 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'etapes_titre'         => 'Comment ça se passe',
 			'realisations_titre'   => 'Des chantiers, *pas des images d\'agence*',
 			'realisations_chapo'   => 'Ce qu\'il y avait, ce qu\'on a fait, ce qu\'il en reste. Photos prises sur place.',
+			/* LES HORAIRES DU PIED DE PAGE. Le bloc existe dans footer.php
+			   et ne sortait JAMAIS : aucune valeur par défaut n'était
+			   fournie, donc `lae_lignes('horaires')` renvoyait un tableau
+			   vide sur les neuf pages. Le site déclarait l'astreinte 24 h/24
+			   à Google (openingHoursSpecification) et à personne d'autre.
+			   C'est pourtant l'argument qui distingue un artisan joignable
+			   la nuit d'une entreprise en horaires de bureau. */
+			'horaires'             => "Lundi au samedi : 8 h – 19 h\nUrgences : 24 h/24, 7 j/7, dimanches et jours fériés compris",
 			'zone_titre'           => 'Zone d\'intervention',
 			'zone_texte'           => 'Basé à Vertou, au sud-est de Nantes, et on se déplace dans toute la Loire-Atlantique. On vient voir l\'arbre ou le terrain avant tout devis — dites-nous où vous êtes.',
-			'zone_communes'        => 'Vertou',
+			/* LES COMMUNES NOMMÉES — ajoutées le 14/09 après audit SEO.
+			   Le site ne disait NULLE PART où il travaille : « Vertou »
+			   n'apparaissait 0 fois dans le corps des neuf pages, y compris
+			   dans les 2 747 mots de l'accueil, et « Loire-Atlantique »
+			   n'existait que dans les données structurées. Mesuré, pas
+			   supposé. Sur un domaine qui s'appelle elagage-vertou.fr, c'est
+			   le signal le plus facile à donner et il n'était donné nulle
+			   part.
+
+			   Ce sont les communes LIMITROPHES de Vertou, plus le Vignoble
+			   proche — un fait de géographie, vérifiable, et strictement
+			   plus étroit que ce que le site annonce déjà par ailleurs
+			   (« toute la Loire-Atlantique », zone_texte ci-dessus). On
+			   n'élargit donc aucune promesse : on nomme une partie de ce qui
+			   était déjà promis en bloc.
+
+			   À FAIRE CONFIRMER PAR ANTHONY : cette liste décrit une zone
+			   plausible à quinze minutes de son siège, pas une zone qu'il
+			   aurait validée commune par commune. S'il n'en dessert pas une,
+			   elle se retire en une saisie dans le personnalisateur. */
+			'zone_communes'        => 'Vertou, Saint-Sébastien-sur-Loire, Rezé, Basse-Goulaine, Haute-Goulaine, Les Sorinières, Nantes Sud, Saint-Julien-de-Concelles, Le Loroux-Bottereau, Château-Thébaud, La Haye-Fouassière, Pont-Saint-Martin, Clisson',
 			// Département couvert (info client du 13/09). Déclaré en zone
 			// administrative dans le JSON-LD : couvrir un département ne se dit
 			// pas en énumérant ses 207 communes, ça se dit en nommant le
