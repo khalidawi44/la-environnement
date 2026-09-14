@@ -842,7 +842,16 @@ add_action( 'customize_save_after', 'lae_mentions_maj', 20 );
 if ( ! function_exists( 'lae_prestations_photos' ) ) {
 	function lae_prestations_photos() {
 
-		if ( get_option( 'lae_prestations_photos_faites' ) ) {
+		/* Le verrou porte un NUMÉRO. La première attribution (14/09) avait
+		   choisi les photos sur leur nom de fichier ; rendues en vignette,
+		   deux cartes se sont révélées presque identiques — l'élagage en
+		   grimpe et le haubanage montraient la même scène sous un angle très
+		   proche — et trois autres étaient illisibles, trop sombres une fois
+		   recadrées en 800x600. Ce ne sont pas les mêmes fichiers, ce sont
+		   des prises différentes du même chantier : le nom ne le disait pas,
+		   seul le rendu l'a montré. D'où une seconde passe, et un numéro de
+		   verrou pour qu'il puisse y en avoir une troisième si besoin. */
+		if ( get_option( 'lae_prestations_photos_v2' ) ) {
 			return;
 		}
 		if ( ! function_exists( 'lae_chantier_importe_image' ) ) {
@@ -853,13 +862,31 @@ if ( ! function_exists( 'lae_prestations_photos' ) ) {
 		   de `lae_amorce_prestations()`, où le titre est la donnée de
 		   référence. Le slug, lui, est dérivé par WordPress et peut avoir été
 		   modifié à la main depuis. */
+		/* Choisies sur le RENDU en vignette, pas sur le nom de fichier :
+		   chaque photo doit se reconnaître en 800x600 recadré, et les six
+		   doivent se distinguer les unes des autres au premier coup d'œil.
+		   Le broyeur rouge dit « broyage » mieux qu'un tas de branches ;
+		   une pelouse tondue dit « entretien » mieux qu'une haie sombre ;
+		   et le grimpeur dans le grand arbre nu ne se confond pas avec le
+		   grimpeur dans le houppier vert. */
 		$carte = array(
-			'Élagage en grimpe'         => array( 'elagage-grimpe.webp',                 'Élagueur en grimpe dans un houppier' ),
-			'Abattage et démontage'     => array( 'chantiers/demontage-bouleau.webp',    'Démontage d\'un bouleau par tronçons' ),
-			'Haubanage et sécurisation' => array( 'chantiers/elagage-grimpe-cordes.webp','Travail à la corde dans un arbre' ),
-			'Création de jardin'        => array( 'jardin-piscine.webp',                 'Jardin créé et entretenu au bord d\'une piscine' ),
-			'Entretien de jardin'       => array( 'chantiers/haie-taillee-broyat.webp',  'Haie taillée, broyat laissé en paillage au pied' ),
-			'Évacuation et broyage'     => array( 'chantiers/dechets-verts-tas.webp',    'Tas de déchets verts prêt à être broyé' ),
+			'Élagage en grimpe'         => array( 'elagage-grimpe.webp',                        'Élagueur en grimpe dans un houppier' ),
+			'Abattage et démontage'     => array( 'abattage-troncs.webp',                       'Troncs abattus et débités le long d\'un mur' ),
+			'Haubanage et sécurisation' => array( 'chantiers/reduction-couronne-grimpeur.webp', 'Grimpeur en place dans un grand arbre, travail à la corde' ),
+			'Création de jardin'        => array( 'jardin-piscine.webp',                        'Jardin créé et entretenu au bord d\'une piscine' ),
+			'Entretien de jardin'       => array( 'pelouse-haie.webp',                          'Pelouse tondue le long d\'une haie taillée' ),
+			'Évacuation et broyage'     => array( 'broyage-chantier.webp',                      'Broyeur de végétaux en action sur un chantier' ),
+		);
+
+		/* Toutes les photos que le thème s'est déjà permis d'attribuer. Une
+		   vignette issue de cette liste est de NOTRE fait : on peut la
+		   remplacer. Tout le reste vient du client et ne se touche pas. */
+		$nos_photos = array(
+			'elagage-grimpe.webp', 'abattage-troncs.webp', 'jardin-piscine.webp',
+			'pelouse-haie.webp', 'broyage-chantier.webp',
+			'chantiers/demontage-bouleau.webp', 'chantiers/elagage-grimpe-cordes.webp',
+			'chantiers/haie-taillee-broyat.webp', 'chantiers/dechets-verts-tas.webp',
+			'chantiers/reduction-couronne-grimpeur.webp',
 		);
 
 		$posts = get_posts( array(
@@ -871,12 +898,19 @@ if ( ! function_exists( 'lae_prestations_photos' ) ) {
 			return;   // rien à illustrer : l'amorce n'a pas encore tourné
 		}
 
-		update_option( 'lae_prestations_photos_faites', 1 );   // verrou AVANT l'écriture
+		update_option( 'lae_prestations_photos_v2', 1 );   // verrou AVANT l'écriture
 
 		foreach ( $posts as $p ) {
-			// Une image posée à la main par le client ne se remplace jamais.
-			if ( has_post_thumbnail( $p->ID ) ) {
-				continue;
+			/* Une image posée à la main par le client ne se remplace jamais.
+			   Celles que le thème a attribuées, si : c'est tout l'objet de
+			   cette seconde passe. La distinction se lit sur la méta
+			   `_lae_source` de la pièce jointe, posée par l'importateur. */
+			$actuelle = get_post_thumbnail_id( $p->ID );
+			if ( $actuelle ) {
+				$source = get_post_meta( $actuelle, '_lae_source', true );
+				if ( ! $source || ! in_array( $source, $nos_photos, true ) ) {
+					continue;
+				}
 			}
 			$titre = trim( wp_strip_all_tags( $p->post_title ) );
 			if ( ! isset( $carte[ $titre ] ) ) {
