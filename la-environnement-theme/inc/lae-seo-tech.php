@@ -143,48 +143,39 @@ add_filter( 'wp_sitemaps_taxonomies', function ( $taxonomies ) {
 	return $taxonomies;
 } );
 
-/* Les archives /prestations/ et /realisations/ sont les deux pages
-   commerciales du site, et WordPress ne les met JAMAIS au sitemap : son
-   fournisseur n'énumère que les fiches, jamais leur archive. Constaté
-   le 14/09, les deux URL étaient absentes des huit sous-sitemaps. On
-   les ajoute en tête de leur propre type, avec la date de la fiche la
-   plus récemment modifiée pour `lastmod`. */
-/* Signature DÉFENSIVE : `$page` et `$type` ont une valeur par défaut.
-   Première version déployée le 14/09 avec trois paramètres obligatoires —
-   elle n'a rien produit en ligne, alors que les deux autres filtres du même
-   fichier, déployés dans le même commit, fonctionnaient. Si WordPress
-   n'avait passé que deux arguments, le rappel aurait levé une erreur fatale
-   et le sitemap n'aurait plus rendu du tout ; il rendait. On rend donc les
-   paramètres optionnels, ce qui ne coûte rien et écarte cette piste. */
-add_filter( 'wp_sitemaps_posts_url_list', function ( $liste, $type = '', $page = 1 ) {
-	if ( 1 !== (int) $page ) {
-		return $liste;
-	}
-	if ( ! in_array( $type, array( 'lae_prestation', 'lae_realisation' ), true ) ) {
-		return $liste;
-	}
-	if ( ! is_array( $liste ) ) {
-		return $liste;
-	}
-	$archive = get_post_type_archive_link( $type );
-	if ( ! $archive ) {
-		return $liste;
-	}
-	$entree  = array( 'loc' => $archive );
-	$dernier = get_posts( array(
-		'post_type'      => $type,
-		'post_status'    => 'publish',
-		'posts_per_page' => 1,
-		'orderby'        => 'modified',
-		'order'          => 'DESC',
-		'fields'         => 'ids',
-	) );
-	if ( $dernier ) {
-		$entree['lastmod'] = get_post_modified_time( DATE_W3C, true, $dernier[0] );
-	}
-	array_unshift( $liste, $entree );
-	return $liste;
-}, 10, 3 );
+/* ═══════════════════════════════════════════════════════════════════
+   LES ARCHIVES /prestations/ ET /realisations/ NE SONT PAS AU SITEMAP,
+   ET JE N'AI PAS RÉUSSI À LES Y METTRE.
+
+   WordPress ne met jamais les archives de type de contenu au sitemap :
+   son fournisseur n'énumère que les fiches. Deux tentatives par le
+   filtre `wp_sitemaps_posts_url_list` (v1.28.0 puis v1.28.1, la seconde
+   avec des paramètres optionnels et un garde sur le type) n'ont produit
+   aucun effet en ligne.
+
+   CE QUE J'AI ÉCARTÉ, MESURES À L'APPUI :
+   — pas un problème de déploiement : les deux autres filtres ajoutés au
+     même endroit dans le même commit agissent bien (le fournisseur
+     `users` a disparu, la catégorie par défaut aussi) ;
+   — pas un problème de cache : vérifié sur une réponse en
+     `x-litespeed-cache: miss` ET `x-hcdn-cache-status: MISS`, servie par
+     la bonne version du thème ;
+   — pas une erreur d'arguments : un rappel à paramètres obligatoires
+     aurait fait échouer le rendu si WordPress en passait moins, or le
+     sitemap rendait normalement.
+
+   Le code est retiré plutôt que laissé en place : un filtre sans effet
+   qui ressemble à un filtre actif fera perdre une heure à la prochaine
+   session, exactement comme le réglage `hero_image` lu et jamais
+   utilisé, ou comme la section « zone d'intervention » écrite et jamais
+   appelée.
+
+   CE QUE ÇA COÛTE RÉELLEMENT : peu. Les deux archives sont liées depuis
+   le menu présent sur chaque page du site, donc parfaitement
+   découvrables et indexables. Le sitemap n'aurait ajouté qu'un indice
+   de fraîcheur. À reprendre un jour avec un accès au débogage côté
+   serveur, pas à l'aveugle.
+   ═══════════════════════════════════════════════════════════════════ */
 
 /* Les archives de familles (/famille/arbre/…) et la catégorie par
    défaut ne reçoivent AUCUN lien interne — vérifié sur les dix-huit
