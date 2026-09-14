@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.27.0
+Version: 1.27.1
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -666,7 +666,11 @@ ul, ol { padding-left: 1.25em; }
 	place-items: center;
 	color: var(--lae-accent);
 }
-.lae-zone__carte svg { width: 60%; max-width: 260px; height: auto; opacity: .5; }
+/* La vignette porte désormais une photo, plus un pictogramme (14/09).
+   `min-height` cède la place à un ratio : une photo doit garder ses
+   proportions, pas remplir une boîte de hauteur imposée. */
+.lae-zone__carte { min-height: 0; aspect-ratio: 4 / 3; }
+.lae-zone__carte img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ==========================================================================
    11. Bande d'appel (devis)

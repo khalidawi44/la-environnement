@@ -32,9 +32,21 @@ $titre = lae_reglage( 'zone_titre', 'Zone d\'intervention' );
 					</ul>
 				<?php endif; ?>
 			</div>
-			<div class="lae-zone__carte" aria-hidden="true">
-				<?php echo lae_icone( 'lieu' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-			</div>
+			<?php
+			/* LE PICTOGRAMME DE CARTE A ÉTÉ RETIRÉ le 14/09 : « pas d'icône
+			   de ce genre-là dans le site » (Fabrice). À sa place, une vraie
+			   photo de chantier — c'est ce qu'il demandait, et c'est aussi
+			   plus utile : une épingle grise ne dit rien, un jardin entretenu
+			   dit ce qu'on vient faire chez vous. Choisie sur le RENDU et non
+			   sur le nom — première tentative avec la haie taillée, écartée
+			   après rendu : sombre et illisible à cette taille. */
+			$lae_zone_illu = get_template_directory() . '/assets/images/pelouse-haie.webp';
+			if ( file_exists( $lae_zone_illu ) ) : ?>
+				<div class="lae-zone__carte" aria-hidden="true">
+					<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/pelouse-haie.webp' ); ?>"
+					     alt="" loading="lazy" decoding="async" width="1200" height="900">
+				</div>
+			<?php endif; ?>
 		</div>
 	</div>
 </section>

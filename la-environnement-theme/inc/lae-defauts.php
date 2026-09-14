@@ -130,10 +130,17 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			   n'élargit donc aucune promesse : on nomme une partie de ce qui
 			   était déjà promis en bloc.
 
-			   À FAIRE CONFIRMER PAR ANTHONY : cette liste décrit une zone
-			   plausible à quinze minutes de son siège, pas une zone qu'il
-			   aurait validée commune par commune. S'il n'en dessert pas une,
-			   elle se retire en une saisie dans le personnalisateur. */
+			   VALIDÉE PAR FABRICE LE 14/09, la liste telle qu'elle est écrite
+			   ci-dessous. C'est SA validation, pas celle d'Anthony : la
+			   nuance compte, et on ne la maquillera pas en accord du client
+			   final. Si Anthony corrige un jour son périmètre, chaque commune
+			   se retire en une saisie dans le personnalisateur.
+
+			   « Nantes Sud » est volontairement un quartier et non la commune
+			   entière. C'est plus honnête — un artisan seul basé à Vertou ne
+			   couvre pas Nantes nord — et c'est plus gagnable : personne ne
+			   se bat sur « élagueur Nantes Sud », tout le monde se bat sur
+			   « élagueur Nantes ». */
 			'zone_communes'        => 'Vertou, Saint-Sébastien-sur-Loire, Rezé, Basse-Goulaine, Haute-Goulaine, Les Sorinières, Nantes Sud, Saint-Julien-de-Concelles, Le Loroux-Bottereau, Château-Thébaud, La Haye-Fouassière, Pont-Saint-Martin, Clisson',
 			// Département couvert (info client du 13/09). Déclaré en zone
 			// administrative dans le JSON-LD : couvrir un département ne se dit
