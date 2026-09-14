@@ -213,7 +213,11 @@ $lae_contact    = lae_url_contact();
      descend à 12,5 écrans et la part épinglée à 43 %. Les trois moments de
      la timeline — intro, offres, atelier — ont été vérifiés en capture : ils
      ont toujours la place de se lire. */
-  .ds{position:relative;height:380svh}
+  /* Raccourcissement du 14/09. La scène tenait 3 écrans sur 14 pour
+     présenter une liste que la page Prestations montre en une grille. C'est
+     le rapport effort/information le plus défavorable de l'accueil : on la
+     traverse deux fois plus vite, la timeline reste entière. */
+  .ds{position:relative;height:220svh}
   .ds__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   #cv{width:100%;height:100%;display:block}
   .ds__photo{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
@@ -411,19 +415,44 @@ $lae_contact    = lae_url_contact();
     .mq__in span{font-size:1.05rem}
 
     .tab{height:120svh}
-    /* la peinture est en 16/9 : on la montre entière, tableau puis légende */
+    /* Tranché le 14/09, contre mon propre commentaire d'origine. J'avais
+       écrit « la peinture est en 16/9 : on la montre entière » — c'était vrai
+       d'une peinture, pas d'une photo de chantier. Le broyeur et les troncs
+       ne perdent rien à être recadrés, et le 4/3 comble les 174 px de vide
+       que laissait le 16/9 dans une scène de 664. Recadrer plutôt que
+       raccourcir : la scène a déjà été réduite deux fois, l'écourter encore
+       la rendrait précipitée. */
     .tab__stick{display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,4svh,44px)}
-    .tab__img{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:16/9}
+    .tab__img{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:4/3}
     .tab__img img{object-fit:cover;height:100%;transform:none!important}
     .tab__veil{display:none}
     .tab__cap{align-self:auto;padding:0 20px}
     .tab__cap h2{font-size:clamp(1.7rem,7.4vw,2.4rem)}
     .tab__cap p{font-size:.95rem;margin-top:12px}
 
-    .chs{padding:44px 0}
-    .ch{grid-template-columns:1fr;margin-bottom:44px}
+    .chs{padding:34px 0}
+    /* Réalisations : la section pesait 2,5 écrans pour deux chantiers. Les
+       vignettes passent en 16/10 plus plat, le bloc respire moins, le contenu
+       ne change pas. */
+    .rz{padding:46px 0}
+    .rz__vue{aspect-ratio:16/9}
+    .rz__grid{gap:16px;margin:26px 0 22px}
+    .rz__body{padding:14px 16px 16px;gap:7px}
+    .rz__card h3{font-size:1.22rem}
+    .rz__card p{font-size:.88rem;line-height:1.5}
+    /* Sur téléphone chaque chapitre empilait une image 4/3 pleine largeur
+       au-dessus de son texte : trois écrans à eux trois. L'image passe en
+       bandeau large et le texte se resserre — le récit reste, la traversée
+       est deux fois plus courte. */
+    .ch{grid-template-columns:1fr;margin-bottom:30px}
     .ch:nth-child(even) .ch__txt{order:0}
-    .ch__media{aspect-ratio:4/3}
+    /* L'image de chapitre plafonne : en ratio libre elle mangeait la moitié
+       de l'écran à chaque chapitre. 150 px suffisent à reconnaître la scène
+       sans qu'elle prenne la place du texte. */
+    .ch__media{aspect-ratio:auto;height:150px}
+    .ch__media img{width:100%;height:100%;object-fit:cover}
+    .ch__t{font-size:clamp(1.45rem,5.4vw,1.9rem);margin:.15em 0 .35em}
+    .ch__p{font-size:.97rem;line-height:1.6}
     .ch__p{font-size:1rem}
     .ch__meta{gap:16px;font-size:.7rem}
 
@@ -437,7 +466,7 @@ $lae_contact    = lae_url_contact();
        Elles jaillissent désormais toutes les trois et RESTENT jusqu'à la
        sortie de la scène. Pour qu'elles tiennent dans le cadre, l'image du
        pack est masquée sur téléphone et remplacée par son contenu en texte. */
-    .ds{height:300svh}
+    .ds{height:170svh}
     #cv{display:none}
     .ds__photo{display:block}
     .ds__hand{left:0;right:0;margin:0 auto;top:2svh;width:min(96vw,440px)}
@@ -511,7 +540,7 @@ $lae_contact    = lae_url_contact();
     .av__grid{grid-template-columns:1fr;gap:14px}
     .rz__card h3{font-size:1.28rem}
 
-    .arbre{height:120svh}
+    .arbre{height:105svh}
     .arbre__img{width:min(86vw,400px)}
     .arbre__w{bottom:4vh;letter-spacing:.4em}
     .cta{padding:60px 0}

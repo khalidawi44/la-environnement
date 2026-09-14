@@ -219,6 +219,75 @@ qui renvoie un défi JavaScript en 403 sur les requêtes sans User-Agent de
 navigateur — pour vérifier le live, il faut désormais `-A` avec un UA
 Chrome et un `Referer`, sinon on mesure la page de défi et pas le site.
 
+### [2026-09-14] 🎨→⚙️ Raccourcissement : 14,1 → 10 écrans. La dernière marche n'est pas du CSS.
+
+Fait, mesuré à chaque étape sur iPhone 13 (viewport 664), avec ta sonde de
+hauteurs — que j'applique désormais systématiquement, et qui a servi ici à
+vérifier qu'aucune section n'avait déboîté.
+
+| Section | avant | après |
+|---|---:|---:|
+| `prestations` (.ds) | 3,0 | **1,7** |
+| `chapitres` (.chs) | 3,0 | **2,1** |
+| `realisations` (.rz) | 2,5 | **2,3** |
+| `devis` (.arbre) | 1,2 | **1,0** |
+| **TOTAL page** | **14,1** | **10,0** |
+
+**Ce que j'ai fait, et pourquoi ainsi.**
+
+`.ds` : 380 → 220svh au bureau, 300 → 170 sur téléphone. Tu avais raison sur le
+rapport effort/information — mais je n'ai pas supprimé la timeline. La scène
+est la seule démonstration animée du site, et c'est elle qui fait que la page
+tarifs peut s'appuyer sur une impression de travail d'agence. On la traverse
+deux fois plus vite, elle existe toujours.
+
+`.chs` : l'image de chapitre plafonne à 150 px au lieu d'occuper un ratio
+libre — elle mangeait la moitié de l'écran à chaque chapitre. Titre et
+interligne resserrés. Le texte est intact.
+
+`.rz` : vignettes en 16/9, respirations réduites. Aucun contenu retiré.
+
+**`.tab` : je tranche pour le recadrage 4/3, contre mon propre commentaire.**
+J'avais écrit « la peinture est en 16/9 : on la montre entière ». C'était vrai
+d'une peinture, pas d'une photo de chantier : le broyeur et les troncs ne
+perdent rien aux bords. Le 4/3 comble les 174 px de vide. Je n'ai pas raccourci
+la scène davantage — elle a déjà été réduite deux fois, l'écourter encore la
+rendrait précipitée.
+
+**Le hero illustré : oui, garde-le tel quel.** Ton repli est le bon, et non,
+je ne veux pas que la colonne se découvre dès l'ouverture — une photo de métier
+au premier écran vaut mieux qu'une canopée générique. Je vérifierai le cadrage
+du grimpeur en paysage quand j'aurai la main sur le rendu réel.
+
+---
+
+**Et maintenant la partie honnête : je ne peux pas descendre à 6-7 en CSS.**
+
+Ce qui reste se répartit en hero 1,0 + atouts 0,5 + bandeau 0,1 + chantiers 2,3
++ prestations 1,7 + épinglée 1,1 + chapitres 2,1 + devis 1,0 + appel 0,5. Il
+n'y a plus de gras : chaque section est au plancher de ce qu'on peut serrer
+sans que le texte devienne illisible ou que les photos deviennent des timbres.
+
+**Passer sous 8 écrans demande de retirer une section entière, et c'est une
+décision de contenu — pas de mise en page. Je ne la prends pas seul.**
+
+Ma candidate, si Fabrice tranche : **les chapitres** (2,1 écrans). Raison :
+« La cime — l'élagage en grimpe », « Le tronc — l'abattage maîtrisé », « Les
+racines — le jardin qui tient » disent la même chose que la scène des
+prestations juste au-dessus, en plus long. C'est le seul vrai doublon de
+l'accueil. La page tomberait à **7,9 écrans**, et le récit cime/tronc/racines
+pourrait vivre sur `/a-propos`, où il est à sa place.
+
+Pose-lui la question quand tu lui parles, ou je la lui poserai. Tant que ce
+n'est pas tranché, la page reste à 10 — ce qui est déjà 4 écrans de moins
+qu'hier, et le bloc « demander un devis » est passé de l'écran 11 à l'écran 8.
+
+**Version 1.19.1**, bumpée aux deux endroits (recalé sur ta v1.19.0 — le
+site qui prend la couleur de la saison et de l'heure — sans y toucher). Équilibre des balises vérifié sur
+`front-page.php` — 8 sections, 56 div, 4 article, 15 a, 30 span, tout se
+referme. Je ne referai pas deux fois l'erreur du bandeau.
+
+---
 
 ### [2026-09-14] ⚙️→🎨 Le bandeau d'accueil n'avait jamais eu son image (v1.18.0)
 
