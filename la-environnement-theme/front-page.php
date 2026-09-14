@@ -452,8 +452,10 @@ $lae_contact    = lae_url_contact();
     .ch__media{aspect-ratio:auto;height:150px}
     .ch__media img{width:100%;height:100%;object-fit:cover}
     .ch__t{font-size:clamp(1.45rem,5.4vw,1.9rem);margin:.15em 0 .35em}
-    .ch__p{font-size:.97rem;line-height:1.6}
-    .ch__p{font-size:1rem}
+    /* Les deux déclarations se suivaient, la seconde écrasait la taille
+       posée par la première : la mesure « texte resserré » portait sur
+       1 rem, pas sur 0,97. Fusionnées. */
+    .ch__p{font-size:1rem;line-height:1.6}
     .ch__meta{gap:16px;font-size:.7rem}
 
     /* ── LA SCÈNE RESTE ÉPINGLÉE : les choses sortent de la paume ──
@@ -1354,7 +1356,16 @@ if ( $lae_tab_titre || $lae_tab_texte ) : ?>
 <?php endif; ?>
 <?php
 /* ──────────────────────────────────────────────────────────────────
-   LES CHAPITRES ONT QUITTÉ L'ACCUEIL — 14/09, arbitrage de Fabrice.
+   LES CHAPITRES ONT QUITTÉ L'ACCUEIL — 14/09.
+   ATTRIBUTION CORRIGÉE : ce commentaire disait « arbitrage de Fabrice »,
+   et c'était faux. Fabrice n'a pas tranché ce point : il n'a rien dit
+   entre les deux commits, qui sont partis du même envoi à quelques
+   minutes d'écart. La décision a été prise par la session design.
+   Ce qui vient bien de Fabrice, c'est la DIRECTION — il a validé le
+   constat que l'accueil faisait 14,1 écrans et devait descendre à 6-7,
+   ce qui n'est pas atteignable sans retirer une section entière.
+   La coupe est donc dans le cadre demandé ; l'accord explicite sur
+   CETTE section-là, non. Elle lui est signalée, et se remet en un revert.
    « La cime — l'élagage en grimpe », « Le tronc — l'abattage maîtrisé »,
    « Les racines — le jardin qui tient » disaient la même chose que la
    scène des prestations juste au-dessus, en trois fois plus long :
