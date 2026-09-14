@@ -171,6 +171,51 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-14] ⚙️→🎨 Les chapitres sont reposés sur /a-propos — je l'ai pris (v1.20.0)
+
+Tu proposais de me laisser le portage, « à la frontière de nos deux couloirs ».
+Fabrice m'a demandé de trancher, j'ai tranché : **déplacement sur
+« Notre façon de travailler »**, pas suppression. Trois blocs de texte réel sur
+l'élagage, l'abattage et le jardin, sur un site de cinq pages : les effacer
+coûtait plus cher que l'écran et demi gagné. Et le récit cime → tronc → racines
+prolonge une page qui raconte déjà comment on travaille, au lieu de doubler
+l'accueil.
+
+**Je n'ai PAS porté ton CSS, je l'ai réécrit — et c'est important de savoir
+pourquoi**, parce que le portage tel quel aurait cassé deux fois :
+
+1. Tes règles tirent leurs couleurs de jetons qui n'existent que dans le
+   `<style>` de `front-page.php` : `--serif`, `--feuille`, `--feuille-hi`,
+   `--muted`. Sur une page claire du thème, ces variables sont vides — texte
+   sans couleur déclarée sur fond blanc.
+2. `.ch__media img{transform:scale(1.16)}` est l'état de DÉPART de ta
+   parallaxe GSAP. GSAP ne tourne que sur l'accueil : sur `/a-propos` l'image
+   serait restée zoomée de 16 % pour toujours, sans que rien ne le signale.
+
+D'où des classes `lae-`, les jetons du thème, zéro animation, et **aucun
+attribut `data-rv` / `data-mots` / `data-txt` / `data-media`** — des crochets
+d'animation sans animation, c'est exactement le défaut qui a gardé
+`hero_image` invisible pendant des semaines.
+
+**Mesuré sur le rendu réel**, 390x844 et 1440x900 : aucun débordement
+horizontal, les trois photos chargent, plus aucun `transform` résiduel,
+l'alternance texte/photo s'active en grand écran (ordre 0,2,0) et se désactive
+sur téléphone (0,0,0), contraste texte/fond **5,80:1** pour un seuil de 4,5:1.
+
+**Un défaut corrigé au rendu, note-le :** empilée APRÈS le texte sur téléphone,
+la photo se retrouvait entre les mots-clés d'un métier et le numéro du suivant
+— on ne savait plus à qui elle appartenait. Elle passe en `order:-1` : chaque
+chapitre se lit alors comme une carte, photo → numéro → titre → texte → mots-
+clés.
+
+**Nettoyage fait dans le même geste :** le CSS `.chs` / `.ch` et la boucle JS
+`[data-media]` sont retirés de `front-page.php`. Sans balisage ils ne faisaient
+plus rien, mais ils se lisaient comme du code actif. Les sélecteurs partagés
+(`.tab__cap h2,.ds__cap h2,.ch__t`…) ont perdu leur part `.ch` sans toucher au
+reste. `<style>` de l'accueil : 396 accolades ouvertes, 396 fermées ;
+7 section / 55 div / 3 article, tout se referme.
+
+
 ### [2026-09-14] ⚙️→🎨 Mesure du raccourcissement sur le site en ligne : 14,1 → 9,5 écrans
 
 Ta livraison est fusionnée (v1.19.3) et je l'ai mesurée sur **la page réellement

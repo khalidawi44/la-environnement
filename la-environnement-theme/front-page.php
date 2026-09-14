@@ -193,16 +193,6 @@ $lae_contact    = lae_url_contact();
   /* overflow-x:clip (et non hidden) : aucune animation latérale ne peut plus
      faire défiler la PAGE de côté, sans créer pour autant un conteneur de
      défilement ni casser un position:sticky descendant. */
-  .chs{padding:clamp(50px,7vh,90px) 0;overflow-x:clip}
-  .ch{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,70px);align-items:center;margin-bottom:clamp(28px,5vh,64px)}
-  .ch:nth-child(even) .ch__txt{order:2}
-  .ch__media{position:relative;overflow:hidden;aspect-ratio:4/3;border:1px solid rgba(127,176,74,.2);will-change:transform}
-  .ch__media img{width:100%;height:100%;object-fit:cover;transform:scale(1.16)}
-  .ch__n{font-family:var(--serif);font-size:clamp(2.4rem,6vw,4.4rem);color:var(--feuille);opacity:.8;line-height:1;will-change:transform}
-  .ch__t{font-family:var(--serif);font-weight:500;font-size:clamp(1.8rem,4.4vw,3.1rem);line-height:1.06;margin:.2em 0 .5em}
-  .ch__t em{font-style:italic;color:var(--feuille-hi)}
-  .ch__p{color:var(--muted);font-size:1.05rem;line-height:1.75;max-width:46ch}
-  .ch__meta{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--feuille)}
 
   /* ---------- DISSOLUTION ---------- */
   /* Budget de défilement de la scène épinglée. Mesuré sur iPhone 13
@@ -363,8 +353,6 @@ $lae_contact    = lae_url_contact();
   .ft a:hover{color:var(--feuille)}
 
   @media(max-width:820px){
-    .ch{grid-template-columns:1fr}
-    .ch:nth-child(even) .ch__txt{order:0}
     .hero__eg{opacity:.95}
   }
 
@@ -377,7 +365,6 @@ $lae_contact    = lae_url_contact();
     .av__grid{grid-template-columns:1fr}
     .at__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .of__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-    .ch{gap:26px}
   }
   @media(max-width:960px){
     .wrap{padding:0 20px}
@@ -430,7 +417,6 @@ $lae_contact    = lae_url_contact();
     .tab__cap h2{font-size:clamp(1.7rem,7.4vw,2.4rem)}
     .tab__cap p{font-size:.95rem;margin-top:12px}
 
-    .chs{padding:34px 0}
     /* Réalisations : la section pesait 2,5 écrans pour deux chantiers. Les
        vignettes passent en 16/10 plus plat, le bloc respire moins, le contenu
        ne change pas. */
@@ -440,23 +426,6 @@ $lae_contact    = lae_url_contact();
     .rz__body{padding:14px 16px 16px;gap:7px}
     .rz__card h3{font-size:1.22rem}
     .rz__card p{font-size:.88rem;line-height:1.5}
-    /* Sur téléphone chaque chapitre empilait une image 4/3 pleine largeur
-       au-dessus de son texte : trois écrans à eux trois. L'image passe en
-       bandeau large et le texte se resserre — le récit reste, la traversée
-       est deux fois plus courte. */
-    .ch{grid-template-columns:1fr;margin-bottom:30px}
-    .ch:nth-child(even) .ch__txt{order:0}
-    /* L'image de chapitre plafonne : en ratio libre elle mangeait la moitié
-       de l'écran à chaque chapitre. 150 px suffisent à reconnaître la scène
-       sans qu'elle prenne la place du texte. */
-    .ch__media{aspect-ratio:auto;height:150px}
-    .ch__media img{width:100%;height:100%;object-fit:cover}
-    .ch__t{font-size:clamp(1.45rem,5.4vw,1.9rem);margin:.15em 0 .35em}
-    /* Les deux déclarations se suivaient, la seconde écrasait la taille
-       posée par la première : la mesure « texte resserré » portait sur
-       1 rem, pas sur 0,97. Fusionnées. */
-    .ch__p{font-size:1rem;line-height:1.6}
-    .ch__meta{gap:16px;font-size:.7rem}
 
     /* ── LA SCÈNE RESTE ÉPINGLÉE : les choses sortent de la paume ──
        Le canvas de dissolution (coûteux) est remplacé par une photo qui
@@ -644,8 +613,6 @@ $lae_contact    = lae_url_contact();
   .card__glyphe{color:var(--feuille-hi);opacity:.85}
   .card__glyphe svg{width:44px;height:44px}
   /* Chapitre sans photo : une seule colonne, le texte se pose sur l'arbre. */
-  .ch--nu{grid-template-columns:1fr;max-width:640px}
-  .ch--nu:nth-child(even){margin-left:auto}
   .rz__vue--nu{background:linear-gradient(150deg,rgba(18,48,30,.6),rgba(4,20,12,.8))}
   .pack--nu .pack__txt{display:block}
   /* Le nom colle à son icône : la règle d'Alliance Groupe écartait les deux
@@ -757,7 +724,7 @@ $lae_contact    = lae_url_contact();
      Assombrir la page entière tuait la vidéo et l'arbre ; l'ombre
      portée ne noircit que le pourtour immédiat du texte.
      ---------------------------------------------------------- */
-  .hero__t,.stitle,.lead,.hero__sub,.eyebrow,.hero__points,.hero__scroll,.chs__t,.chs__p{
+  .hero__t,.stitle,.lead,.hero__sub,.eyebrow,.hero__points,.hero__scroll{
     text-shadow:0 1px 2px rgba(2,12,7,.72),0 2px 22px rgba(2,12,7,.6)}
   .eyebrow{text-shadow:0 1px 2px rgba(2,12,7,.9),0 0 14px rgba(2,12,7,.85)}
   .hero__t,.stitle{text-shadow:0 2px 3px rgba(2,12,7,.78),0 4px 34px rgba(2,12,7,.68)}
@@ -773,7 +740,7 @@ $lae_contact    = lae_url_contact();
      CORRECTIF 13/09 — trois blocs avaient été oubliés.
      La protection locale ci-dessus couvrait le hero, l'atelier, les
      offres et les réalisations, mais PAS les deux scènes épinglées
-     (.tab__cap, .ds__cap) ni les chapitres (.ch__txt). Leur texte se
+     (.tab__cap, .ds__cap) ni les chapitres. Leur texte se
      posait donc directement sur la photo, sans ombre ni halo.
      Mesure : sur une zone claire de feuillage, le vert des titres
      (--feuille-hi) tombait à 1,02:1 de contraste — invisible. Le blanc
@@ -782,19 +749,18 @@ $lae_contact    = lae_url_contact();
      les mots, jamais l'écran entier — assombrir toute la page tuerait
      l'arbre et la vidéo, qui portent la descente.
      ---------------------------------------------------------- */
-  .tab__cap h2,.tab__cap p,.ds__cap h2,.ds__cap p,.ch__n,.ch__t,.ch__p{
+  .tab__cap h2,.tab__cap p,.ds__cap h2,.ds__cap p{
     text-shadow:0 1px 2px rgba(2,12,7,.78),0 2px 24px rgba(2,12,7,.66)}
-  .tab__cap h2,.ds__cap h2,.ch__t{
+  .tab__cap h2,.ds__cap h2{
     text-shadow:0 2px 3px rgba(2,12,7,.82),0 4px 34px rgba(2,12,7,.72)}
 
-  .tab__cap::before,.ds__cap::before,.ch__txt::before{
+  .tab__cap::before,.ds__cap::before{
     content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:min(1100px,124%);height:136%;z-index:-1;pointer-events:none;
     background:radial-gradient(62% 60% at 50% 50%,rgba(3,16,9,.72),rgba(3,16,9,.34) 62%,transparent 80%)}
   /* z-index explicite : sans contexte d'empilement, le halo en z-index:-1
      passerait derrière le fond de section au lieu de se poser entre la photo
      et le texte. .tab__cap et .ds__cap en ont déjà un (z-index 2 et 5). */
-  .ch__txt{position:relative;z-index:0}
 
   /* ----------------------------------------------------------
      CORRECTIF 13/09 (2) — LA cause des titres illisibles.
@@ -824,7 +790,7 @@ $lae_contact    = lae_url_contact();
   /* Les paragraphes de ces scènes étaient en --muted (#93a396), pensé pour
      un aplat sombre. Sur une photo il ne tient pas : on prend le même gris
      clair que .tab__cap p, qui lui était déjà correct. */
-  .ds__cap p,.ch__p{color:#d5ded6}
+  .ds__cap p{color:#d5ded6}
 
 
   /* Les fonds pleins des scènes deviennent des voiles : sans cela la colonne
@@ -1356,28 +1322,33 @@ if ( $lae_tab_titre || $lae_tab_texte ) : ?>
 <?php endif; ?>
 <?php
 /* ──────────────────────────────────────────────────────────────────
-   LES CHAPITRES ONT QUITTÉ L'ACCUEIL — 14/09.
-   ATTRIBUTION CORRIGÉE : ce commentaire disait « arbitrage de Fabrice »,
-   et c'était faux. Fabrice n'a pas tranché ce point : il n'a rien dit
-   entre les deux commits, qui sont partis du même envoi à quelques
-   minutes d'écart. La décision a été prise par la session design.
-   Ce qui vient bien de Fabrice, c'est la DIRECTION — il a validé le
-   constat que l'accueil faisait 14,1 écrans et devait descendre à 6-7,
-   ce qui n'est pas atteignable sans retirer une section entière.
-   La coupe est donc dans le cadre demandé ; l'accord explicite sur
-   CETTE section-là, non. Elle lui est signalée, et se remet en un revert.
-   « La cime — l'élagage en grimpe », « Le tronc — l'abattage maîtrisé »,
-   « Les racines — le jardin qui tient » disaient la même chose que la
-   scène des prestations juste au-dessus, en trois fois plus long :
-   2,1 écrans sur 10. C'était le seul vrai doublon de la page.
-   Le contenu n'est PAS perdu : il vit toujours dans le réglage
-   « Accueil cinématique → Chapitres » du personnalisateur, et le CSS
-   .chs / .ch est conservé plus haut. Pour le reposer sur /a-propos, où
-   le récit cime-tronc-racines est à sa place, il faut sortir ce bloc en
-   template-part ET porter son CSS dans style.css — l'accueil le porte
-   aujourd'hui en ligne.
-   Le JS n'a rien à faire : la boucle sur [data-media] ne trouve plus de
-   chapitre et ne s'exécute pas.
+   LES CHAPITRES ONT QUITTÉ L'ACCUEIL — 14/09, et ils vivent maintenant sur
+   « Notre façon de travailler » (/a-propos). Voir
+   template-parts/section-chapitres.php et style.css section 17.
+
+   POURQUOI ILS SONT PARTIS. « La cime — l'élagage en grimpe », « Le tronc —
+   l'abattage maîtrisé », « Les racines — le jardin qui tient » disaient la
+   même chose que la scène des prestations juste au-dessus, en trois fois
+   plus long : 2,1 écrans sur 14,1. C'était le seul vrai doublon de la page.
+
+   POURQUOI ILS NE SONT PAS SUPPRIMÉS. Trois blocs de texte réel sur
+   l'élagage, l'abattage et le jardin, sur un site de cinq pages : les
+   effacer aurait coûté plus cher que l'écran et demi gagné. Déplacés, ils
+   prolongent une page qui raconte déjà comment on travaille, au lieu de
+   doubler l'accueil. Décision prise ici, sur demande de Fabrice de trancher.
+
+   UNE NOTE SUR LA TRAÇABILITÉ, parce qu'elle a failli être perdue : ce
+   commentaire a d'abord écrit que la coupe était un « arbitrage de
+   Fabrice ». C'était faux — il n'avait rien dit à ce moment-là. Une
+   attribution inventée dans un commentaire de code devient la mémoire du
+   projet, et la session suivante la lit comme un fait. Quand une validation
+   manque, on écrit « décision prise, réversible, signalée » — jamais
+   « untel a tranché ».
+
+   Le CSS et le JS des chapitres ont été retirés d'ici en même temps : sans
+   balisage ils ne faisaient plus rien, mais ils se lisaient comme du code
+   actif. Le bloc de /a-propos ne les reprend pas — il est réécrit en thème
+   clair et sans animation, GSAP ne tournant que sur l'accueil.
    ────────────────────────────────────────────────────────────────── */
 ?>
 
@@ -1584,30 +1555,14 @@ var LAE_SCENE_IMG = <?php echo wp_json_encode( $lae_scene_img ); ?>;
     G.utils.toArray("[data-rv]").forEach(function(el){
       G.from(el, { y:32, opacity:0, duration:.95, ease:"power3.out", scrollTrigger:{ trigger:el, start:"top 88%" }});
     });
-    G.utils.toArray("[data-media]").forEach(function(m, i){
-      var sens = i % 2 ? -1 : 1;
-      /* l'image vit pendant tout son passage : zoom, glissement et redressement */
-      G.fromTo(m.querySelector("img"), { scale:1.32, yPercent:-10 }, { scale:1.02, yPercent:10, ease:"none",
-        scrollTrigger:{ trigger:m, start:"top bottom", end:"bottom top", scrub:.4 }});
-      G.fromTo(m, { yPercent:9 * sens, rotate:1.4 * sens }, { yPercent:-9 * sens, rotate:0, ease:"none",
-        scrollTrigger:{ trigger:m, start:"top bottom", end:"bottom top", scrub:.4 }});
-      G.from(m, { clipPath:"inset(100% 0% 0% 0%)", duration:1.2, ease:"power4.out", scrollTrigger:{ trigger:m, start:"top 86%" }});
-      /* La colonne de texte arrive par le côté opposé sur PC.
-         Sur téléphone, cette entrée latérale de 52 px poussait la colonne
-         hors du cadre : la page entière défilait horizontalement de 37 px
-         (mesuré à 375 comme à 390). On la remplace par l'entrée documentée
-         dans DESIGN.md — fondu + léger déplacement VERTICAL — qui ne peut
-         pas déborder. */
-      var txt = m.parentNode.querySelector(".ch__txt");
-      var etroit = matchMedia("(max-width:960px)").matches;
-      if (txt) G.fromTo(txt,
-        etroit ? { y:18, opacity:.35 } : { x:52 * -sens, opacity:.35 },
-        { x:0, y:0, opacity:1, ease:"power2.out",
-          scrollTrigger:{ trigger:m.parentNode, start:"top 92%", end:"top 45%", scrub:.5 }});
-      /* le numéro file plus vite */
-      var n = m.parentNode.querySelector(".ch__n");
-      if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:.3 }});
-    });
+    /* LES CHAPITRES ONT QUITTÉ L'ACCUEIL (14/09) — leur animation aussi.
+       Elle vivait ici, accrochée à [data-media] : zoom de l'image, glissement
+       de la colonne de texte, numéro qui file plus vite. Le balisage étant
+       parti sur /a-propos, la boucle ne trouvait plus rien et ne faisait plus
+       rien — mais elle restait lisible comme du code actif, et c'est ce
+       genre de code fantôme qui fait perdre une heure à la prochaine
+       session. Elle n'est pas portée sur /a-propos : GSAP n'y tourne pas,
+       et le bloc y est volontairement sans animation. */
     /* arbre : la revelation se joue sur la premiere moitie du defilement,
        pour que le formulaire pose par-dessus soit utilisable tout de suite. */
     G.fromTo("#arbreImg", { scale:.5, opacity:0, filter:"blur(14px)" },

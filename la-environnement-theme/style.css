@@ -3,7 +3,7 @@ Theme Name: L.A Environnement
 Theme URI: https://github.com/khalidawi44/la-environnement
 Author: Advise Alliance Group
 Description: Thème du site L.A Environnement — élagage, abattage et création de jardin. Accueil cinématique : vidéo plein écran et descente d'un arbre, de la cime aux racines. Contenu livré, modifiable depuis l'admin WordPress. Embarque le moteur de synchronisation automatique GitHub → WordPress (un push sur main met le site à jour sous 5 minutes).
-Version: 1.19.3
+Version: 1.20.0
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -1658,4 +1658,105 @@ ul, ol { padding-left: 1.25em; }
 		linear-gradient(var(--lae-saison-voile), var(--lae-saison-voile)),
 		linear-gradient(180deg, rgba(10, 30, 19, .35) 0%, rgba(10, 30, 19, .62) 45%, rgba(10, 30, 19, .9) 100%),
 		linear-gradient(90deg, rgba(10, 30, 19, .5), rgba(10, 30, 19, .12));
+}
+
+/* ==========================================================================
+   17. Les trois métiers (page « Notre façon de travailler »)
+   Le bloc a quitté l'accueil le 14/09 — il y répétait la scène des
+   prestations — et se repose ici, où le récit cime → tronc → racines
+   prolonge la page au lieu de la doubler.
+
+   IL N'EST PAS PORTÉ, IL EST RÉÉCRIT, et c'est la bonne façon de le faire.
+   La version accueil tirait ses couleurs de jetons qui n'existent que dans
+   le <style> de front-page.php (--serif, --feuille, --muted) et supposait
+   un fond sombre ; recopiée sur une page blanche elle aurait été illisible.
+   Elle portait aussi un `transform:scale(1.16)` qui est l'état de DÉPART
+   d'une parallaxe GSAP : sans GSAP, ici, l'image serait restée zoomée de
+   16 % pour toujours. D'où des classes `lae-` propres, les jetons du
+   thème, et aucune animation.
+   ========================================================================== */
+
+.lae-chapitres {
+	padding: var(--lae-section) 0;
+	background: var(--lae-fond-doux);
+	border-top: 1px solid var(--lae-trait);
+}
+.lae-chapitres__t { margin-bottom: 14px; }
+
+.lae-chapitre {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: clamp(22px, 4vw, 56px);
+	align-items: center;
+	margin-top: clamp(30px, 5vw, 56px);
+}
+/* Un chapitre sur deux inverse texte et photo : sans ça, trois lignes
+   identiques font liste de produits, pas récit. */
+.lae-chapitre:nth-child(even) .lae-chapitre__txt { order: 2; }
+/* Sans photo, le texte ne s'étale pas sur toute la largeur : une colonne
+   de 46 caractères reste lisible, une de 90 ne l'est pas. */
+.lae-chapitre--nu { grid-template-columns: 1fr; max-width: 640px; }
+
+.lae-chapitre__media {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: 4 / 3;
+	border-radius: var(--lae-rayon);
+	border: 1px solid var(--lae-trait);
+	background: var(--lae-fond-vert);
+}
+.lae-chapitre__media img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Le numéro est décoratif (aria-hidden côté balisage) : il donne le rythme
+   des trois métiers, il ne remplace pas le titre qui suit. */
+.lae-chapitre__n {
+	margin: 0;
+	font-size: clamp(2rem, 4.5vw, 3.2rem);
+	font-weight: 800;
+	line-height: 1;
+	color: var(--lae-accent);
+	opacity: .28;
+}
+.lae-chapitre__t { margin: .12em 0 .4em; font-size: var(--lae-t-2xl); }
+.lae-chapitre__t em { font-style: italic; color: var(--lae-accent); }
+.lae-chapitre__p {
+	margin: 0;
+	color: var(--lae-doux);
+	font-size: var(--lae-t-lg);
+	line-height: 1.7;
+	max-width: 46ch;
+}
+
+/* Les mots-clés du métier. En liste plutôt qu'en suite de <span> : c'est
+   une énumération, et un lecteur d'écran l'annonce alors comme telle. */
+.lae-chapitre__meta {
+	list-style: none;
+	margin: 20px 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+.lae-chapitre__meta li {
+	padding: 5px 12px;
+	border-radius: 100px;
+	border: 1px solid var(--lae-trait-fort);
+	background: var(--lae-blanc);
+	font-size: var(--lae-t-xs);
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--lae-accent-fonce);
+}
+
+@media (max-width: 860px) {
+	/* Sur téléphone la photo passe en bandeau au-dessus du texte et
+	   plafonne : en 4/3 pleine largeur, chaque chapitre mangeait un écran
+	   entier à lui seul — le défaut mesuré sur l'accueil le 14/09. */
+	.lae-chapitre { grid-template-columns: 1fr; gap: 16px; }
+	.lae-chapitre:nth-child(even) .lae-chapitre__txt { order: 0; }
+	/* La photo passe EN TÊTE de son chapitre. Empilée après le texte, elle
+	   se retrouvait entre les mots-clés d'un métier et le numéro du
+	   suivant : on ne savait plus à qui elle appartenait. En tête, chaque
+	   chapitre se lit comme une carte — photo, numéro, titre, texte. */
+	.lae-chapitre__media { order: -1; aspect-ratio: auto; height: 170px; }
 }
