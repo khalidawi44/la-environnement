@@ -808,6 +808,30 @@ $lae_contact    = lae_url_contact();
   .hero__veil{background:
     linear-gradient(180deg,rgba(4,20,12,.5),rgba(4,20,12,.02) 34%,rgba(4,20,12,.2) 68%,rgba(4,20,12,.66)),
     radial-gradient(120% 80% at 22% 60%,transparent 44%,rgba(4,20,12,.3))}
+
+  /* ---------- VOILE RENFORCÉ QUAND LE BANDEAU PORTE UNE PHOTO ----------
+     Mesuré le 14/09 sur le rendu réel, texte masqué, fond échantillonné :
+     avec la photo du grimpeur (ciel dégagé), le blanc du titre tombait à
+     4,22:1 en médiane et 1,84:1 au 95e centile. Le seuil AA est de 4,5:1
+     pour du texte courant. Autrement dit : lisible sur la moitié sombre
+     de la photo, illisible sur le ciel.
+
+     Le voile d'origine était réglé pour la colonne de fond, qui est
+     sombre par construction. Une photo, elle, change — et le client peut
+     en poser une autre demain depuis le personnalisateur. Le voile doit
+     donc tenir pour N'IMPORTE QUELLE image, pas pour celle d'aujourd'hui.
+
+     D'où un renfort conditionné à la présence d'une photo : sans image,
+     la scénographie d'origine reprend exactement sa place. */
+  .hero--photo .hero__veil{
+    background:
+      linear-gradient(180deg,
+        rgba(4,20,12,.60) 0%,
+        rgba(4,20,12,.52) 24%,
+        rgba(4,20,12,.74) 60%,
+        rgba(4,20,12,.94) 100%),
+      radial-gradient(120% 80% at 22% 62%,transparent 40%,rgba(4,20,12,.42))}
+
 </style>
 
 <script>
@@ -866,7 +890,7 @@ if ( '' === $lae_col_arbre ) {
 })();
 </script>
 
-<section class="hero" id="top">
+<section class="hero<?php echo $lae_hero_img ? ' hero--photo' : ''; ?>" id="top">
   <?php if ( $lae_hero_img ) : ?>
     <?php /* Décorative : le titre juste en dessous porte le sens. */ ?>
     <div class="hero__bg" aria-hidden="true">
