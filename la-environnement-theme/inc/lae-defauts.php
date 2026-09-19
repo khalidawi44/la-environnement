@@ -47,7 +47,14 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			// l'inverse fabrique une déception le jour du devis.
 			'atouts_tarif_texte'   => 'Étudiant, sans emploi, minima sociaux, retraite modeste : dites-le en appelant, la réduction est appliquée au devis. Aucun justificatif à fournir.',
 			'tarif_tranches'       => "Étudiant, apprenti, sans emploi, minima sociaux | 30\nRetraité modeste, temps partiel, famille monoparentale | 15",
-			'telephone'            => '07 59 79 03 96',
+			/* Numero de l'entreprise change le 19/09 sur indication de Fabrice.
+			   L'ancien (07 59 79 03 96) n'est plus le numero de L.A
+			   Environnement. Tout le site le lit ici : boutons d'appel,
+			   pied de page, liens tel:, donnees structurees, mentions
+			   legales. Une valeur deja enregistree dans le personnalisateur
+			   primerait sur cette table — c'est ce que reprend le rattrapage
+			   `lae_telephone_rattrapage()` dans lae-amorce.php. */
+			'telephone'            => '06 04 40 83 00',
 			'email'                => 'paysagisteenvironnement@gmail.com',
 			/* Identité légale — relevée le 13/09 sur le registre officiel
 			   (API recherche-entreprises, data.gouv.fr) et confirmée par

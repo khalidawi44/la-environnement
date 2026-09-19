@@ -1,6 +1,6 @@
 # HANDOFF — L.A Environnement
 
-> Dernière mise à jour : 2026-09-14 — branche de travail : `main` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-09-19 — branche de travail : `main` (tampon auto à chaque commit).
 > Document de reprise pour toute nouvelle session Claude (PC, web ou mobile).
 > Lire ce fichier en premier, puis `BACKLOG.md` pour ce qui est en réserve.
 
@@ -174,7 +174,7 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
 
 - Nom exact affiché : **L A environnement** (sans point après le L)
 - Catégorie Google : **Paysagiste**
-- Téléphone : **07 59 79 03 96** — renseigné dans le thème
+- Téléphone : **06 04 40 83 00** — renseigné dans le thème
 - Site déclaré : **paysagiste-environnement.com** — c'est le domaine « cassé ».
   Diagnostic : le certificat HTTPS est **auto-signé**, donc tout navigateur
   affiche un avertissement de sécurité avant d'ouvrir la page. Ce n'est pas le
@@ -207,7 +207,7 @@ Relevé le 09/09/2026 sur la fiche Google (place_id `ChIJd15eFR_nBUgRqwOuCR9Hlrs
   **Non publiée sur le site** : la fiche Google du client n'en publie pas non
   plus, c'est visiblement son choix. Seule la commune apparaît, ce qui suffit
   au référencement local. À rediscuter avec lui s'il veut l'afficher.
-- Téléphone : +33 7 59 79 03 96 (cohérent avec la fiche Google)
+- Téléphone : +33 6 04 40 83 00 (cohérent avec la fiche Google)
 - E-mail : **paysagisteenvironnement@gmail.com** — renseigné dans le thème,
   c'est lui qui reçoit les demandes du formulaire de contact.
 

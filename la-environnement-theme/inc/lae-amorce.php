@@ -571,7 +571,14 @@ if ( ! function_exists( 'lae_mentions_texte' ) ) {
 		$cp    = lae_defaut( 'adresse_cp' );
 		$ville = lae_defaut( 'adresse_ville' );
 		$siret = lae_defaut( 'siret_numero' );
-		$tel   = lae_defaut( 'telephone' );
+		/* Le telephone se lit dans le REGLAGE, pas dans la table des
+		   defauts : c'est le seul champ de ce bloc qui n'est pas une
+		   identite legale figee (SIRET, forme, adresse relevees au
+		   registre) mais un contact qui change. Le lire ailleurs que le
+		   reste du site laisserait les mentions annoncer un numero que
+		   plus aucun bouton n'appelle. lae_reglage() retombe sur la table
+		   des defauts quand rien n'est enregistre : meme texte produit. */
+		$tel   = lae_reglage( 'telephone' );
 		$mail  = lae_defaut( 'email' );
 
 		/* Les trois manques légaux se lisent dans le PERSONNALISATEUR, pas
@@ -714,6 +721,85 @@ add_action( 'init', 'lae_mentions_rattrapage', 22 );
 add_action( 'admin_init', 'lae_mentions_rattrapage', 13 );
 
 /* ═══════════════════════════════════════════════════════════════════
+   CHANGEMENT DE NUMÉRO DE TÉLÉPHONE — 19/09
+
+   Le numéro de L.A Environnement est passé au 06 04 40 83 00. Changer la
+   table des défauts ne suffit PAS : tout le site lit
+   `lae_reglage( 'telephone' )`, c'est-à-dire `get_theme_mod()`, et une
+   valeur déjà enregistrée dans le personnalisateur prime sur la table.
+   Si le site en a une, le thème continuerait d'afficher l'ancien numéro
+   après déploiement — sur les boutons d'appel, les liens tel:, le pied de
+   page et les données structurées.
+
+   CE QU'ON ÉCRASE, ET CE QU'ON N'ÉCRASE PAS. On ne remplace la valeur
+   enregistrée que si elle est l'ANCIEN numéro (comparaison sur les
+   chiffres seuls : « 07 59 79 03 96 », « 0759790396 » et « 07.59.79.03.96 »
+   sont le même numéro). Si le personnalisateur porte un troisième numéro,
+   quelqu'un l'a saisi délibérément : on n'y touche pas et on le signale en
+   administration. Même discipline que pour les mentions légales — on ne
+   réécrit que ce qu'on a écrit soi-même.
+   ═══════════════════════════════════════════════════════════════════ */
+
+if ( ! function_exists( 'lae_telephone_rattrapage' ) ) {
+
+	/** Les chiffres d'un numéro, sans espaces ni ponctuation. */
+	function lae_tel_chiffres( $tel ) {
+		return preg_replace( '/[^0-9]/', '', (string) $tel );
+	}
+
+	function lae_telephone_rattrapage() {
+
+		if ( get_option( 'lae_tel_2026_09' ) ) {
+			return;
+		}
+
+		$attendu = lae_defaut( 'telephone' );          // le nouveau
+		$ancien  = '0759790396';                       // celui qu'on remplace
+		$actuel  = get_theme_mod( 'lae_telephone', '' );
+
+		update_option( 'lae_tel_2026_09', 1, false );  // verrou posé AVANT l'écriture
+
+		// Rien d'enregistré : la table des défauts s'applique déjà.
+		if ( ! is_string( $actuel ) || '' === trim( $actuel ) ) {
+			return;
+		}
+
+		$chiffres = lae_tel_chiffres( $actuel );
+
+		// Déjà le bon numéro : ne pas écrire pour rien.
+		if ( $chiffres === lae_tel_chiffres( $attendu ) ) {
+			return;
+		}
+
+		if ( $chiffres === $ancien ) {
+			set_theme_mod( 'lae_telephone', $attendu );
+			return;
+		}
+
+		/* Un troisième numéro, saisi à la main. On s'abstient et on le dit. */
+		update_option( 'lae_tel_divergent', $actuel, false );
+	}
+}
+add_action( 'init', 'lae_telephone_rattrapage', 23 );
+add_action( 'admin_init', 'lae_telephone_rattrapage', 14 );
+
+/* Signale en administration le cas où le personnalisateur portait un
+   numéro qu'on n'a pas voulu écraser. */
+add_action( 'admin_notices', function () {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$divergent = get_option( 'lae_tel_divergent', '' );
+	if ( ! $divergent ) {
+		return;
+	}
+	echo '<div class="notice notice-warning is-dismissible"><p><strong>Téléphone :</strong> le personnalisateur porte <code>'
+		. esc_html( $divergent ) . '</code>, qui n\'est ni l\'ancien numéro ni le nouveau ('
+		. esc_html( lae_defaut( 'telephone' ) ) . '). Il n\'a pas été modifié automatiquement. '
+		. 'Corrigez-le dans <em>Apparence &rsaquo; Personnaliser &rsaquo; Coordonnées</em> si besoin.</p></div>';
+} );
+
+/* ═══════════════════════════════════════════════════════════════════
    METTRE À JOUR LES MENTIONS QUAND LES MANQUES SONT COMBLÉS
 
    LE PROBLÈME QUE ÇA RÉSOUT. Les mentions sont écrites une fois, puis
@@ -809,8 +895,13 @@ if ( ! function_exists( 'lae_mentions_texte_sans_manques' ) ) {
 	}
 }
 
-add_action( 'init', 'lae_mentions_maj', 23 );
-add_action( 'admin_init', 'lae_mentions_maj', 14 );
+/* APRES lae_telephone_rattrapage (23 / 14), jamais avant : les mentions
+   affichent le telephone, et les regenerer d'abord les figerait sur
+   l'ancien numero encore enregistre. Deux rappels de meme priorite ne se
+   departagent que par leur ordre d'enregistrement dans le fichier — trop
+   fragile pour une dependance reelle, d'ou ce decalage explicite. */
+add_action( 'init', 'lae_mentions_maj', 24 );
+add_action( 'admin_init', 'lae_mentions_maj', 15 );
 /* Et dès qu'un réglage change dans le personnalisateur, sans attendre la
    prochaine visite : c'est le moment exact où Anthony s'attend à voir la
    page bouger. */

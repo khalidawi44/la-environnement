@@ -88,7 +88,7 @@ if ( ! function_exists( 'lae_reglage' ) ) {
 /**
  * Numéro de téléphone au format international E.164, pour le balisage.
  *
- * « 07 59 79 03 96 » se lit bien pour un humain, mais Google et les
+ * « 06 04 40 83 00 » se lit bien pour un humain, mais Google et les
  * assistants vocaux réconcilient une fiche d'établissement sur un numéro
  * international. Un 0 initial français devient +33. L'affichage du site
  * n'est pas touché : cette forme ne sert qu'aux données structurées.

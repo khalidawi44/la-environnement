@@ -35,7 +35,7 @@ add_action( 'wp_head', function () {
 
 	$telephone = lae_reglage( 'telephone' );
 	if ( $telephone ) {
-		/* FORMAT INTERNATIONAL pour le balisage. « 07 59 79 03 96 » est
+		/* FORMAT INTERNATIONAL pour le balisage. « 06 04 40 83 00 » est
 		   la bonne écriture pour un lecteur français, mais Google et les
 		   assistants vocaux réconcilient une fiche d'établissement sur un
 		   numéro E.164. L'affichage, lui, ne change pas : c'est seulement

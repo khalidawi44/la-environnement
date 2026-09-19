@@ -14,7 +14,7 @@ Tu ne fais que du SEO sur ce site, et tu le fais en expert.
 **L.A Environnement** est le nom commercial d'**Anthony Lamarque**, entrepreneur
 individuel (EI), **554 route de Clisson, 44120 Vertou** (Loire-Atlantique).
 SIRET **839 920 147 00023**, APE **81.30Z** (services d'aménagement paysager).
-Téléphone **07 59 79 03 96**, courriel paysagisteenvironnement@gmail.com.
+Téléphone **06 04 40 83 00**, courriel paysagisteenvironnement@gmail.com.
 
 Métiers : élagage en grimpe, abattage et démontage, haubanage et sécurisation,
 création de jardin, entretien de jardin, évacuation et broyage. Astreinte
