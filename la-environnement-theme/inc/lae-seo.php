@@ -104,22 +104,37 @@ add_action( 'wp_head', function () {
 	}
 
 	/*
-	 * Ouverture 24 h/24, 7 j/7 (information client du 13/09).
+	 * Les heures d'ouverture de l'entreprise — corrigées le 21/09.
 	 *
-	 * C'est ce qui fait afficher « Ouvert 24 h/24 » par Google et ce qui rend
-	 * l'entreprise éligible aux recherches d'urgence — un arbre qui menace se
-	 * cherche la nuit et le week-end, pas aux heures de bureau. Déclarer les
-	 * horaires vaut donc plus ici que sur n'importe quel autre métier.
+	 * CE QUI ÉTAIT FAUX. Le balisage déclarait l'entreprise ouverte
+	 * 00:00–23:59 les sept jours, au motif que les urgences sont assurées
+	 * 24 h/24. Mais `openingHoursSpecification` porte les heures de
+	 * l'ÉTABLISSEMENT, pas la disponibilité d'un service particulier. Le
+	 * pied de page du site annonce « Lundi au samedi : 8 h – 19 h », et la
+	 * fiche Google Business de l'entreprise affiche « ferme à 19 h ». Le
+	 * balisage était donc le seul des trois à dire autre chose.
 	 *
-	 * `dayOfWeek` liste les sept jours, `opens`/`closes` à 00:00 est la
-	 * notation schema.org pour une ouverture continue.
+	 * POURQUOI ÇA COMPTE. Google demande que les données structurées
+	 * correspondent au contenu visible de la page, et il juge la cohérence
+	 * entre le site et la fiche d'établissement — c'est le socle du
+	 * référencement local. Une contradiction entre les deux coûte plus
+	 * qu'un « Ouvert 24 h/24 » affiché à tort ne rapporte.
+	 *
+	 * LE 24 H/24 N'EST PAS PERDU POUR AUTANT, et c'est le point : il est
+	 * porté là où il est vrai et où schema.org l'attend — le `contactPoint`
+	 * d'urgence ci-dessous, et le `hoursAvailable` du `Service` d'urgence
+	 * dans lae-schema-pages.php. L'entreprise ferme à 19 h ; la ligne
+	 * d'urgence, elle, répond la nuit et le dimanche.
+	 *
+	 * Horaires confirmés par Fabrice le 21/09, concordants avec le pied de
+	 * page du site et la fiche Google Business.
 	 */
 	$donnees['openingHoursSpecification'] = array(
 		array(
 			'@type'     => 'OpeningHoursSpecification',
-			'dayOfWeek' => array( 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ),
-			'opens'     => '00:00',
-			'closes'    => '23:59',
+			'dayOfWeek' => array( 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ),
+			'opens'     => '08:00',
+			'closes'    => '19:00',
 		),
 	);
 
@@ -140,6 +155,21 @@ add_action( 'wp_head', function () {
 				'telephone'         => lae_tel_e164( $telephone ),
 				'areaServed'        => 'FR',
 				'availableLanguage' => 'fr',
+				/* Le 24 h/24 se déclare ICI, et plus sur l'entreprise.
+				   Depuis le 21/09 `openingHoursSpecification` porte les
+				   vraies heures de bureau (lundi-samedi, 8 h – 19 h) ;
+				   sans cette précision, le signal « joignable la nuit et
+				   le dimanche » disparaîtrait du balisage alors qu'il
+				   reste vrai — et c'est l'argument le plus rentable du
+				   métier. `hoursAvailable` est valide sur un
+				   ContactPoint : c'est la disponibilité de CE canal, pas
+				   celle de l'établissement. */
+				'hoursAvailable'    => array(
+					'@type'     => 'OpeningHoursSpecification',
+					'dayOfWeek' => array( 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ),
+					'opens'     => '00:00',
+					'closes'    => '23:59',
+				),
 			),
 		);
 	}
