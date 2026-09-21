@@ -60,6 +60,13 @@ if ( ! function_exists( 'lae_amorce_prestations' ) ) {
 				'texte'   => "Un jardin se dessine avant de se planter. On regarde le sol, l'exposition, l'eau, ce que vous voulez en faire — un coin d'ombre, un potager, un écran qui vous rende votre intimité.\n\nLes essences sont choisies pour tenir à cet endroit-là : une haie de persistants au nord ne vaut pas une haie champêtre au sud, et un arbre planté trop près d'une façade sera un problème dans dix ans. Nous plantons ce qui aura la place de grandir.\n\nTerrassement léger, engazonnement ou placage de gazon, massifs, paillage, haies, plantation d'arbres et d'arbustes : le jardin est livré planté et paillé, avec ce qu'il faut savoir pour l'arroser la première année.",
 			),
 			array(
+				'titre'   => 'Pose de gazon synthétique',
+				'famille' => 'jardin',
+				'icone'   => 'pelle',
+				'extrait' => 'Un sol nu ou une pelouse qui ne tient pas, remplacés par une surface verte toute l\'année, sans tonte.',
+				'texte'   => "Là où le gazon naturel ne tient pas — ombre portée, sol tassé, passage répété — le gazon synthétique donne une surface verte et propre toute l'année, sans tonte.\n\nLe résultat dépend de ce qu'il y a dessous : le sol est préparé et nivelé avant la pose, les lés sont ajustés et fixés, les raccords travaillés pour ne pas se voir.\n\nOn ne recouvre pas le pied des arbres. Un arbre en place garde un cercle de terre à sa base : ses racines ont besoin d'air et d'eau, et les en priver l'affaiblit. C'est ce qu'un élagueur voit avant un poseur.",
+			),
+			array(
 				'titre'   => 'Entretien de jardin',
 				'famille' => 'jardin',
 				'icone'   => 'feuille',

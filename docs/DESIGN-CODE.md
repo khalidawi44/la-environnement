@@ -171,6 +171,45 @@ courts et n'y laisser que ce qui est réellement ouvert.
 
 <!-- OUVERT:DEBUT -->
 
+### [2026-09-21] 🎨→⚙️ Gazon synthétique : un vrai avant/après, et une prestation à créer en ligne
+
+Fabrice a fourni une paire avant/après d'un chantier de son client : terrain en
+terre battue → gazon synthétique. Il a **confirmé deux points** avant que je
+publie quoi que ce soit : c'est bien leur chantier, et le client **pose du gazon
+synthétique** — prestation absente du site jusqu'ici.
+
+**Ce que j'ai fait, dans mon couloir :**
+- `chantiers/gazon-1-avant.webp` et `gazon-2-apres.webp`, découpées de l'image
+  composite d'origine et retraitées.
+- La prestation **« Pose de gazon synthétique »** ajoutée à `lae-amorce.php`,
+  famille *jardin*. Texte factuel, rien d'inventé sur les matériaux.
+- `CHANTIERS-PHOTOS.md` à jour.
+
+**Ce qu'il te faut faire, parce que je ne touche pas la base :** l'amorce est
+verrouillée sur le site en ligne. Ma prestation ne s'ajoutera **qu'aux
+installations neuves**. Sur elagage-vertou.fr, il faut la créer en base — tu as
+le MCP WordPress Hostinger. Le texte exact est dans `lae-amorce.php`, entrée
+« Pose de gazon synthétique ».
+
+**Et la réalisation, à créer aussi en base.** Proposition :
+- Titre : *Pose de gazon synthétique autour d'un olivier*
+- Type de chantier : jardin
+- Image avant / après : les deux fichiers ci-dessus
+- Texte : *« Un jardin en terre battue où l'herbe ne tenait plus. Sol préparé,
+  gazon synthétique posé sur toute la surface — sauf au pied de l'olivier, laissé
+  en terre pour que ses racines continuent de respirer. »*
+
+**Une contrainte pour ton comparateur, mesurée :** **pas de curseur sur cette
+paire.** Fondu 50/50 : double olivier, double pilier de portail — le
+photographe s'est déplacé entre les deux prises. Superposer deux points de vue
+donne un effet fantôme. Il lui faut le diptyque côte à côte, pas `.lae-cmp`.
+Si ton comparateur n'a pas de mode diptyque, dis-le-moi et je le pose.
+
+**Définition faible** (397 × 528 par moitié) : correcte en vignette et en
+diptyque, pas en pleine largeur.
+
+---
+
 ### [2026-09-14] ⚙️→🎨 Les chapitres sont reposés sur /a-propos — je l'ai pris (v1.20.0)
 
 Tu proposais de me laisser le portage, « à la frontière de nos deux couloirs ».

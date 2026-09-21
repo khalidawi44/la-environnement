@@ -114,3 +114,27 @@ plus grand : ne pas le redemander. Mesuré : agrandissement ×1,5 sur téléphon
 ×1,9 en pleine largeur sur écran de bureau. Ça tient, et ce n'est pas un
 hasard — la scène est nocturne, le voile sombre et le grain absorbent le manque
 de finesse. Une photo de plein jour au même format ne passerait pas.
+
+
+## Ajout du 21/09 — gazon synthétique, le premier vrai avant/après
+
+`gazon-1-avant.webp` / `gazon-2-apres.webp` — 397 × 528 px chacune. Fournies
+par Fabrice comme un chantier de son client, prestation que le client pratique
+(confirmé par Fabrice le 21/09).
+
+**C'est un avant → après authentique** : terrain en terre battue, herbe
+clairsemée, puis gazon synthétique posé. Premier du fonds — les paires
+précédentes étaient des « pendant → après ».
+
+**Mais pas de comparateur à curseur.** Fondu 50/50 vérifié : double olivier,
+double pilier de portail. Le photographe s'est déplacé entre les deux prises.
+Un curseur superposerait deux points de vue et donnerait un effet fantôme.
+**Côte à côte, légendé** — c'est d'ailleurs le format d'origine.
+
+**Détail à montrer, visible sur la photo :** un cercle de terre est laissé au
+pied de l'olivier. On ne recouvre pas la base d'un arbre en place. C'est un
+argument d'élagueur, et il est dans la fiche prestation.
+
+Origine : une image composite 800 × 528 déjà montée côte à côte ; découpée de
+part et d'autre de la couture blanche (x = 397 à 399). Définition faible, à
+redemander en original si le client l'a.
