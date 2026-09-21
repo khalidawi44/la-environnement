@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LAE_VERSION', '1.33.1' );
+define( 'LAE_VERSION', '1.34.0' );
 
 /** Supports WordPress de base. */
 add_action( 'after_setup_theme', function () {
@@ -64,6 +64,7 @@ add_filter( 'body_class', function ( $classes ) {
 // ── Sécurité ────────────────────────────────────────────────────────
 require_once get_template_directory() . '/inc/lae-tarif.php';
 require_once get_template_directory() . '/inc/lae-chantiers.php';
+require_once get_template_directory() . '/inc/lae-gazon.php';
 require_once get_template_directory() . '/inc/lae-illustration.php';
 require_once get_template_directory() . '/inc/lae-ambiance.php';
 require_once get_template_directory() . '/inc/lae-articles.php';

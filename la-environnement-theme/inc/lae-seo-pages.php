@@ -158,6 +158,11 @@ function lae_seo_pages() {
 			'desc'  => "Branches broyées sur place en paillage, ou rémanents chargés et évacués. Allées dégagées, sciure ramassée, terrain rendu net.",
 		),
 
+		'pose-de-gazon-synthetique' => array(
+			'titre' => 'Pose de gazon synthétique à Vertou (44)',
+			'desc'  => "Là où l'herbe ne tient pas — ombre, sol tassé, passage — une surface verte toute l'année, sans tonte. Sol préparé avant la pose.",
+		),
+
 		/* Les deux chantiers. Ce sont des photos réelles prises sur
 		   place : la description le dit, sans en rajouter. */
 		'demontage-arbres-abri-jardin' => array(
@@ -167,6 +172,11 @@ function lae_seo_pages() {
 		'broyage-sur-place-mur-mitoyen' => array(
 			'titre' => 'Conifères réduits le long d\'un mur mitoyen (44)',
 			'desc'  => "Une rangée de conifères réduite au ras d'un mur mitoyen, sans recul pour travailler, avec broyage des branches directement sur place.",
+		),
+
+		'gazon-synthetique-autour-olivier' => array(
+			'titre' => 'Gazon synthétique posé autour d\'un olivier (44)',
+			'desc'  => "Un jardin en terre battue où l'herbe ne tenait plus, refait en gazon synthétique — sauf au pied de l'olivier, laissé en terre.",
 		),
 
 		/* Les trois articles. Les deux premiers titres dépassaient 60
