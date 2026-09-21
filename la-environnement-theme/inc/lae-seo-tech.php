@@ -157,38 +157,73 @@ add_filter( 'wp_sitemaps_taxonomies', function ( $taxonomies ) {
 } );
 
 /* ═══════════════════════════════════════════════════════════════════
-   LES ARCHIVES /prestations/ ET /realisations/ NE SONT PAS AU SITEMAP,
-   ET JE N'AI PAS RÉUSSI À LES Y METTRE.
+   LES ARCHIVES /prestations/ ET /realisations/ AU SITEMAP — RÉSOLU
 
-   WordPress ne met jamais les archives de type de contenu au sitemap :
-   son fournisseur n'énumère que les fiches. Deux tentatives par le
-   filtre `wp_sitemaps_posts_url_list` (v1.28.0 puis v1.28.1, la seconde
-   avec des paramètres optionnels et un garde sur le type) n'ont produit
-   aucun effet en ligne.
+   HISTORIQUE, PARCE QU'IL EXPLIQUE LE CHOIX. Deux tentatives (v1.28.0
+   puis v1.28.1) sont passées par le filtre `wp_sitemaps_posts_url_list`
+   et n'ont produit AUCUN effet en ligne. Avaient été écartés, mesures à
+   l'appui : le déploiement (deux filtres voisins du même commit
+   agissaient bien), le cache (vérifié sur `x-litespeed-cache: miss` ET
+   `x-hcdn-cache-status: MISS`) et le nombre d'arguments. Le code avait
+   été retiré plutôt que laissé en place, pour ne pas laisser un filtre
+   inerte qui ressemble à un filtre actif.
 
-   CE QUE J'AI ÉCARTÉ, MESURES À L'APPUI :
-   — pas un problème de déploiement : les deux autres filtres ajoutés au
-     même endroit dans le même commit agissent bien (le fournisseur
-     `users` a disparu, la catégorie par défaut aussi) ;
-   — pas un problème de cache : vérifié sur une réponse en
-     `x-litespeed-cache: miss` ET `x-hcdn-cache-status: MISS`, servie par
-     la bonne version du thème ;
-   — pas une erreur d'arguments : un rappel à paramètres obligatoires
-     aurait fait échouer le rendu si WordPress en passait moins, or le
-     sitemap rendait normalement.
+   POURQUOI ÇA NE POUVAIT PAS MARCHER. `wp_sitemaps_posts_url_list`
+   filtre la liste d'un fournisseur EXISTANT. Or le fournisseur `posts`
+   n'énumère que des publications ; l'archive d'un type de contenu n'est
+   pas une publication, elle n'a pas d'identifiant, et rien dans ce
+   fournisseur ne la représente. On greffait une URL sur un objet qui ne
+   l'attendait pas.
 
-   Le code est retiré plutôt que laissé en place : un filtre sans effet
-   qui ressemble à un filtre actif fera perdre une heure à la prochaine
-   session, exactement comme le réglage `hero_image` lu et jamais
-   utilisé, ou comme la section « zone d'intervention » écrite et jamais
-   appelée.
+   LA VOIE CORRECTE est l'autre API, celle des FOURNISSEURS :
+   `wp_register_sitemap_provider()` déclare une nouvelle source d'URL,
+   qui obtient son propre fichier `wp-sitemap-archives-1.xml` référencé
+   dans l'index. C'est exactement ce à quoi elle sert.
 
-   CE QUE ÇA COÛTE RÉELLEMENT : peu. Les deux archives sont liées depuis
-   le menu présent sur chaque page du site, donc parfaitement
-   découvrables et indexables. Le sitemap n'aurait ajouté qu'un indice
-   de fraîcheur. À reprendre un jour avec un accès au débogage côté
-   serveur, pas à l'aveugle.
+   Classe anonyme, et pour une raison précise : `WP_Sitemaps_Provider`
+   n'existe qu'une fois le sous-système des sitemaps chargé. Une classe
+   déclarée au niveau du fichier serait évaluée trop tôt et provoquerait
+   une erreur fatale ; déclarée à l'intérieur du rappel, elle n'est
+   construite qu'au moment où sa classe parente est disponible.
    ═══════════════════════════════════════════════════════════════════ */
+add_action( 'init', function () {
+
+	if ( ! function_exists( 'wp_register_sitemap_provider' ) || ! class_exists( 'WP_Sitemaps_Provider' ) ) {
+		return;   // sitemaps natifs indisponibles : on ne casse rien
+	}
+
+	$fournisseur = new class extends WP_Sitemaps_Provider {
+
+		public function __construct() {
+			$this->name        = 'archives';
+			$this->object_type = 'archive';
+		}
+
+		/**
+		 * Les deux archives, et seulement si elles existent vraiment.
+		 *
+		 * `get_post_type_archive_link()` rend `false` quand le type n'est
+		 * pas enregistré ou n'a pas d'archive : on n'inscrit jamais une
+		 * URL qu'on n'a pas vérifiée.
+		 */
+		public function get_url_list( $page_num, $object_subtype = '' ) {
+			$urls = array();
+			foreach ( array( 'lae_prestation', 'lae_realisation' ) as $type ) {
+				$lien = get_post_type_archive_link( $type );
+				if ( $lien ) {
+					$urls[] = array( 'loc' => $lien );
+				}
+			}
+			return apply_filters( 'lae_sitemap_archives', $urls );
+		}
+
+		public function get_max_num_pages( $object_subtype = '' ) {
+			return 1;
+		}
+	};
+
+	wp_register_sitemap_provider( 'archives', $fournisseur );
+}, 20 );
 
 /* Les archives de familles (/famille/arbre/…) et la catégorie par
    défaut ne reçoivent AUCUN lien interne — vérifié sur les dix-huit
