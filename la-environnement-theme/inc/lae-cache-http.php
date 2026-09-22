@@ -67,7 +67,30 @@ add_action( 'send_headers', function () {
 	 * stale-while-revalidate : le visiteur reçoit la copie tiède pendant que le
 	 *                        cache va chercher la nouvelle. Aucune attente.
 	 */
-	$duree = (int) apply_filters( 'lae_cache_html_secondes', 300 );
+	/*
+	 * 24 HEURES, ET NON PLUS 5 MINUTES — changé le 22/09, mesures à l'appui.
+	 *
+	 * Le TTL de 5 minutes datait du 09/09 et visait « le rythme de la sync ».
+	 * Mais il ne protégeait personne : sur un site à faible trafic, la
+	 * plupart des visiteurs arrivent après l'expiration et encaissent la
+	 * génération complète. Mesuré à l'URL nue : l'accueil met 2,183 s sur un
+	 * cache MISS contre 0,591 s sur un HIT — elle exécute trois WP_Query et
+	 * émet 138 Ko de HTML. Le `stale-while-revalidate` n'amortit que les 60 s
+	 * qui suivent l'expiration.
+	 *
+	 * CE QUI REND LE TTL LONG SÛR, et sans quoi il serait dangereux :
+	 *   — `lae-purge-forcee.php` purge tout à chaque changement de version du
+	 *     thème, par un appel sur nous-mêmes que le cache ne peut pas servir
+	 *     de sa réserve ;
+	 *   — et depuis le 22/09, il purge aussi à chaque publication, modification
+	 *     ou suppression de contenu, à chaque enregistrement du
+	 *     personnalisateur, de menu ou de taxonomie.
+	 *
+	 * Sans ce second filet, une correction d'Anthony resterait invisible
+	 * vingt-quatre heures. Les deux vont ensemble : ne jamais rallonger ce
+	 * TTL sans vérifier que les purges suivent.
+	 */
+	$duree = (int) apply_filters( 'lae_cache_html_secondes', DAY_IN_SECONDS );
 	header( 'Cache-Control: public, max-age=0, s-maxage=' . $duree . ', stale-while-revalidate=60', true );
 	header_remove( 'Expires' );  // en-tête hérité, il contredirait le précédent
 

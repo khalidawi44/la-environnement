@@ -34,7 +34,50 @@ while ( have_posts() ) : the_post();
 			?>
 		</div>
 	</article>
+
 	<?php
+	/* LA SUITE — elle n'existait pas, et c'est ce qui coutait le plus cher.
+	   Mesure du 22/09 : les seuls liens sortants d'une page chantier etaient
+	   le menu et le pied de page. Or quelqu'un qui vient de regarder un
+	   avant/apres est exactement la personne qui va appeler : il lui manque
+	   juste de savoir comment ca s'appelle et ou demander. */
+	$lae_presta   = function_exists( 'lae_maillage_prestations' ) ? lae_maillage_prestations( get_the_ID() ) : array();
+	$lae_chantiers = get_posts( array(
+		'post_type'      => 'lae_realisation',
+		'post_status'    => 'publish',
+		'post__not_in'   => array( get_the_ID() ),
+		'posts_per_page' => 2,
+		'orderby'        => 'rand',
+		'no_found_rows'  => true,
+	) );
+
+	if ( $lae_presta || $lae_chantiers ) : ?>
+		<section class="lae-section lae-suite">
+			<div class="lae-shell">
+
+				<?php if ( $lae_presta ) : ?>
+					<h2 class="lae-suite__t">Vous avez le même besoin&nbsp;?</h2>
+					<p class="lae-suite__p">On vient voir sur place avant de chiffrer quoi que ce soit.</p>
+					<ul class="lae-suite__liste">
+						<?php foreach ( $lae_presta as $lae_p ) : ?>
+							<li><a href="<?php echo esc_url( get_permalink( $lae_p ) ); ?>"><?php echo esc_html( get_the_title( $lae_p ) ); ?></a></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+
+				<?php if ( $lae_chantiers ) : ?>
+					<h2 class="lae-suite__t">D'autres chantiers</h2>
+					<ul class="lae-suite__liste">
+						<?php foreach ( $lae_chantiers as $lae_c ) : ?>
+							<li><a href="<?php echo esc_url( get_permalink( $lae_c ) ); ?>"><?php echo esc_html( get_the_title( $lae_c ) ); ?></a></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+
+			</div>
+		</section>
+	<?php endif;
+
 endwhile;
 
 get_footer();

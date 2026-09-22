@@ -86,12 +86,59 @@ add_action( 'wp_enqueue_scripts', function () {
  * visiteur à un domaine qu'il n'a pas demandé. Le retirer aussi n'est
  * pas du zèle : c'est la moitié du problème.
  */
+/*
+ * LISTE BLANCHE, ET NON LISTE NOIRE — corrigé le 22/09.
+ *
+ * CE QUI S'EST PASSÉ. Ce filtre a été écrit le 14/09 contre un domaine
+ * précis, `cdn-reach.hostinger.com`. Une liste noire d'un seul nom ne
+ * protège que contre ce nom. Un audit du 22/09 a trouvé, sur les 22 pages
+ * du site :
+ *
+ *     <link rel='dns-prefetch' href='//www.googletagmanager.com' />
+ *
+ * Aucun script Google ne se charge — seul l'indice DNS restait. Mais il
+ * suffit à faire partir une requête vers Google à chaque affichage, donc à
+ * révéler l'adresse IP du visiteur à un domaine qu'il n'a pas demandé.
+ * C'est exactement le raisonnement écrit six lignes plus haut, et il
+ * s'appliquait à un seul domaine.
+ *
+ * Ce n'est pas qu'un détail technique : les mentions légales du site
+ * AFFIRMENT qu'il « ne charge aucune ressource hébergée par un tiers » et
+ * qu'« aucune bannière de consentement n'est nécessaire ». Un engagement
+ * écrit ne peut pas dépendre d'une liste noire qu'on oublie de tenir.
+ *
+ * On inverse donc : ne survivent que les indices pointant vers NOTRE
+ * domaine. Tout le reste tombe, y compris ce qui n'existe pas encore. Une
+ * liste blanche ne se périme pas.
+ *
+ * ATTENTION, CE FILTRE NE TRAITE QUE LE SYMPTÔME : quelque chose a ajouté
+ * ce domaine (extension d'analyse, outil de l'hébergeur, réglage de
+ * LiteSpeed). Trouver et désactiver la source reste à faire côté
+ * administration — signalé à Fabrice.
+ */
 add_filter( 'wp_resource_hints', function ( $urls, $relation ) {
 	if ( 'dns-prefetch' !== $relation && 'preconnect' !== $relation ) {
 		return $urls;
 	}
-	return array_values( array_filter( $urls, static function ( $url ) {
+
+	$nous = wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+	$nous = is_string( $nous ) ? strtolower( ltrim( $nous, '.' ) ) : '';
+
+	return array_values( array_filter( $urls, static function ( $url ) use ( $nous ) {
+
 		$href = is_array( $url ) && isset( $url['href'] ) ? $url['href'] : $url;
-		return ! is_string( $href ) || false === strpos( $href, 'cdn-reach.hostinger.com' );
+		if ( ! is_string( $href ) || '' === trim( $href ) ) {
+			return false;   // dans le doute, on ne laisse pas passer
+		}
+
+		/* WordPress émet souvent « //exemple.com » sans protocole :
+		   wp_parse_url() le comprend, mais pas un chemin relatif seul. */
+		$hote = wp_parse_url( 0 === strpos( $href, '//' ) ? 'https:' . $href : $href, PHP_URL_HOST );
+		if ( ! $hote ) {
+			return true;    // pas d'hôte du tout = ressource locale
+		}
+
+		$hote = strtolower( ltrim( $hote, '.' ) );
+		return '' === $nous || $hote === $nous || substr( $hote, - ( strlen( $nous ) + 1 ) ) === '.' . $nous;
 	} ) );
 }, 20, 2 );

@@ -184,3 +184,70 @@ add_filter( 'lae_github_sync_purge', function ( $faits ) {
 	$faits = is_array( $faits ) ? $faits : array();
 	return array_merge( $faits, lae_purge_forcee() );
 }, 10, 1 );
+
+/* ═══════════════════════════════════════════════════════════════════
+   PURGER DÈS QU'UN CONTENU CHANGE — la contrepartie du TTL long.
+
+   Le TTL du cache HTML passe de 5 minutes à 24 heures le 22/09, parce
+   qu'un TTL court ne protégeait personne : sur un site à faible trafic, la
+   plupart des visiteurs tombaient sur un cache expiré et encaissaient les
+   ~2,2 s de génération de l'accueil. Mesuré : 2,183 s sur un MISS contre
+   0,591 s sur un HIT.
+
+   Mais un TTL de 24 h sans purge sur modification serait bien pire que le
+   problème qu'il règle : Anthony corrige une faute dans une page, et sa
+   correction reste invisible une journée entière sans qu'il comprenne
+   pourquoi. Le TTL long n'est donc acceptable QUE couplé à ceci.
+
+   DÉBOUNCE. `lae_purge_forcee()` fait un appel HTTP sur nous-mêmes : le
+   déclencher à chaque `save_post` d'une modification en lot enverrait
+   autant de requêtes que d'articles. Un verrou court regroupe les
+   modifications rapprochées en une seule purge.
+   ═══════════════════════════════════════════════════════════════════ */
+
+if ( ! function_exists( 'lae_purge_demandee' ) ) {
+	function lae_purge_demandee() {
+
+		// Une purge vient d'avoir lieu : les suivantes n'apporteraient rien.
+		if ( get_transient( 'lae_purge_recente' ) ) {
+			return;
+		}
+		set_transient( 'lae_purge_recente', 1, 60 );
+
+		lae_purge_forcee();
+	}
+}
+
+/* Contenu publié, modifié, dépublié ou supprimé. */
+add_action( 'save_post', function ( $post_id, $post = null ) {
+
+	// Ni les révisions, ni les enregistrements automatiques, ni les
+	// brouillons qui n'ont jamais été publics : rien de tout cela ne change
+	// ce qu'un visiteur voit.
+	if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		return;
+	}
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+	$statut = $post ? $post->post_status : get_post_status( $post_id );
+	if ( 'auto-draft' === $statut ) {
+		return;
+	}
+
+	lae_purge_demandee();
+}, 10, 2 );
+
+foreach ( array( 'deleted_post', 'wp_trash_post', 'untrash_post' ) as $lae_evt ) {
+	add_action( $lae_evt, 'lae_purge_demandee' );
+}
+unset( $lae_evt );
+
+/* Réglages du personnalisateur, menus, taxonomies : tout cela se voit sur
+   des pages déjà en cache, souvent sur TOUTES les pages. */
+add_action( 'customize_save_after', 'lae_purge_demandee', 20 );
+add_action( 'wp_update_nav_menu', 'lae_purge_demandee' );
+add_action( 'edited_term', 'lae_purge_demandee' );
+add_action( 'created_term', 'lae_purge_demandee' );
+add_action( 'delete_term', 'lae_purge_demandee' );
+add_action( 'switch_theme', 'lae_purge_demandee' );
