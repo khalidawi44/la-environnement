@@ -144,7 +144,7 @@ if ( ! function_exists( 'lae_abattage_rattrapage' ) ) {
 		}
 
 		if ( function_exists( 'lae_chantier_importe_image' ) ) {
-			$img = lae_chantier_importe_image( 'chantiers/abattage-troncs.webp', 'Troncs préparés avant abattage' );
+			$img = lae_chantier_importe_image( 'abattage-troncs.webp', 'Troncs préparés avant abattage' );
 			if ( $img ) {
 				set_post_thumbnail( $id, $img );
 			}
@@ -172,3 +172,45 @@ if ( ! function_exists( 'lae_abattage_rattrapage' ) ) {
    article doit arriver une fois la catégorie et la page Conseils en place. */
 add_action( 'init', 'lae_abattage_rattrapage', 26 );
 add_action( 'admin_init', 'lae_abattage_rattrapage', 17 );
+
+/* ═══════════════════════════════════════════════════════════════════
+   L'IMAGE MANQUAIT — rattrapage du 22/09, quelques minutes après.
+
+   Le premier passage a publié l'article sans vignette : j'avais écrit
+   « chantiers/abattage-troncs.webp » alors que ce fichier est à la RACINE
+   de assets/images/, pas dans le sous-dossier. `lae_chantier_importe_image()`
+   rend 0 pour un fichier absent — silencieusement, par sécurité — donc
+   `set_post_thumbnail()` n'a jamais été appelé et rien n'a signalé l'erreur.
+
+   Constaté sur le site servi : l'article sortait sans image, ce qui se voit
+   dans la liste de /conseils/ et prive l'aperçu de partage de sa vignette.
+
+   Le verrou du premier rattrapage étant déjà posé en base, corriger le
+   chemin ne suffit pas : il faut un second passage, avec son propre verrou.
+   Il ne pose la vignette QUE si l'article n'en a pas déjà une — si Anthony
+   en a choisi une entre-temps, on n'y touche pas.
+   ═══════════════════════════════════════════════════════════════════ */
+if ( ! function_exists( 'lae_abattage_vignette' ) ) {
+	function lae_abattage_vignette() {
+
+		if ( get_option( 'lae_abattage_vignette_faite' ) ) {
+			return;
+		}
+		update_option( 'lae_abattage_vignette_faite', 1, false );   // verrou AVANT
+
+		$article = get_page_by_path( 'autorisation-abattre-arbre', OBJECT, 'post' );
+		if ( ! $article || has_post_thumbnail( $article->ID ) ) {
+			return;
+		}
+		if ( ! function_exists( 'lae_chantier_importe_image' ) ) {
+			return;
+		}
+
+		$img = lae_chantier_importe_image( 'abattage-troncs.webp', 'Troncs préparés avant abattage' );
+		if ( $img ) {
+			set_post_thumbnail( $article->ID, $img );
+		}
+	}
+}
+add_action( 'init', 'lae_abattage_vignette', 27 );
+add_action( 'admin_init', 'lae_abattage_vignette', 18 );
