@@ -143,6 +143,22 @@ add_action( 'send_headers', function () {
 		"frame-ancestors 'self'",
 		'upgrade-insecure-requests',
 	) );
+	/*
+	 * ATTENTION — CONSTAT DU 22/09, MESURE EN LIGNE : cet en-tete est
+	 * ACTUELLEMENT SANS EFFET. Le CDN d'Hostinger (`server: hcdn`) injecte
+	 * son propre `Content-Security-Policy: upgrade-insecure-requests` sur
+	 * CHAQUE reponse — verifie jusque sur un fichier .css statique, ou PHP ne
+	 * s'execute pas — et il REMPLACE celui-ci a la sortie. Le navigateur ne
+	 * voit donc qu'une seule ligne CSP, celle du CDN, pas celle-ci. Meme
+	 * classe de probleme que le TTL du cache en septembre : une couche
+	 * serveur prime sur PHP.
+	 *
+	 * On garde quand meme cette ligne : elle est correcte, sans danger, et
+	 * s'appliquera le jour ou le CDN cesse de forcer la sienne (reglage
+	 * hPanel « Force HTTPS » / en-tetes de securite) ou si le site change
+	 * d'hebergement. Le levier est cote Hostinger, pas dans le code —
+	 * signale a Fabrice. Ne pas re-tenter par PHP : ca ne peut pas gagner.
+	 */
 	header( 'Content-Security-Policy: ' . $csp );
 	if ( function_exists( 'is_ssl' ) && is_ssl() ) {
 		header( 'Strict-Transport-Security: max-age=31536000; includeSubDomains' );
