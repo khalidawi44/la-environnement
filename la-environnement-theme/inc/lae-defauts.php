@@ -104,7 +104,13 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'hero_surtitre'        => 'Élagage · Abattage · Création de jardin',
 			'hero_titre'           => 'Un arbre trop grand, trop près, *trop vieux ?*',
 			'hero_chapo'           => 'On monte, on regarde, et on vous dit ce qu\'il faut faire : tailler, haubaner ou abattre. Élagage en grimpe, démontage par câble, création et entretien de jardin.',
-			'hero_points'          => "Diagnostic sur place avant le devis\nDémontage par câble là où l'abattage direct est impossible\nDéchets verts évacués ou broyés sur place",
+						/* « GRATUIT » — confirme par Fabrice le 22/09, et absent du site
+			   jusque-la : le mot n'apparaissait pas une seule fois sur les 22
+			   pages. C'est une expression tres recherchee, et ce n'est PAS un
+			   montant : elle ne tombe donc pas sous la regle « aucun prix
+			   affiche pour L.A Environnement ». On ne la repete pas partout —
+			   trois endroits ou quelqu'un hesite encore a decrocher. */
+			'hero_points'          => "Devis gratuit après visite sur place\nDémontage par câble là où l'abattage direct est impossible\nDéchets verts évacués ou broyés sur place",
 			'prestations_surtitre' => 'Nos prestations',
 			'prestations_titre'    => 'Tout ce qu\'on fait *sur un terrain*',
 			'prestations_chapo'    => 'Chaque prestation a sa fiche : ce qu\'elle comprend, comment on procède, et ce qu\'on laisse derrière nous.',
@@ -159,7 +165,7 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			// département. Les communes restent listées pour la page zone.
 			'zone_departement'     => 'Loire-Atlantique',
 			'appel_titre'          => 'On vient voir *votre arbre*',
-			'appel_texte'          => 'Un appel, une visite sur place, un devis écrit. La suite vous appartient.',
+			'appel_texte'          => 'Un appel, une visite sur place, un devis écrit et gratuit. La suite vous appartient.',
 			'appel_btn_texte'      => 'Demander mon devis',
 			'cine_marquee'         => "Élagage\nAbattage\nCréation de jardin",
 			'cine_tab_surtitre'    => 'De la cime aux racines',
@@ -178,7 +184,7 @@ if ( ! function_exists( 'lae_defauts' ) ) {
 			'cine_avis_total'      => '1',
 			'cine_arbre_surtitre'  => 'Devis',
 			'cine_arbre_titre'     => 'Dites-nous *ce qui vous inquiète*',
-			'cine_arbre_texte'     => 'Une branche au-dessus du toit, un arbre qui penche depuis la tempête, un jardin à reprendre entièrement. On se déplace, on regarde, et vous repartez avec un devis écrit.',
+			'cine_arbre_texte'     => 'Une branche au-dessus du toit, un arbre qui penche depuis la tempête, un jardin à reprendre entièrement. On se déplace, on regarde, et vous repartez avec un devis écrit et gratuit.',
 		);
 		/**
 		 * Permet à un site enfant de changer le contenu livré sans toucher au thème.

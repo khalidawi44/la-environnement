@@ -75,7 +75,7 @@ function lae_seo_pages() {
 			   comparatif sourcé et daté). Elle était invisible sur ces
 			   requêtes faute d'un titre qui les porte. */
 			'titre' => 'Prix d\'un élagage ou d\'un abattage à Vertou et Nantes',
-			'desc'  => "Comment se chiffre un élagage ou un abattage : forfait après visite, repères du marché, réduction selon vos revenus.",
+			'desc'  => "Comment se chiffre un élagage ou un abattage : devis gratuit après visite, forfait tout compris, repères du marché, réduction selon vos revenus.",
 		),
 
 		'a-propos' => array(
@@ -85,7 +85,7 @@ function lae_seo_pages() {
 
 		'contact' => array(
 			'titre' => 'Contact élagueur Vertou (44) — devis après visite',
-			'desc'  => "Dites-nous l'arbre, la commune et ce qui vous inquiète. On rappelle pour convenir d'une visite : c'est là que le devis se fait.",
+			'desc'  => "Dites-nous l'arbre, la commune et ce qui vous inquiète. On rappelle pour convenir d'une visite : le devis est écrit, et il est gratuit.",
 		),
 
 		'mentions-legales' => array(
