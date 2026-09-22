@@ -9,8 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 get_header();
 
+/* Le <h1> portait « Nos prestations » : pas un mot-clé, pas une commune, sur
+   la page qui liste justement ce qu'on vend. Le <title> est bien écrit depuis
+   le 14/09, mais le grand titre visible ne disait rien à Google ni au
+   visiteur arrive d'une recherche. Il nomme desormais les trois metiers et la
+   ville. Ce n'est qu'une valeur de REPLI : une saisie du personnalisateur la
+   remplace toujours, rien n'est ecrase. */
 get_template_part( 'template-parts/entete', 'page', array(
-	'titre' => lae_reglage( 'prestations_titre', 'Nos prestations' ),
+	'titre' => lae_reglage( 'prestations_titre', 'Élagage, abattage et création de jardin à Vertou' ),
 	'chapo' => lae_reglage( 'prestations_chapo' ),
 ) );
 ?>

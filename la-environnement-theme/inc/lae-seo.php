@@ -96,8 +96,32 @@ add_action( 'wp_head', function () {
 	if ( $dep ) {
 		$zones[] = array( '@type' => 'AdministrativeArea', 'name' => $dep );
 	}
+	/* `City` attend une COMMUNE. « Nantes Sud » n'en est pas une : c'est un
+	   secteur de la commune de Nantes. Le déclarer en City est faux, et le
+	   coût est double — un validateur ne le reconnaît pas, et surtout
+	   « Nantes », le terme au plus fort volume de toute la zone, n'apparaît
+	   alors dans AUCUNE des treize entrées. Or travailler à Nantes Sud,
+	   c'est travailler à Nantes : rien n'est exagéré en le disant.
+
+	   On ne touche PAS à la liste affichée : « Nantes Sud » est ce que
+	   Fabrice a validé le 14/09, c'est ce que les gens du coin disent, et
+	   c'est plus honnête sur une page que « Nantes » tout court, qui
+	   laisserait croire qu'on couvre le nord de l'agglomération. Seule la
+	   traduction vers le balisage change. */
+	$commune = static function ( $ville ) {
+		$secteurs = apply_filters( 'lae_seo_secteurs_communes', array(
+			'Nantes Sud' => 'Nantes',
+		) );
+		return isset( $secteurs[ $ville ] ) ? $secteurs[ $ville ] : $ville;
+	};
+	$vues = array();
 	foreach ( lae_communes() as $ville ) {
-		$zones[] = array( '@type' => 'City', 'name' => $ville );
+		$nom = $commune( $ville );
+		if ( isset( $vues[ $nom ] ) ) {
+			continue;   // deux libellés pour une même commune : une seule entrée
+		}
+		$vues[ $nom ] = true;
+		$zones[]      = array( '@type' => 'City', 'name' => $nom );
 	}
 	if ( $zones ) {
 		$donnees['areaServed'] = $zones;

@@ -12,7 +12,9 @@ get_header();
 $terme = is_tax( 'lae_type_chantier' ) ? get_queried_object() : null;
 
 get_template_part( 'template-parts/entete', 'page', array(
-	'titre' => $terme ? $terme->name : lae_reglage( 'realisations_titre', 'Nos chantiers' ),
+	/* Meme correction que sur l'archive des prestations : « Nos chantiers »
+	   ne portait aucun mot-cle. Valeur de repli uniquement. */
+	'titre' => $terme ? $terme->name : lae_reglage( 'realisations_titre', 'Nos chantiers d\'élagage et d\'abattage autour de Nantes' ),
 	'chapo' => $terme ? wp_strip_all_tags( term_description( $terme ) ) : lae_reglage( 'realisations_chapo' ),
 	'fil'   => $terme ? '<a href="' . esc_url( get_post_type_archive_link( 'lae_realisation' ) ) . '">Réalisations</a>' : '',
 ) );
