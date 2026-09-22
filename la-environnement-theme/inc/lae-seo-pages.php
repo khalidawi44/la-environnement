@@ -182,6 +182,11 @@ function lae_seo_pages() {
 		/* Les trois articles. Les deux premiers titres dépassaient 60
 		   caractères une fois le suffixe de marque ajouté, et étaient
 		   coupés dans les résultats. */
+		'autorisation-abattre-arbre' => array(
+			'titre' => 'Faut-il une autorisation pour abattre un arbre&nbsp;?',
+			'desc'  => "Ce n'est pas l'arbre qui décide, c'est la parcelle. Espace boisé classé, espace paysager à protéger, danger : ce qu'il faut vérifier avant de couper.",
+		),
+
 		'distance-plantation-arbre-limite-propriete' => array(
 			'titre' => 'Distance de plantation d\'un arbre : ce que dit la loi',
 			'desc'  => "50 cm, 2 m, et la prescription trentenaire que presque personne ne mentionne : ce que disent les articles 671, 672 et 673 du code civil.",
