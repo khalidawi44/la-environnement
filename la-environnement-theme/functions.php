@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'LAE_VERSION', '1.39.1' );
+define( 'LAE_VERSION', '1.40.0' );
 
 /** Supports WordPress de base. */
 add_action( 'after_setup_theme', function () {
@@ -67,6 +67,7 @@ require_once get_template_directory() . '/inc/lae-chantiers.php';
 require_once get_template_directory() . '/inc/lae-gazon.php';
 require_once get_template_directory() . '/inc/lae-maillage.php';
 require_once get_template_directory() . '/inc/lae-abattage.php';
+require_once get_template_directory() . '/inc/lae-prestations-2.php';
 require_once get_template_directory() . '/inc/lae-illustration.php';
 require_once get_template_directory() . '/inc/lae-ambiance.php';
 require_once get_template_directory() . '/inc/lae-articles.php';

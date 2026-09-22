@@ -45,10 +45,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! function_exists( 'lae_maillage_table' ) ) {
 	function lae_maillage_table() {
 		return apply_filters( 'lae_maillage_table', array(
-			'abattage' => array( 'abattage-et-demontage', 'evacuation-et-broyage' ),
+			'abattage' => array( 'abattage-et-demontage', 'dessouchage-et-rognage-de-souche', 'evacuation-et-broyage' ),
 			'élagage'  => array( 'elagage-en-grimpe', 'evacuation-et-broyage' ),
 			'elagage'  => array( 'elagage-en-grimpe', 'evacuation-et-broyage' ),
-			'jardin'   => array( 'pose-de-gazon-synthetique', 'creation-de-jardin', 'entretien-de-jardin' ),
+			'jardin'   => array( 'pose-de-gazon-synthetique', 'creation-de-jardin', 'entretien-de-jardin', 'taille-de-haie' ),
 		) );
 	}
 }

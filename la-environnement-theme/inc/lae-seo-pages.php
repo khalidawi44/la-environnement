@@ -163,6 +163,15 @@ function lae_seo_pages() {
 			'desc'  => "Là où l'herbe ne tient pas — ombre, sol tassé, passage — une surface verte toute l'année, sans tonte. Sol préparé avant la pose.",
 		),
 
+		'dessouchage-et-rognage-de-souche' => array(
+			'titre' => 'Dessouchage et rognage de souche à Vertou (44)',
+			'desc'  => "Rogner la souche sous le niveau du sol, ou l'extraire quand le terrain doit être repris : ce qui décide, c'est ce que le terrain va devenir.",
+		),
+		'taille-de-haie' => array(
+			'titre' => 'Taille de haie à Vertou (44) : entretien, rabattage',
+			'desc'  => "Taille d'entretien, remise en forme ou rabattage d'une haie trop haute, au bon moment de l'année. Broyage sur place, pied ratissé.",
+		),
+
 		/* Les deux chantiers. Ce sont des photos réelles prises sur
 		   place : la description le dit, sans en rajouter. */
 		'demontage-arbres-abri-jardin' => array(

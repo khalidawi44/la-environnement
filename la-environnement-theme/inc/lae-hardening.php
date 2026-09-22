@@ -82,6 +82,35 @@ add_action( 'send_headers', function () {
 remove_action( 'wp_head', 'wp_generator' );
 add_filter( 'the_generator', '__return_empty_string' );
 
+/* ---- 5 bis. Et la signature des EXTENSIONS, pas seulement celle du cœur ----
+ *
+ * CONSTAT DU 22/09, en sondant le site servi : la page annonçait
+ *
+ *     <meta name="generator" content="Site Kit by Google 1.187.0" />
+ *
+ * Le point 5 ci-dessus ne retire que le générateur de WordPress. Une
+ * extension qui pose le sien passe au travers — et celui-ci nomme
+ * l'extension ET son numéro de version exact, c'est-à-dire précisément ce
+ * qu'un attaquant cherche pour choisir une faille connue à tenter.
+ *
+ * On ne devine PAS le nom du rappel interne de l'extension : il changerait
+ * à la prochaine mise à jour et le correctif tomberait en silence. On
+ * filtre la SORTIE de wp_head, ce qui vaut pour toutes les extensions,
+ * celles installées demain comprises. Le filtre ne retire que les balises
+ * `generator` : tout le reste du <head> est réémis tel quel.
+ */
+add_action( 'wp_head', static function () {
+	ob_start();
+}, 0 );
+
+add_action( 'wp_head', static function () {
+	$tete = ob_get_clean();
+	if ( ! is_string( $tete ) ) {
+		return;   // un autre tampon est passé par là : on ne touche à rien
+	}
+	echo preg_replace( '#<meta[^>]+name=["\']generator["\'][^>]*>\s*#i', '', $tete ); // phpcs:ignore WordPress.Security.EscapeOutput
+}, PHP_INT_MAX );
+
 /* ---- 6. Retire les liens de découverte inutiles (RSD/xmlrpc, manifest) ---- */
 remove_action( 'wp_head', 'rsd_link' );
 remove_action( 'wp_head', 'wlwmanifest_link' );
