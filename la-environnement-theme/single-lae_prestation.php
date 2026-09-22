@@ -50,17 +50,48 @@ while ( have_posts() ) : the_post();
 
 	/* Les autres prestations, pour ne pas laisser la page sans suite.
 
-	   TRI ALEATOIRE, et ce n'est pas un detail. Le tri par `menu_order`
-	   affichait TOUJOURS les trois memes fiches, sur les sept pages
-	   prestation comme sur les trois articles : creation de jardin,
+	   ROTATION CIRCULAIRE, ET NON TIRAGE ALEATOIRE.
+
+	   Le tri d'origine, par `menu_order` croissant, affichait TOUJOURS les
+	   trois memes fiches sur les sept pages prestation : creation de jardin,
 	   entretien de jardin et evacuation n'etaient liees que depuis deux
-	   pages du site, contre onze pour les trois premieres. Mesure du 22/09.
-	   `single.php` fait deja tourner ses articles de cette facon. */
+	   pages du site, contre onze pour les trois premieres (mesure du 22/09).
+
+	   Le reflexe etait de passer en `orderby => rand`. Essaye et MESURE en
+	   ligne : sur quinze releves, entretien de jardin n'est jamais sorti.
+	   La raison est que le hasard est tire au moment ou la page est MISE EN
+	   CACHE, pas a chaque visite — et depuis le 22/09 le cache tient
+	   vingt-quatre heures. Un tirage aleatoire derriere un cache long est
+	   fige : il ne tourne plus, il choisit une fois pour toutes.
+
+	   On prend donc les trois fiches qui SUIVENT celle-ci dans l'ordre, en
+	   bouclant. Avec sept prestations, chacune est alors liee depuis
+	   exactement trois autres pages — repartition uniforme, garantie, et
+	   stable d'une visite a l'autre. Des liens stables valent mieux que des
+	   liens qui changent : Google et le visiteur y gagnent. */
+	$lae_toutes = get_posts( array(
+		'post_type'      => 'lae_prestation',
+		'post_status'    => 'publish',
+		'posts_per_page' => -1,
+		'orderby'        => array( 'menu_order' => 'ASC', 'title' => 'ASC' ),
+		'no_found_rows'  => true,
+		'fields'         => 'ids',
+	) );
+
+	$lae_rang = array_search( get_the_ID(), $lae_toutes, true );
+	$lae_ids  = array();
+	if ( false !== $lae_rang && count( $lae_toutes ) > 1 ) {
+		$lae_n = count( $lae_toutes );
+		for ( $i = 1; $i <= min( 3, $lae_n - 1 ); $i++ ) {
+			$lae_ids[] = $lae_toutes[ ( $lae_rang + $i ) % $lae_n ];
+		}
+	}
+
 	$autres = new WP_Query( array(
 		'post_type'           => 'lae_prestation',
+		'post__in'            => $lae_ids ? $lae_ids : array( 0 ),
+		'orderby'             => 'post__in',
 		'posts_per_page'      => 3,
-		'post__not_in'        => array( get_the_ID() ),
-		'orderby'             => 'rand',
 		'ignore_sticky_posts' => true,
 		'no_found_rows'       => true,
 	) );
