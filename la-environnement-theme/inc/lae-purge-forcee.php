@@ -62,7 +62,7 @@ add_action( 'init', function () {
 		return;
 	}
 
-	$attendu = (string) get_option( 'lae_purge_jeton', '' );
+	$attendu = (string) get_transient( 'lae_purge_jeton' );
 	$fourni  = sanitize_text_field( wp_unslash( $_GET['lae_purge'] ) );
 
 	// Pas de jeton armé, ou jeton qui ne correspond pas : on ne répond rien
@@ -71,7 +71,7 @@ add_action( 'init', function () {
 		return;
 	}
 
-	delete_option( 'lae_purge_jeton' );   // usage unique, consommé tout de suite
+	delete_transient( 'lae_purge_jeton' );   // usage unique, consommé tout de suite
 
 	if ( ! headers_sent() ) {
 		// L'en-tête que le serveur LiteSpeed lit. `*` = tout le cache du site.
@@ -106,7 +106,13 @@ if ( ! function_exists( 'lae_purge_forcee' ) ) {
 		// 2. Le serveur, via un rappel sur nous-mêmes que le cache ne peut
 		//    pas servir de sa réserve.
 		$jeton = wp_generate_password( 40, false, false );
-		update_option( 'lae_purge_jeton', $jeton, false );
+		/* Le jeton voyage dans la chaine de requete (ligne suivante) : il atterrit
+		   donc dans les journaux d'acces du serveur et du CDN, en clair. A usage
+		   unique et consomme immediatement, un jeton lu dans un journal est deja
+		   mort — SAUF s'il reste arme apres l'echec d'un rappel. Un transient qui
+		   expire referme ce cas : passe 120 s, le jeton ne vaut plus rien, meme
+		   rejoue. Signale par l'audit securite du 22/09. */
+		set_transient( 'lae_purge_jeton', $jeton, 120 );
 
 		$url = add_query_arg( 'lae_purge', $jeton, home_url( '/' ) );
 
@@ -127,7 +133,7 @@ if ( ! function_exists( 'lae_purge_forcee' ) ) {
 			// Le jeton reste armé : un prochain passage pourra réessayer.
 		} else {
 			$faits[] = 'serveur LiteSpeed (rappel, HTTP ' . wp_remote_retrieve_response_code( $reponse ) . ')';
-			delete_option( 'lae_purge_jeton' );
+			delete_transient( 'lae_purge_jeton' );
 		}
 
 		if ( function_exists( 'wp_cache_flush' ) ) {

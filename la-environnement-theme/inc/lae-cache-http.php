@@ -46,6 +46,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  */
 add_action( 'send_headers', function () {
 	if ( headers_sent() || ! defined( 'LAE_VERSION' ) ) return;
+	/* Reserve aux utilisateurs connectes depuis le 22/09. L'en-tete reste
+	   l'outil de diagnostic « quelle version a rendu CETTE page » — il a
+	   servi a trouver la panne du 21/09 — mais le publier en clair sur un
+	   depot PUBLIC donnait a n'importe qui de quoi lire le diff entre deux
+	   versions et cibler une faille. Le durcissement remplace justement le
+	   ?ver= des CSS/JS par une empreinte pour cette raison : l'en-tete le
+	   contredisait trois fichiers plus loin. Connecte, on garde l'outil. */
+	if ( ! is_user_logged_in() ) return;
 	header( 'X-LAE-Version: ' . LAE_VERSION );
 }, 99 );
 
@@ -59,6 +67,22 @@ add_action( 'send_headers', function () {
 	   Googlebot : exactement le problème que ce fichier existe pour régler.
 	   Le flux RSS, lui, reste exclu : il porte ses propres en-têtes. */
 	if ( is_feed() ) return;
+
+	/* La page CONTACT ne va pas au cache partage. Elle porte un nonce
+	   (lae_contact_nonce) qui vit 24 h ; la page vivait aussi 24 h en cache.
+	   Les deux durees identiques se croisent forcement : passe l'expiration,
+	   le visiteur recevait « votre session a expire », rechargeait, et le
+	   cache lui reservait la MEME page avec le MEME nonce mort — formulaire
+	   casse en boucle, donc une demande de devis perdue sans trace. Le nonce
+	   mis en cache n'offrait de toute facon aucune protection CSRF reelle
+	   (identique pour tous, lisible publiquement) : ce qui filtre les robots
+	   ici, c'est le champ leurre et la limite par IP, pas lui. Cette page n'a
+	   pas d'enjeu de performance comparable a l'accueil : on la sert fraiche. */
+	if ( is_page( 'contact' ) ) {
+		header( 'Cache-Control: private, no-store, max-age=0' );
+		header( 'X-LiteSpeed-Cache-Control: no-cache' );
+		return;
+	}
 
 	/*
 	 * max-age=0            : le navigateur revalide à chaque visite.

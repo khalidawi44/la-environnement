@@ -45,6 +45,35 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
 	return $endpoints;
 } );
 
+/* ---- 2 bis. oEmbed : la porte que les points 2 et 3 avaient laissee ----
+ *
+ * CONSTAT DU 22/09, mesure a l'URL nue et publique :
+ *
+ *     GET /wp-json/oembed/1.0/embed?url=https://elagage-vertou.fr/
+ *     "author_name":"Petit jardinier"
+ *     "author_url":"https://elagage-vertou.fr/author/advise-alliance-groupgmail-com/"
+ *
+ * Le slug « advise-alliance-groupgmail-com » est le user_nicename passe au
+ * tamis de sanitize_title : il se relit a l'endroit en
+ * « advise-alliance-group@gmail.com », c'est-a-dire l'identifiant de
+ * connexion, donne en clair. Et les deux liens de decouverte oEmbed sont
+ * annonces dans le <head> de CHAQUE page : personne n'a besoin de chercher,
+ * le site montre lui-meme ou regarder.
+ *
+ * Le point 2 ferme /wp/v2/users, le point 3 ferme ?author= et /author/ —
+ * mais oembed/1.0 construit author_url tout seul, dans le coeur de
+ * WordPress, sans passer par ces filtres. Le durcissement etait aux deux
+ * tiers fait ; voici le tiers manquant.
+ *
+ * On retire les deux champs auteur de la reponse oEmbed, et les liens de
+ * decouverte du <head> : aucun site tiers ne re-embarque ces pages, ils ne
+ * servent donc a rien ici, et c'est une surface de moins. */
+add_filter( 'oembed_response_data', function ( $data ) {
+	unset( $data['author_url'], $data['author_name'] );
+	return $data;
+}, 20 );
+remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+
 /* ---- 3. Énumération d'auteur ?author=N et archives /author/ ----
  * On intercepte ?author= dès 'init' (priorité 1), AVANT le redirect_canonical
  * de WordPress (template_redirect, priorité 10) qui, lui, révèle l'identifiant
@@ -68,9 +97,53 @@ add_action( 'send_headers', function () {
 	header( 'X-Content-Type-Options: nosniff' );
 	header( 'X-Frame-Options: SAMEORIGIN' );
 	header( 'Referrer-Policy: strict-origin-when-cross-origin' );
-	header( 'Permissions-Policy: geolocation=(), microphone=(), camera=()' );
-	// CSP « douce » : force les ressources en HTTPS sans rien bloquer.
-	header( 'Content-Security-Policy: upgrade-insecure-requests' );
+	header( 'Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()' );
+	/*
+	 * CSP COMPLETE — remplacee le 22/09. Avant, ce n'etait qu'un
+	 * `upgrade-insecure-requests` : ca force le HTTPS, ca ne restreint AUCUNE
+	 * source. Une vraie liste blanche, dans la meme logique que celle
+	 * appliquee aux resource_hints.
+	 *
+	 * POURQUOI `'unsafe-inline'` ET NON DES NONCES. Un nonce CSP doit etre
+	 * unique par reponse. Les pages sont servies depuis LiteSpeed avec
+	 * s-maxage=86400 : un nonce serait mis en cache et resservi identique a
+	 * tous les visiteurs 24 h, donc equivalent a `'unsafe-inline'` mais avec
+	 * l'illusion d'une protection. Le cache et les valeurs a usage unique ne
+	 * cohabitent pas — c'est le meme piege que le nonce du formulaire de
+	 * contact. Les empreintes sha256 survivraient au cache, mais il y en a
+	 * onze, dont certaines varient selon le contenu (ld+json,
+	 * speculationrules) : ingerable sur 24 pages avec une sync automatique.
+	 *
+	 * CE QUE CETTE CSP GAGNE, meme avec 'unsafe-inline' : un <script src>
+	 * externe injecte (extension compromise, mise a jour veroleee) ne se
+	 * charge pas ; base-uri 'self' neutralise le detournement par <base> ;
+	 * form-action 'self' empeche de reecrire le formulaire de contact pour
+	 * expedier les coordonnees des prospects ailleurs ; object-src 'none'
+	 * ferme Flash/applets. Et surtout, elle devient le garde-fou AUTOMATIQUE
+	 * de l'engagement « aucune ressource tierce » des mentions legales : ce
+	 * que lae-zero-tiers.php retire apres coup, la CSP l'empeche par principe,
+	 * y compris ce qui n'existe pas encore.
+	 *
+	 * A SURVEILLER (dit a Fabrice) : si Site Kit est un jour relie a Analytics
+	 * ou Tag Manager, googletagmanager.com sera bloque et les stats cesseront
+	 * silencieusement de remonter. Si hostinger-reach est reactive, son CDN
+	 * sera bloque. Ce sont des consequences voulues, pas des regressions.
+	 */
+	$csp = implode( '; ', array(
+		"default-src 'self'",
+		"script-src 'self' 'unsafe-inline'",
+		"style-src 'self' 'unsafe-inline'",
+		"img-src 'self' data:",
+		"font-src 'self'",
+		"connect-src 'self'",
+		"frame-src 'self'",
+		"object-src 'none'",
+		"base-uri 'self'",
+		"form-action 'self'",
+		"frame-ancestors 'self'",
+		'upgrade-insecure-requests',
+	) );
+	header( 'Content-Security-Policy: ' . $csp );
 	if ( function_exists( 'is_ssl' ) && is_ssl() ) {
 		header( 'Strict-Transport-Security: max-age=31536000; includeSubDomains' );
 	}
@@ -122,18 +195,10 @@ remove_action( 'wp_head', 'wlwmanifest_link' );
  *        le .htaccess est accessible en écriture. Gardes IfModule → pas de 500
  *        selon la version d'Apache / LiteSpeed. */
 add_action( 'admin_init', function () {
-	if ( '1' === (string) get_option( 'lae_htaccess_hard', '' ) ) return; // déjà appliqué
-	if ( ! function_exists( 'get_home_path' ) )       require_once ABSPATH . 'wp-admin/includes/file.php';
-	if ( ! function_exists( 'insert_with_markers' ) ) require_once ABSPATH . 'wp-admin/includes/misc.php';
-	$home = function_exists( 'get_home_path' ) ? get_home_path() : ABSPATH;
-	$file = rtrim( $home, '/\\' ) . '/.htaccess';
-	if ( ! file_exists( $file ) || ! is_writable( $file ) ) {
-		update_option( 'lae_htaccess_hard_note', 'manuel', false ); // à coller à la main
-		return;
-	}
+
 	$rules = array(
 		'Options -Indexes',
-		'<FilesMatch "(?i)^(readme\.html|readme\.txt|license\.txt|licence\.txt|wp-config\.php|\.env|\.git.*)$">',
+		'<FilesMatch "(?i)^(readme\.html|readme\.txt|license\.txt|licence\.txt|wp-config\.php|wp-config-sample\.php|\.env|\.git.*)$">',
 		'<IfModule mod_authz_core.c>',
 		'Require all denied',
 		'</IfModule>',
@@ -143,8 +208,27 @@ add_action( 'admin_init', function () {
 		'</IfModule>',
 		'</FilesMatch>',
 	);
+
+	/* Verrou VERSIONNE, et non binaire. Ajouter wp-config-sample.php au
+	   FilesMatch le 22/09 ne changeait rien sur un site ou le bloc etait
+	   deja pose : un verrou « 1 » l'aurait bloque a jamais. On stocke a la
+	   place une empreinte du jeu de regles ; si les regles changent, la
+	   valeur ne correspond plus et le bloc est reecrit. insert_with_markers
+	   remplace le bloc balise « LAE Hardening », l'operation est idempotente. */
+	$empreinte = substr( md5( implode( '|', $rules ) ), 0, 12 );
+	if ( $empreinte === (string) get_option( 'lae_htaccess_hard', '' ) ) return;
+
+	if ( ! function_exists( 'get_home_path' ) )       require_once ABSPATH . 'wp-admin/includes/file.php';
+	if ( ! function_exists( 'insert_with_markers' ) ) require_once ABSPATH . 'wp-admin/includes/misc.php';
+	$home = function_exists( 'get_home_path' ) ? get_home_path() : ABSPATH;
+	$file = rtrim( $home, '/\\' ) . '/.htaccess';
+	if ( ! file_exists( $file ) || ! is_writable( $file ) ) {
+		update_option( 'lae_htaccess_hard_note', 'manuel', false ); // à coller à la main
+		return;
+	}
+
 	if ( function_exists( 'insert_with_markers' ) && insert_with_markers( $file, 'LAE Hardening', $rules ) ) {
-		update_option( 'lae_htaccess_hard', '1', false );
+		update_option( 'lae_htaccess_hard', $empreinte, false );
 		delete_option( 'lae_htaccess_hard_note' );
 	}
 } );
